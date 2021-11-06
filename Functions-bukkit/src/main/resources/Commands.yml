@@ -1,0 +1,18 @@
+NotLogin:
+  #优先执行Allow
+  Allow:
+    - "l(ogin)?"
+    - "reg(ister)?"
+    - "recoverpassword"
+    - "rp"
+    - "changepassword"
+    - "cp"
+    - "mailcode"
+  Disallow: all
+BeLogin:
+  Allow:
+    - ""
+  Disallow:
+    - "pl(ugins)?"
+    - "bukkit"
+    - "spigot"

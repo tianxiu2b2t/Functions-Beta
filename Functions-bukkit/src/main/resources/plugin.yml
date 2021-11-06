@@ -1,0 +1,35 @@
+name: Functions
+version: '${project.version}'
+main: org.functions.Bukkit.Main.Functions
+prefix: Functions
+loadbefore: [ Functions ]
+authors: [ None ]
+description: None
+website: None
+commands:
+  Functions:
+    description: Functions's Main commands.
+    aliases: [fun, function]
+  login:
+    description: Functions's Accounts login.
+    aliases: [l]
+  register:
+    description: Functions's Accounts register.
+    aliases: [reg]
+  bindmail:
+    description: Functions's Accounts bind mail.
+    aliases: [bd]
+  recoverpassword:
+    description: Functions's Accounts recover password(recovery password mail code).
+    aliases: [rp]
+  mailcode:
+    description: Functions's Accounts mail code(verify code).
+    aliases: [mc]
+  changepassword:
+    description: Functions's Accounts change password.
+    aliases: [cp]
+  logout:
+    description: Functions's Accounts log out.
+  accountdelete:
+    description: Functions's Accounts delete.
+    aliases: [accountdel, delaccount]

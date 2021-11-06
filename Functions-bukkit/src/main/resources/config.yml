@@ -1,0 +1,22 @@
+#插件前缀
+Prefix: §3[§bFunctions§3] §r
+#服务器名字
+ServerName: "Unknown Server"
+#邮箱找回密码服务器名字
+RecoveryPasswordServerName: "Recovery Password Unknow Server"
+#语言配置
+#如果没有语言文字则生成中文
+Language: zh-cn
+#数据库
+DataBase:
+  #SQLITE MYSQL(目前Beta版不开放)
+  Type: SQLITE
+  #数据库文件
+  File: DataBase.db
+#功能开启
+Functions:
+  #登陆
+  #如果没有开启则直接游玩
+  Login: true
+  #账号注册功能
+  RegisterAccounts: true

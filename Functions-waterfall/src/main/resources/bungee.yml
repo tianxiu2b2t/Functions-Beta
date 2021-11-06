@@ -1,0 +1,4 @@
+name: Functions
+version: '${project.version}'
+main: org.functions.Bungee.Main.Functions
+description: None

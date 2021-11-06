@@ -1,0 +1,31 @@
+Mail:
+  #邮箱条数
+  Debug: true
+  #是否验证邮箱
+  Auth: true
+  #邮箱地址(smtp.163.com)
+  Host: ""
+  #协议
+  protocol: ""
+  #私密验证
+  SSL: true
+  #主题
+  Subject: "Recovery Password."
+  #来自(填邮箱)
+  From: ""
+  #如果FromName为空则获取From的邮箱
+  FromName: ""
+  #授权码
+  Password: ""
+  #几分钟超时验证码失效？
+  TimeOut: 5
+Holder:
+  #变量
+  Location: "%world%,%x%,%y%,%z%,%yaw%,%pitch%"
+Date-Time:
+  #日期格式
+  Date: "yyyy-MM-dd"
+  #时间格式
+  Time: "HH:mm:ss"
+  #游戏时间
+  DayTime: "mm:ss"
