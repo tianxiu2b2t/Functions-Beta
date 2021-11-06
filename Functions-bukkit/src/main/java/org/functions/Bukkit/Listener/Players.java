@@ -64,6 +64,7 @@ public class Players implements Listener {
         Functions.instance.print("Player: " + p.getName() + " Join the server. (Address: " + fpi.getPlayerAddress(p.getUniqueId()) + ")");
         account = new Account(p.getUniqueId());
         if (account.exists()) {
+            account.teleportSpawn();
             Accounts.login.put(p.getUniqueId(),false);
             if (account.autoLogin()) {
                 p.sendMessage(fpi.putLanguage("AutoLogin","&a成功自动登陆！"));
