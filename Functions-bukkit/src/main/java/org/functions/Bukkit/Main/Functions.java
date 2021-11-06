@@ -7,7 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Listener.Players;
 import org.functions.Bukkit.Tasks.CheckAccountLogin;
-import org.functions.Bukkit.Tasks.PlayersTasks;
+import org.functions.Bukkit.Tasks.Tasks;
 
 import java.io.File;
 import java.util.*;
@@ -111,7 +111,7 @@ public final class Functions extends JavaPlugin {
     }
     public void runScheduler() {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20*5);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new PlayersTasks(), 0, 0);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
     }
     public void print(Object text) {
         getServer().getConsoleSender().sendMessage(Prefix() + text);

@@ -5,9 +5,11 @@ import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Accounts;
 import org.functions.Bukkit.Main.Functions;
+import org.functions.Bukkit.Main.Updater;
 
-public class PlayersTasks implements Runnable {
+public class Tasks implements Runnable {
     FPI fpi = new FPI();
+    long check = 0;
     public void run() {
         for (Player p : fpi.getOnlinePlayers()) {
             if (FPI.code_timeout.get(p.getUniqueId()) != null) {
@@ -17,6 +19,10 @@ public class PlayersTasks implements Runnable {
                     FPI.code_verify.remove(p.getUniqueId());
                 }
             }
+        }
+        check++;
+        if (check==(20*5)) {
+            new Updater.scheduler().run();
         }
     }
 }
