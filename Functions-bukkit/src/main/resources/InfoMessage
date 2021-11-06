@@ -1,4 +1,4 @@
 &a嘿，服主管理员，%plugin%有新的版本下载了哦。
-&a插件版本是： %latest_version%
+&a新版插件版本是： %latest_version%
 &b现在的插件版本是： %version%
 &b请到 %url% 下载吧！
