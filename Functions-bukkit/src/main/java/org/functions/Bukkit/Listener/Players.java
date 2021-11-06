@@ -70,6 +70,9 @@ public class Players implements Listener {
                 Functions.instance.print("Player: " + p.getName() + " Auto login.");
             }
         }
+        if (p.isOp()) {
+            new Updater().sendOp(p);
+        }
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void move(PlayerMoveEvent event) {

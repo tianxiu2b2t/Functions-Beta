@@ -91,6 +91,7 @@ public final class Functions extends JavaPlugin {
         saveResource(name, replace);
     }
     public void onEnable() {
+        new Metrics(this,11673);
         instance = this;
         print(configuration.getSettings().getString("Mail.From"));
         if (getConfig().getString("DataBase.Type").equals("MYSQL")) {

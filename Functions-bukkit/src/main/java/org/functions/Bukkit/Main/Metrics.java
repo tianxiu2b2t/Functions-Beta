@@ -1,4 +1,4 @@
-package org.functions.Main;
+package org.functions.Bukkit.Main;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

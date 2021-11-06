@@ -1,9 +1,12 @@
 package org.functions.Bukkit.Main;
 
+import org.bukkit.entity.Player;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 public class Updater {
@@ -11,9 +14,12 @@ public class Updater {
         check();
         info();
         now();
+        getVersion();
     }
     long check = 0;
     int pre = 0;
+    String plugin_version = Functions.instance.getDescription().getVersion();
+    String vurl = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/plugin.yml";
     String curl = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/Version";
     String iurl = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/InfoMessage";
     public void check() {
@@ -30,7 +36,23 @@ public class Updater {
         return "https://gitee.com/tianxiu2b2t/Functions-Beta/releases/";
     }
     ArrayList<String> message = new ArrayList<>();
-
+    public void getVersion() {
+        try {
+            URL u = new URL(vurl);
+            InputStream is = u.openStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            LinkedHashMap<String, String> t = new LinkedHashMap<>();
+            String temp;
+            while ((temp = br.readLine())!=null) {
+                if (temp.contains("version:")) {
+                    plugin_version = temp.split(": ")[1].replace("'","").replace("\"","");
+                    return;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void info() {
         try {
             InputStream is = Functions.instance.getResource("Version");
@@ -63,12 +85,21 @@ public class Updater {
             }
         }
     }
+    public void sendOp(Player p) {
+        if (pre > nowversion) {
+            if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
+                for (String s : message) {
+                    p.sendMessage(Functions.instance.Prefix() + Functions.instance.getAPI().replace(s).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%latest_version%", plugin_version).replace("%version%", Functions.instance.getDescription().getVersion()));
+                }
+            }
+        }
+    }
     public void run() {
         if (check<=0) {
             if (pre > nowversion) {
                 if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
                     for (String s : message) {
-                        Functions.instance.print(Functions.instance.getAPI().replace(s).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%version%",Functions.instance.getDescription().getVersion()));
+                        Functions.instance.print(Functions.instance.getAPI().replace(s).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%latest_version%",plugin_version).replace("%version%",Functions.instance.getDescription().getVersion()));
                         check = 20*60*Functions.instance.getConfig().getLong("Updater.minutes",5);
                     }
                 }
