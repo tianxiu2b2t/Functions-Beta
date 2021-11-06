@@ -7,71 +7,73 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Updater {
-    public static class CheckVersion {
-        String url = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/Version";
-        int version = 0;
-        public CheckVersion() {
+    public Updater() {
+        check();
+        info();
+        now();
+    }
+    long check = 0;
+    int pre = 0;
+    String curl = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/Version";
+    String iurl = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/InfoMessage";
+    public void check() {
+        try {
+            URL u = new URL(curl);
+            InputStream is = u.openStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            pre = Integer.parseInt(br.readLine());
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+    public String getURL() {
+        return "https://gitee.com/tianxiu2b2t/Functions-Beta/releases/";
+    }
+    ArrayList<String> message = new ArrayList<>();
+
+    public void info() {
+        try {
+            InputStream is = Functions.instance.getResource("Version");
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            String temp;
+            while ((temp = br.readLine()) != null) {
+                message.add(temp);
+            }
+            URL u = new URL(iurl);
+            is = u.openStream();
+            br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            message.clear();
+            while ((temp = br.readLine()) != null) {
+                message.add(temp);
+            }
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+    int nowversion = 0;
+
+    public void now() {
+        if (Functions.instance != null) {
             try {
-                URL u = new URL(url);
-                InputStream is = u.openStream();
+                InputStream is = Functions.instance.getResource("Version");
                 BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                version = Integer.parseInt(br.readLine());
+                nowversion = Integer.parseInt(br.readLine());
             } catch (IOException | NumberFormatException e) {
                 e.printStackTrace();
             }
         }
-
-        public int getVersion() {
-            return version;
-        }
     }
-    public static class UpdaterMessage {
-        String url = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/InfoMessage";
-        ArrayList<String> message = new ArrayList<>();
-        public UpdaterMessage() {
-            try {
-                URL u = new URL(url);
-                InputStream is = u.openStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                String temp;
-                while ((temp = br.readLine())!=null) {
-                    message.add(temp);
-                }
-            } catch (IOException | NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public ArrayList<String> getMessages() {
-            return message;
-        }
-    }
-    public static class Localversion {
-        int nowversion = 0;
-        public Localversion() {
-            if (Functions.instance!=null) {
-                try {
-                    InputStream is = Functions.instance.getResource("Version");
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                    nowversion = Integer.parseInt(br.readLine());
-                } catch (IOException | NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        public int getVersion() {
-            return nowversion;
-        }
-    }
-    public static class scheduler implements Runnable {
-        public void run() {
-            if (Functions.instance.getConfig().getBoolean("Updater.Enable",true)) {
-                if (new CheckVersion().getVersion() > new Localversion().getVersion()) {
-                    for (String s : new UpdaterMessage().getMessages()) {
-                        Functions.instance.print(Functions.instance.getAPI().replace(s));
+    public void run() {
+        if (check<=0) {
+            if (pre > nowversion) {
+                if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
+                    for (String s : message) {
+                        Functions.instance.print(Functions.instance.getAPI().replace(s).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%version%",Functions.instance.getDescription().getVersion()));
+                        check = 20*60*Functions.instance.getConfig().getLong("Updater.minutes",5);
                     }
                 }
             }
         }
+        check--;
     }
 }

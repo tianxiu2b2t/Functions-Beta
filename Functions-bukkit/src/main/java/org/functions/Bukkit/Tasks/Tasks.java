@@ -10,6 +10,7 @@ import org.functions.Bukkit.Main.Updater;
 public class Tasks implements Runnable {
     FPI fpi = new FPI();
     long check = 0;
+    Updater up = new Updater();
     public void run() {
         for (Player p : fpi.getOnlinePlayers()) {
             if (FPI.code_timeout.get(p.getUniqueId()) != null) {
@@ -20,9 +21,6 @@ public class Tasks implements Runnable {
                 }
             }
         }
-        check++;
-        if (check==(20*5)) {
-            new Updater.scheduler().run();
-        }
+        up.run();
     }
 }
