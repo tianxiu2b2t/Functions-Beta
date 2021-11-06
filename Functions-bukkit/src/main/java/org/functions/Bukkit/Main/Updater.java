@@ -3,6 +3,7 @@ package org.functions.Bukkit.Main;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Updater {
@@ -22,6 +23,27 @@ public class Updater {
 
         public int getVersion() {
             return version;
+        }
+    }
+    public static class UpdaterMessage {
+        String url = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/InfoMessage";
+        ArrayList<String> message = new ArrayList<>();
+        public UpdaterMessage() {
+            try {
+                URL u = new URL(url);
+                InputStream is = u.openStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                String temp;
+                while ((temp = br.readLine())!=null) {
+                    message.add(temp);
+                }
+            } catch (IOException | NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public ArrayList<String> getMessages() {
+            return message;
         }
     }
     public static class Localversion {
@@ -45,7 +67,9 @@ public class Updater {
         public void run() {
             if (Functions.instance.getConfig().getBoolean("Updater.Enable",true)) {
                 if (new CheckVersion().getVersion() > new Localversion().getVersion()) {
-                    Functions.instance.print("Fuck you need updater.");
+                    for (String s : new UpdaterMessage().getMessages()) {
+                        Functions.instance.print(Functions.instance.getAPI().replace(s));
+                    }
                 }
             }
         }
