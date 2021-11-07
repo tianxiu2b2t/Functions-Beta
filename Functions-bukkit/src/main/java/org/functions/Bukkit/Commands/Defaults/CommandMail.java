@@ -18,6 +18,7 @@ public class CommandMail implements TabExecutor {
         new FPI().getCommand("bindmail", new CommandMail());
         new FPI().getCommand("recoverpassword", new CommandMail());
         new FPI().getCommand("mailcode", new CommandMail());
+        new FPI().getCommand("mailogin", new CommandMail());
     }
     FPI fpi = new FPI();
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -50,7 +51,7 @@ public class CommandMail implements TabExecutor {
                     return true;
                 }
                 if (account.isLogin()) {
-                    sender.sendMessage(fpi.putLanguage("LoginSendCode", "&c已登陆，不需要找回密码了！"));
+                    sender.sendMessage(fpi.putLanguage("LoginSendCode", "&c已登陆，不需要找回密码或登陆了！"));
                     return true;
                 }
                 code = new MailCode(p.getUniqueId());
@@ -70,6 +71,37 @@ public class CommandMail implements TabExecutor {
                 code = new MailCode(p.getUniqueId());
                 if (code.verify(args[0])) {
                     sender.sendMessage(fpi.putLanguage("CodeVerify", "&a验证码验证成功！快使用/cp <密码> <密码>来换密码吧"));
+                    return true;
+                }
+                sender.sendMessage(fpi.putLanguage("NotFoundCode","&c无效验证码或已过时间！"));
+                return true;
+            }
+            if (fpi.hasAliases("mailogin", label)) {
+                if (args.length == 0) {
+                    if (!account.existsMail()) {
+                        sender.sendMessage(fpi.putLanguage("NotMail", "&c没有找到你的邮箱。"));
+                        return true;
+                    }
+                    if (account.isLogin()) {
+                        sender.sendMessage(fpi.putLanguage("LoginSendCode", "&c已登陆，不需要找回密码或登陆了！"));
+                        return true;
+                    }
+                    code = new MailCode(p.getUniqueId());
+                    sender.sendMessage(fpi.putLanguage("SendCode", "&a正在发送到你的邮箱%mail%.").replace("%mail%", account.getMail()));
+                    if (code.create()) {
+                        sender.sendMessage(fpi.putLanguage("SendCodeSuccessfully", "&a成功发送到你的邮箱%mail%.").replace("%mail%", account.getMail()));
+                        return true;
+                    }
+                    sender.sendMessage(fpi.putLanguage("SendCodeFailed", "&c发送失败（原因：已发送验证码，服务器没有开邮箱找回密码或邮箱错误！）"));
+                    return true;
+                }
+                code = new MailCode(p.getUniqueId());
+                if (code.verify(args[0])) {
+                    if (account.mailLogin()) {
+                        sender.sendMessage(fpi.putLanguage("CodeLogin", "&a验证码登陆成功！"));
+                        return true;
+                    }
+                    sender.sendMessage(fpi.putLanguage("CodeLoginFailed","&c验证码登陆失败！"));
                     return true;
                 }
                 sender.sendMessage(fpi.putLanguage("NotFoundCode","&c无效验证码或已过时间！"));

@@ -27,7 +27,7 @@ public class CheckAccountLogin implements Runnable {
                             if (account.isLogin()) {
                                 continue;
                             }
-                            p.sendMessage(fpi.putLanguage("LoginAccount", "&c请使用/login <密码> 来登录"));
+                            p.sendMessage(fpi.putLanguage("LoginAccount", "&c请使用/login <密码> 或者使用/mailogin 来登录"));
                         }
                     }
                 }

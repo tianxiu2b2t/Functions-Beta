@@ -207,16 +207,31 @@ public class Account {
     }
     public boolean Login(String password) {
         if (exists()) {
-            try {
-                password = security.security(password);
-                if (db.query(select).getString("Password").equals(password)) {
-                    Accounts.login.put(uuid, true);
-                    setAddress();
-                    teleportQuitPosition();
-                    return true;
+            if (!isLogin()) {
+                try {
+                    password = security.security(password);
+                    if (db.query(select).getString("Password").equals(password)) {
+                        Accounts.login.put(uuid, true);
+                        setAddress();
+                        teleportQuitPosition();
+                        return true;
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
+                return false;
+            }
+            return false;
+        }
+        return false;
+    }
+    public boolean mailLogin() {
+        if (exists()) {
+            if (!isLogin()) {
+                Accounts.login.put(uuid, true);
+                setAddress();
+                teleportQuitPosition();
+                return true;
             }
             return false;
         }

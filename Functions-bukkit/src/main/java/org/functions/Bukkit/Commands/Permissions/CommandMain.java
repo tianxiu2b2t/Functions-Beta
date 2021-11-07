@@ -3,8 +3,10 @@ package org.functions.Bukkit.Commands.Permissions;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Commands.Defaults.CommandRegister;
+import org.functions.Bukkit.Main.Economy;
 import org.functions.Bukkit.Main.Functions;
 
 import java.util.List;
@@ -35,6 +37,21 @@ public class CommandMain implements TabExecutor {
             Functions.instance.getServer().reloadData();
             sender.sendMessage(Functions.instance.getAPI().putLanguage("ReloadMinecraftData","&a成功重载原版数据！ (%time-ms% ms)").replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
+        }
+        Player p = ((Player)sender).getPlayer();
+        Economy economy = new Economy(p.getUniqueId());
+        if (args[0].equalsIgnoreCase("add")) {
+            sender.sendMessage(economy.display());
+            economy.addBalance(5.0);
+            sender.sendMessage(economy.display());
+        }
+        if (args[0].equalsIgnoreCase("display")) {
+            sender.sendMessage(economy.display());
+        }
+        if (args[0].equalsIgnoreCase("remove")) {
+            sender.sendMessage(economy.display());
+            economy.takeBalance(5.0);
+            sender.sendMessage(economy.display());
         }
         return true;
     }

@@ -5,6 +5,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +31,6 @@ public class Configuration {
         onCommands();
         onQQAddress();
     }
-
     public void reload() {
         install();
         Functions.instance.reloadConfig();

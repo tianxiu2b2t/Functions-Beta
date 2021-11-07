@@ -25,6 +25,9 @@ commands:
   mailcode:
     description: Functions's Accounts mail code(verify code).
     aliases: [mc]
+  mailogin:
+    description: Functions's Account mail login.
+    aliases: [ml]
   changepassword:
     description: Functions's Accounts change password.
     aliases: [cp]

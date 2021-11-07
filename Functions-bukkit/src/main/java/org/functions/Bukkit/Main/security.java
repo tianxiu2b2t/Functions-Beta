@@ -1,10 +1,9 @@
 package org.functions.Bukkit.Main;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -61,7 +60,7 @@ public class security {
             int is = new_all.length - i - 1;
             temp = temp.replace(new_all[is], i+"");
         }
-        return new String(temp);
+        return subString(temp);
     }
     public static String base64(String text) {
         return Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
@@ -79,6 +78,29 @@ public class security {
         String sha = SHA512(text);
         String temp = md5(SHA512(md + (md.length() * md.length()) + sha + (sha.length() * sha.length())+""));
         return subString(temp);
+    }
+    public static String byteHEX(String temp) {
+        byte ib = temp.getBytes()[256];
+        char[] Digit = { '0', '1', '2', '3', '4', '5','6','7', '8', '9','A', 'B', 'C', 'D','E','F' };
+        char[] ob = new char[2];
+        ob[0] = Digit[(ib >>> 4) & 0X0F];
+        ob[1] = Digit[ib & 0X0F];
+        return new String(ob);
+
+    }
+    public static String HexString(Object temps) {
+        String tempa = temps.toString();
+        byte[] b = tempa.getBytes();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tempa.length();i++) {
+            //sb.append("a").append(0xFF & b[i]);
+            if (Integer.toHexString(0xFF & b[i]).length() == 1) {
+                sb.append("a").append(Integer.toHexString(0xFF & b[i]));
+            } else {
+                sb.append(Integer.toHexString(0xFF & b[i]));
+            }
+        }
+        return sb.toString();
     }
     public static String subString(Object temps) {
         String temp = temps.toString();

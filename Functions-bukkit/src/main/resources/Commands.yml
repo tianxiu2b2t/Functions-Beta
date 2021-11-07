@@ -1,6 +1,8 @@
+#没有登陆。
 NotLogin:
   #优先执行Allow
   Allow:
+    #支持正则匹配
     - "l(ogin)?"
     - "reg(ister)?"
     - "recoverpassword"
@@ -8,6 +10,7 @@ NotLogin:
     - "changepassword"
     - "cp"
     - "mailcode"
+  #禁用 全部(all)
   Disallow: all
 BeLogin:
   Allow:
