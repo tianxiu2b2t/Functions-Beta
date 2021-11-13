@@ -14,11 +14,13 @@ public class FunctionsRules {
         FALL,
         SICKS_ITEM,
         DISPENSER,
+        WRONGPASSWORD
     }
     public FunctionsRules() {
         AddRules(Type.FALL);
         AddRules(Type.SICKS_ITEM);
         AddRules(Type.DISPENSER);
+        AddRules(Type.WRONGPASSWORD);
     }
     public FunctionsRules clone() {
         try {

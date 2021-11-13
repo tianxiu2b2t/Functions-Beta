@@ -7,9 +7,9 @@ authors: [ None ]
 description: None
 website: None
 commands:
-  Functions:
+  functions:
     description: Functions's Main commands.
-    aliases: [fun, function]
+    aliases: [funs, function]
   login:
     description: Functions's Accounts login.
     aliases: [l]
@@ -36,3 +36,6 @@ commands:
   accountdelete:
     description: Functions's Accounts delete.
     aliases: [accountdel, delaccount]
+  autologin:
+    description: Functions's Accounts autologin settings.
+    aliases: [al]

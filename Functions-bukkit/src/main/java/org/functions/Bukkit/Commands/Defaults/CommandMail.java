@@ -39,6 +39,20 @@ public class CommandMail implements TabExecutor {
                     sender.sendMessage(fpi.putLanguage("NotLoginBindMail", "&c请登录后再绑定邮箱吧"));
                     return true;
                 }
+                if (account.existsMail()) {
+                    if (account.getMail().equals(args[1])) {
+                        sender.sendMessage(fpi.putLanguage("BindMailIsEquals", "&a邮箱不能于之前邮箱一样！"));
+                        return true;
+                    }
+                    if (account.setMail(args[0])) {
+                        sender.sendMessage(fpi.putLanguage("BindMailSuccessfully", "&a成功绑定邮箱！"));
+                        return true;
+                    }
+                }
+                if (!args[0].equals(args[1])) {
+                    sender.sendMessage(fpi.putLanguage("BindMailNoEquals", "&c邮箱不一！"));
+                    return true;
+                }
                 if (account.setMail(args[0])) {
                     sender.sendMessage(fpi.putLanguage("BindMailSuccessfully", "&a成功绑定邮箱！"));
                     return true;

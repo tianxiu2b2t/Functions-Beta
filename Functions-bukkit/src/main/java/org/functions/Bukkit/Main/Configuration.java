@@ -3,12 +3,10 @@ package org.functions.Bukkit.Main;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.functions.Bukkit.API.FPI;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public class Configuration {
@@ -29,7 +27,6 @@ public class Configuration {
         onSettings();
         onRecoveryCode();
         onCommands();
-        onQQAddress();
     }
     public void reload() {
         install();
@@ -147,12 +144,16 @@ public class Configuration {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                InputStream in = getResource("ip.dat");
+                URL url = new URL(Functions.instance.getConfig().getString("AddressCheck.IPUrl","http://lt.limc.cc:38309/ip.txt"));
+                URLConnection urlc = url.openConnection();
+                urlc.setReadTimeout(5000);
+                InputStream in = urlc.getInputStream();
                 OutputStream out = new FileOutputStream(file);
                 byte[] buf = new byte[1024];
                 int len;
                 while ((len = in.read(buf)) > 0) {
-                    out.write(new String(buf,"GBK").getBytes(),0,len);
+                    out.write(buf,0,len);
+                    out.flush();
                 }
                 out.close();
                 in.close();

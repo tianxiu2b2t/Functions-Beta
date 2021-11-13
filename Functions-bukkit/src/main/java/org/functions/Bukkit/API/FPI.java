@@ -95,7 +95,7 @@ public class FPI {
     }
     public String replace(Object msg) {
         String m = msg.toString();
-        return m.replace("&","§");
+        return m.replace("&","§").replace("%lines%","\n");
     }
     public PingResponse getServerList(ServerAddress address, int timeout) {
         return ServerPinger.fetchData(address, timeout);
@@ -111,8 +111,15 @@ public class FPI {
         }
         return Functions.instance.Prefix() + replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()));
     }
+    public String NoPrefixPutLanguage(String path, Object Default) {
+        putLanguage(path,Default);
+        return replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()));
+    }
     public String noPermission(String permission) {
         return putLanguage("NotPermission","&c你没有该 %permission% 权限！").replace("%permission%",permission);
+    }
+    public String changeBooleanToText(boolean Boolean) {
+        return Boolean ? NoPrefixPutLanguage("TextTrue","&a是") : NoPrefixPutLanguage("TextFalse","&c否");
     }
     public String onDisallowCommand(String cmd) {
          return putLanguage("DisallowCommand","&c%command% 这条指令已被管理员禁止！").replace("%command%",cmd);

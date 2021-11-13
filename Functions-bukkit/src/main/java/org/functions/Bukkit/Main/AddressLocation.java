@@ -34,29 +34,9 @@ public class AddressLocation {
     private byte[] buf;
     private byte[] b4;
     private byte[] b3;
-    public void download() throws IOException {
-        File file = new File(INSTALL_DIR,IP_FILE);
-        if (!file.exists()) {
-            URL url = new URL("https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/ip.dat");
-            InputStream in = url.openStream();
-            OutputStream out = new FileOutputStream(file);
-            byte[] buf = new byte[10240];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            out.close();
-            in.close();
-        }
-    }
     public AddressLocation(String fileName, String dir) {
         this.INSTALL_DIR = dir;
         this.IP_FILE = fileName;
-        try {
-            download();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         ipCache = new HashMap<String, IPLocation>();
         loc = new IPLocation();
         buf = new byte[100];

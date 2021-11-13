@@ -10,6 +10,7 @@ import org.functions.Bukkit.Tasks.CheckAccountLogin;
 import org.functions.Bukkit.Tasks.Tasks;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public final class Functions extends JavaPlugin {
@@ -24,19 +25,19 @@ public final class Functions extends JavaPlugin {
     }
     public void onLoad() {
         instance = this;
+        if (!getDataFolder().exists()) getDataFolder().mkdirs();
+        String path = getDataFolder()+"";
+        path = path.replace("/","\\");
+        File file = new File(path,"Logs");
+        latest = new Latest(file);
         configuration = new Configuration();
         configuration.install();
-        if (!getDataFolder().exists()) getDataFolder().mkdirs();
         if (!(new File(getDataFolder(),"config.yml").exists())) {
             saveDefaultConfig();
             saveConfig();
             //saveDefaultConfig();
         }
-        String path = getDataFolder()+"";
-        path = path.replace("/","\\");
-        File file = new File(path,"Logs");
-        latest = new Latest(file);
-        location = new AddressLocation(getConfig().getString("AddressCheck.IPImportFile", "qqwry.dat"),getConfig().getString("AddressCheck.Folder",getDataFolder().getAbsolutePath()));
+        location = new AddressLocation(getConfig().getString("AddressCheck.IPImportFile", "ip.dat"),getConfig().getString("AddressCheck.Folder",getDataFolder().getAbsolutePath()));
     }
     public DataBase getDatabase() {
         return database;
@@ -107,6 +108,7 @@ public final class Functions extends JavaPlugin {
         new FPI().registerCommand();
         new FPI().registerListener();
         runScheduler();
+        configuration.onQQAddress();
         // Plugin startup logic
 
     }

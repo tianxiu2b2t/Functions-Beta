@@ -142,7 +142,7 @@ public class Account {
     }
     public boolean delete() {
         if (exists()) {
-            db.execute("DELETE * FROM " + table + " WHERE UUID='" + uuid.toString() + "'");
+            db.execute("DELETE FROM " + table + " WHERE UUID='" + uuid.toString() + "'");
             return true;
         }
         return false;
@@ -170,10 +170,19 @@ public class Account {
                     }
                     return false;
                 }
+                return false;
             }
             return false;
         }
         return false;
+    }
+    public boolean setAutoLogin() {
+        if (getAutoLogin()) {
+            db.execute("UPDATE " + table + " set AutoLogin='" + false + "' where UUID='" + uuid.toString() + "';");
+            return true;
+        }
+        db.execute("UPDATE " + table + " set AutoLogin='" + true + "' where UUID='" + uuid.toString() + "';");
+        return true;
     }
     public boolean getAutoLogin() {
         try {
@@ -191,6 +200,22 @@ public class Account {
             return (new SimpleDateFormat()).format(new Date(0L));
         }
     }
+    public String getLowerName() {
+        try {
+            return db.query(select).getString("LowerName");
+        } catch (SQLException var2) {
+            var2.printStackTrace();
+            return "steve";
+        }
+    }
+    public String getName() {
+        try {
+            return db.query(select).getString("Name");
+        } catch (SQLException var2) {
+            var2.printStackTrace();
+            return "Steve";
+        }
+    }
     public String getAddress() {
         try {
             return db.query(select).getString("IP");
@@ -205,6 +230,13 @@ public class Account {
     public void setAddress() {
         db.execute("UPDATE " + table + " set IP='" + address() + "' where UUID='" + uuid.toString() + "';");
     }
+    public boolean WrongPassword() {
+        if (Functions.instance.getAPI().getRules().isEnabled(FunctionsRules.Type.WRONGPASSWORD)) {
+            getPlayer().sendMessage(Functions.instance.getAPI().putLanguage("AccountPrintWrongPassword","&c您输入的的密码错误%lines%请找管理员！"));
+            getPlayer().kickPlayer(Functions.instance.getAPI().putLanguage("AccountPrintWrongPassword","&c您输入的的密码错误%lines%请找管理员！"));
+        }
+        return false;
+    }
     public boolean Login(String password) {
         if (exists()) {
             if (!isLogin()) {
@@ -215,6 +247,8 @@ public class Account {
                         setAddress();
                         teleportQuitPosition();
                         return true;
+                    } else {
+                        WrongPassword();
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

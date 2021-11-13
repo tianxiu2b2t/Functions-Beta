@@ -37,9 +37,23 @@ public class CommandAccountDelete implements TabExecutor {
                 sender.sendMessage(fpi.putLanguage("AccountIsDelete","&a成功删除账号！"));
                 return true;
             }
+        }
+        if (sender.isOp()) {
+            if (args.length < 1) {
+                sender.sendMessage(fpi.subcmd());
+                return true;
+            }
+            String name = args[0];
+            for (Account accounts : Accounts.getAccounts()) {
+                if (accounts.getLowerName().equals(name.toLowerCase())) {
+                    accounts.delete();
+                    sender.sendMessage(fpi.putLanguage("AccountIsAdministratorDelete","&a成功删除玩家账号！"));
+                    return true;
+                }
+            }
+            sender.sendMessage(fpi.putLanguage("AccountsIsExists","&c账号不存在？"));
             return true;
         }
-        sender.sendMessage(fpi.noPlayer());
         return true;
     }
 
