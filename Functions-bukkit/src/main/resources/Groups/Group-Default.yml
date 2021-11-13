@@ -1,0 +1,12 @@
+Group: Default
+DisplayName: "&7默认组&r"
+Prefix: "&7"
+Suffix: none
+Format:
+  Join: "&e%player_display% Join the %servername%"
+  Quit: "&e%player_display% Left the %servername%"
+  Chat: "<%player_display%> %message%"
+Hide: false
+Permissions:
+  - "functions.default.*"
+atPlayer: "@3%player%&r"

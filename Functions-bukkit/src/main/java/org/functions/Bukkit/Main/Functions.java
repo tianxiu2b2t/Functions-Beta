@@ -56,7 +56,7 @@ public final class Functions extends JavaPlugin {
         database.execute("create table if not exists " + getTable("Accounts") + " ( Name TEXT, LowerName TEXT, UUID TEXT, Password TEXT, IP TEXT, AutoLogin BOOLEAN DEFAULT false, RegisterTime DEFAULT CURRENT_TIMESTAMP, Mail TEXT, Position TEXT )");
         database.execute("create table if not exists " + getTable("Rules") + " ( Rules TEXT, Enable BOOLEAN DEFAULT true )");
         database.execute("create table if not exists " + getTable("Spawn") + " ( Name TEXT, Location TEXT )");
-        database.execute("create table if not exists " + getTable("Economy") + " ( UUID Text, Economy DOUBLE DEFAULT 0 )");
+        database.execute("create table if not exists " + getTable("Economy") + " ( UUID Text, Economy DOUBLE DEFAULT 0 , Bank DOUBLE DEFAULT 0 )");
         //database.execute("create table if not exists " + getTable("Operators") + " ( UUID Text, Operator BOOLEAN DEFAULT false ) ");
     }
     public void reloadDataBase() {

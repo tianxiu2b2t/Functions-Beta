@@ -3,44 +3,44 @@ package org.functions.Bukkit.Main;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class Economy {
+public class Bank {
     UUID uuid;
     DataBase db = Functions.instance.database;
     String table = Functions.instance.getTable("Economy");
-    public Economy(UUID uuid) {
+    public Bank(UUID uuid) {
         this.uuid = uuid;
-	    db.execute("INSERT INTO " + table + " ( UUID ) VALUES ( '" + uuid.toString() + "' )");
+        db.execute("INSERT INTO " + table + " ( UUID ) VALUES ( '" + uuid.toString() + "' )");
     }
     public double getBalance() {
         try {
-            return db.query("SELECT * FROM " + table + " WHERE UUID='" + uuid.toString() + "'").getDouble("Economy");
+            return db.query("SELECT * FROM " + table + " WHERE UUID='" + uuid.toString() + "'").getDouble("Bank");
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
     public void setBalance(double amount) {
-        db.execute("UPDATE " + table + " SET Economy='" + amount + "' WHERE UUID='" + uuid.toString() +"'");
+        db.execute("UPDATE " + table + " SET Bank='" + amount + "' WHERE UUID='" + uuid.toString() +"'");
     }
     public boolean giveBalance(double amount) {
         return addBalance(amount);
     }
-    public boolean addBalance(double amount) {
-        double temp = amount + getBalance();
-        if (amount>=0.0) {
-            if (temp>=0.0) {
-                setBalance(temp);
+    public boolean putBalance(Economy economy,double amount) {
+        if (economy.getBalance()>=0) {
+            if ((economy.getBalance() - amount) >= 0) {
+                addBalance(amount);
+                economy.takeBalance(amount);
                 return true;
             }
             return false;
         }
         return false;
     }
-    public boolean putBalance(Bank bank,double amount) {
-        if (bank.getBalance()>=0) {
-            if (bank.getBalance() - amount >= 0) {
-                addBalance(amount);
-                bank.takeBalance(amount);
+    public boolean addBalance(double amount) {
+        double temp = amount + getBalance();
+        if (amount>=0.0) {
+            if (temp>=0.0) {
+                setBalance(temp);
                 return true;
             }
             return false;

@@ -87,7 +87,7 @@ public class Players implements Listener {
         if (fpi.getRules().isEnabled(FunctionsRules.Type.FALL)) {
             if (event.getTo().getY() < -64) {
                 FPI.fall.put(p.getUniqueId(), true);
-                event.getPlayer().teleport(new Location(event.getTo().getWorld(), event.getTo().getX(), 320.0, event.getTo().getZ(),event.getTo().getYaw(),event.getTo().getPitch()));
+                event.getPlayer().teleport(new Location(event.getTo().getWorld(), event.getTo().getX(), event.getPlayer().getWorld().getMaxHeight(), event.getTo().getZ(),event.getTo().getYaw(),event.getTo().getPitch()));
             }
         }
     }
