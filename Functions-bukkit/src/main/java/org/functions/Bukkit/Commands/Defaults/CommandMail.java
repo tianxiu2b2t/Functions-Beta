@@ -31,7 +31,7 @@ public class CommandMail implements TabExecutor {
             Player p = ((Player) sender).getPlayer();
             Account account = new Account(p.getUniqueId());
             if (fpi.hasAliases("BindMail", label)) {
-                if (args.length < 1) {
+                if (args.length < 2) {
                     sender.sendMessage(fpi.subcmd());
                     return true;
                 }
