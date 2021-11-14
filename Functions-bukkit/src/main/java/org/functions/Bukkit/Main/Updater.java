@@ -86,6 +86,10 @@ public class Updater {
         }
     }
     public void sendOp(Player p) {
+        check();
+        info();
+        now();
+        getVersion();
         if (pre > nowversion) {
             if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
                 for (String s : message) {
@@ -96,6 +100,10 @@ public class Updater {
     }
     public void run() {
         if (check<=0) {
+            check();
+            info();
+            now();
+            getVersion();
             if (pre > nowversion) {
                 if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
                     for (String s : message) {
