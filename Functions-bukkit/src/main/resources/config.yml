@@ -20,3 +20,5 @@ Functions:
   Login: true
   #账号注册功能
   RegisterAccounts: true
+  #注册或登录提示间隔(单位为秒)
+  RegisterLoginMessageInterval: 5

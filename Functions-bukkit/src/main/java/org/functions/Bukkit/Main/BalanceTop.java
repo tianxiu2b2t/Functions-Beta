@@ -9,11 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class BalanceTop {
-    int top = 10;
-    public BalanceTop(int top) {
-        this.top = top;
-    }
-    public List<Economy> getBalances() {
+    public List<Economy> getEconomyBalances() {
         List<Economy> user = new ArrayList<>();
         try {
             ResultSet r = Functions.instance.getDatabase().query("SELECT * FROM " + Functions.instance.getTable("Economy"));
@@ -23,10 +19,26 @@ public class BalanceTop {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return user;
     }
 
-    public List<Economy> getTop() {
-        return BalanceTopRunnable.getBalanceTop();
+    public List<Economy> getEconomyTop() {
+        return BalanceTopRunnable.getEconomyTop();
+    }
+    public List<Bank> getBankBalances() {
+        List<Bank> user = new ArrayList<>();
+        try {
+            ResultSet r = Functions.instance.getDatabase().query("SELECT * FROM " + Functions.instance.getTable("Economy"));
+            while (r.next()) {
+                user.add(new Bank(UUID.fromString(r.getString("UUID"))));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public List<Bank> getBankTop() {
+        return BalanceTopRunnable.getBankTop();
     }
 }

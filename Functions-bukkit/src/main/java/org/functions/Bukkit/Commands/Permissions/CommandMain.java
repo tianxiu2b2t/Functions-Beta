@@ -41,10 +41,10 @@ public class CommandMain implements TabExecutor {
             return true;
         }
         Economy economy = new Economy(UUID.fromString("f5d56270-477a-370c-abef-799decd5cd57"));
-        Bank bank = new Bank(UUID.fromString("f5d56270-477a-370c-abef-799decd5cd47"));
+        Bank bank = new Bank(UUID.fromString("f5d56270-477a-370c-abef-799decd5cd57"));
         if (args[0].equalsIgnoreCase("add")) {
             sender.sendMessage(economy.display());
-            economy.addBalance(5.555555);
+            economy.addBalance(Integer.MAX_VALUE);
             sender.sendMessage(economy.display());
         }
         if (args[0].equalsIgnoreCase("display")) {
@@ -52,17 +52,17 @@ public class CommandMain implements TabExecutor {
         }
         if (args[0].equalsIgnoreCase("remove")) {
             sender.sendMessage(economy.display());
-            economy.takeBalance(5.555555);
+            economy.takeBalance(Integer.MAX_VALUE);
             sender.sendMessage(economy.display());
         }
         if (args[0].equalsIgnoreCase("putBank")) {
             sender.sendMessage(economy.display() + " | " + bank.display());
-            sender.sendMessage(bank.putBalance(economy,5.555555)+"");
+            sender.sendMessage(bank.putBalance(5.555555)+"");
             sender.sendMessage(economy.display() + " | " + bank.display());
         }
         if (args[0].equalsIgnoreCase("putEconomy")) {
             sender.sendMessage(economy.display() + " | " + bank.display());
-            sender.sendMessage(economy.putBalance(bank,5.555555)+"");
+            sender.sendMessage(economy.putBalance(5.555555)+"");
             sender.sendMessage(economy.display() + " | " + bank.display());
         }
         return true;

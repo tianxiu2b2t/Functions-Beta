@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Listener.Players;
+import org.functions.Bukkit.Tasks.BalanceTopRunnable;
 import org.functions.Bukkit.Tasks.CheckAccountLogin;
 import org.functions.Bukkit.Tasks.Tasks;
 
@@ -24,6 +25,7 @@ public final class Functions extends JavaPlugin {
         return new FPI();
     }
     public void onLoad() {
+        //File database = new File(getDataFolder(),"DataBase.db");
         instance = this;
         if (!getDataFolder().exists()) getDataFolder().mkdirs();
         String path = getDataFolder()+"";
@@ -33,10 +35,10 @@ public final class Functions extends JavaPlugin {
         configuration = new Configuration();
         configuration.install();
         if (!(new File(getDataFolder(),"config.yml").exists())) {
+            //saveConfig();
             saveDefaultConfig();
-            saveConfig();
-            //saveDefaultConfig();
         }
+        reloadConfig();
         location = new AddressLocation(getConfig().getString("AddressCheck.IPImportFile", "ip.dat"),getConfig().getString("AddressCheck.Folder",getDataFolder().getAbsolutePath()));
     }
     public DataBase getDatabase() {
@@ -49,9 +51,10 @@ public final class Functions extends JavaPlugin {
         return getConfig().getString("Prefix","§3[§bFunctions§3] §r");
     }
     public void reloadTable() {
-        if (getConfiguration().getConfig().getBoolean("Debug")) {
+        if (getConfiguration().getConfig().getBoolean("Debug",true)) {
             database.execute("drop table if exists " + getTable("Accounts"));
             database.execute("drop table if exists " + getTable("Rules"));
+            database.execute("drop table if exists " + getTable("Economy"));
 
         }
         database.execute("create table if not exists " + getTable("Accounts") + " ( Name TEXT, LowerName TEXT, UUID TEXT, Password TEXT, IP TEXT, AutoLogin BOOLEAN DEFAULT false, RegisterTime DEFAULT CURRENT_TIMESTAMP, Mail TEXT, Position TEXT )");
@@ -113,8 +116,10 @@ public final class Functions extends JavaPlugin {
 
     }
     public void runScheduler() {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20*5);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
+
     }
     public void print(Object text) {
         getServer().getConsoleSender().sendMessage(Prefix() + text);
@@ -146,10 +151,6 @@ public final class Functions extends JavaPlugin {
         instance = null;
         database.disconnect();
         // Plugin shutdown logic
-    }
-    public void Language() {
-        File file = new File(getDataFolder(),"Language-" + getConfig().getString("Language") + ".yml");
-
     }
     public Configuration getConfiguration() {
         return configuration;

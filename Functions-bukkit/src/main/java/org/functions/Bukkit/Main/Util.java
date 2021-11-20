@@ -39,7 +39,11 @@ public class Util {
         } else {
             return Math.floor(parseDouble(d));
         }*/
+        String t = d.toString();
         DecimalFormat df = new DecimalFormat("#." + limit);
-        return parseDouble(df.format(parseDouble(d)));
+        if (parseString(d).split("\\.")[1].length() >= (limit.length()+1)) {
+            t = parseString(d).split("\\.")[0] + "." + parseString(d).split("\\.")[1].substring(0,limit.length()+1);
+        }
+        return parseDouble(df.format(parseDouble(t)));
     }
 }

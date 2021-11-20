@@ -1,15 +1,21 @@
 package org.functions.Bukkit.Main;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Economy {
     UUID uuid;
     DataBase db = Functions.instance.database;
     String table = Functions.instance.getTable("Economy");
+    public String select_all = "SELECT * FROM " + Functions.instance.getTable("Economy");
     public Economy(UUID uuid) {
         this.uuid = uuid;
-	    db.execute("INSERT INTO " + table + " ( UUID ) VALUES ( '" + uuid.toString() + "' )");
+        if (!exists()) {
+            db.execute("INSERT INTO " + table + " ( UUID , Economy , Bank ) VALUES ( '" + uuid.toString() + "' , ' 0 ', ' 0 ' )");
+        }
     }
     public double getBalance() {
         try {
@@ -17,7 +23,7 @@ public class Economy {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+        return 0.0;
     }
     public void setBalance(double amount) {
         db.execute("UPDATE " + table + " SET Economy='" + amount + "' WHERE UUID='" + uuid.toString() +"'");
@@ -36,11 +42,14 @@ public class Economy {
         }
         return false;
     }
-    public boolean putBalance(Bank bank,double amount) {
-        if (bank.getBalance()>=0) {
-            if (bank.getBalance() - amount >= 0) {
+    public Bank getBank() {
+        return new Bank(uuid);
+    }
+    public boolean putBalance(double amount) {
+        if (getBank().getBalance()>=0) {
+            if (getBank().getBalance() - amount >= 0) {
                 addBalance(amount);
-                bank.takeBalance(amount);
+                getBank().takeBalance(amount);
                 return true;
             }
             return false;
@@ -67,11 +76,30 @@ public class Economy {
     }
     public double autoGetBalance() {
         if (getBalance()>=0.0) {
-            if ((getBalance()+"").split("\\.")[1].length() >= (Functions.instance.getConfiguration().getSettings().getInt("Money.limitation", 4) + 1)) {
-                return Util.parseDoubleUpFromNumber(getBalance(),Functions.instance.getConfiguration().getSettings().getInt("Money.limitation", 4));
+            if ((getBalance() + "").split("\\.")[1].length() >= (Functions.instance.getConfiguration().getSettings().getInt("Money.limitation", 4) + 1)) {
+                return Util.parseDoubleUpFromNumber(getBalance(), Functions.instance.getConfiguration().getSettings().getInt("Money.limitation", 4));
             }
             return getBalance();
         }
         return -1;
+    }
+    public boolean exists() {
+        List<String> ls = new ArrayList<>();
+        ResultSet rs = db.query(select_all);
+        try {
+            while (rs.next()) {
+                ls.add(rs.getString("UUID"));
+            }
+        } catch (SQLException troubles) {
+            troubles.printStackTrace();
+        }
+        for (String s : ls) {
+            if (s.equalsIgnoreCase(uuid.toString())) {
+                ls.clear();
+                return true;
+            }
+        }
+        ls.clear();
+        return false;
     }
 }
