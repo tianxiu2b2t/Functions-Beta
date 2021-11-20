@@ -1,15 +1,15 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.Main.DataBase;
+import org.functions.Bukkit.Main.Functions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Account {
     String table = Functions.instance.getTable("Accounts");
@@ -232,8 +232,8 @@ public class Account {
     }
     public boolean WrongPassword() {
         if (Functions.instance.getAPI().getRules().isEnabled(FunctionsRules.Type.WRONGPASSWORD)) {
-            getPlayer().sendMessage(Functions.instance.getAPI().putLanguage("AccountPrintWrongPassword","&c您输入的的密码错误%lines%请找管理员！"));
-            getPlayer().kickPlayer(Functions.instance.getAPI().putLanguage("AccountPrintWrongPassword","&c您输入的的密码错误%lines%请找管理员！"));
+            getPlayer().sendMessage(Functions.instance.getAPI().putLanguage("AccountPrintWrongPassword","&c您输入的的密码错误%lines%请找管理员！",getPlayer()));
+            getPlayer().kickPlayer(Functions.instance.getAPI().putLanguage("AccountPrintWrongPassword","&c您输入的的密码错误%lines%请找管理员！",getPlayer()));
         }
         return false;
     }

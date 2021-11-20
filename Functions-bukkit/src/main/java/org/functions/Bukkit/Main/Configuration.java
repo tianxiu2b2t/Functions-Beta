@@ -8,6 +8,13 @@ import org.functions.Bukkit.API.FPI;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class Configuration {
     public InputStream getResource(String file) {
@@ -27,7 +34,10 @@ public class Configuration {
         onSettings();
         onRecoveryCode();
         onCommands();
+        //.onGroups();
+        //.readGroups();
     }
+
     public void reload() {
         install();
         Functions.instance.reloadConfig();
@@ -65,7 +75,6 @@ public class Configuration {
         return sbf.toString();
     }
 
-
     public void changeEnCoding(File file) throws IOException {
         InputStreamReader isr = new InputStreamReader(new FileInputStream(
                 file), "GBK");
@@ -93,12 +102,9 @@ public class Configuration {
         System.out.println("Deal:" + file.getPath());
     }
 
-
     public File wry = new File(getDataFolder(), "ip.dat");
 
-
-    public String changeCharset(String str, String newCharset)
-            throws UnsupportedEncodingException {
+    public String changeCharset(String str, String newCharset) throws UnsupportedEncodingException {
         if (str != null) {
             // 用默认字符编码解码字符串。
             byte[] bs = str.getBytes();
@@ -144,7 +150,7 @@ public class Configuration {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                URL url = new URL(Functions.instance.getConfig().getString("AddressCheck.IPUrl","http://lt.limc.cc:38309/ip.txt"));
+                URL url = new URL(Functions.instance.getConfig().getString("AddressCheck.IPUrl", "http://lt.limc.cc:38309/ip.txt"));
                 URLConnection urlc = url.openConnection();
                 urlc.setReadTimeout(5000);
                 InputStream in = urlc.getInputStream();
@@ -152,7 +158,7 @@ public class Configuration {
                 byte[] buf = new byte[1024];
                 int len;
                 while ((len = in.read(buf)) > 0) {
-                    out.write(buf,0,len);
+                    out.write(buf, 0, len);
                     out.flush();
                 }
                 out.close();
@@ -162,7 +168,9 @@ public class Configuration {
             }
         }
     }
-    public File recovery = new File(getDataFolder(),"RecoveryPassword.html");
+
+    public File recovery = new File(getDataFolder(), "RecoveryPassword.html");
+
     public void onRecoveryCode() {
         File file = recovery;
         if (!file.exists()) {
@@ -182,7 +190,28 @@ public class Configuration {
             }
         }
     }
-    public void onLoadFile(File file,FileConfiguration config,String name,boolean replace) {
+
+    public void onLoadZipFile(File file, FileConfiguration config, InputStream in, boolean replace) {
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                OutputStream out = new FileOutputStream(file);
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                out.close();
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        YamlConfiguration.loadConfiguration(file);
+        onLoadConfiguration(file, config, file.getName());
+    }
+
+    public void onLoadFile(File file, FileConfiguration config, String name, boolean replace) {
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -200,10 +229,11 @@ public class Configuration {
             }
         }
         YamlConfiguration.loadConfiguration(file);
-        onLoadConfiguration(file,config,name);
+        onLoadConfiguration(file, config, name);
     }
-    public void onLoadConfiguration(File file,FileConfiguration config,String name) {
-        File Error_Arching = new File(getDataFolder(),name.split("\\.")[0] + "-Error-Arching.yml");
+
+    public void onLoadConfiguration(File file, FileConfiguration config, String name) {
+        File Error_Arching = new File(getDataFolder(), name.split("\\.")[0] + "-Error-Arching.yml");
         try {
             config.load(file);
         } catch (FileNotFoundException e) {
@@ -214,7 +244,7 @@ public class Configuration {
             file.renameTo(Error_Arching);
             file.deleteOnExit();
             file.delete();
-            onLoadFile(file,config,name,false);
+            onLoadFile(file, config, name, false);
             e.printStackTrace();
         } catch (IOException e) {
             if (Error_Arching.exists()) {
@@ -224,7 +254,7 @@ public class Configuration {
             file.renameTo(Error_Arching);
             file.deleteOnExit();
             file.delete();
-            onLoadFile(file,config,name,false);
+            onLoadFile(file, config, name, false);
             e.printStackTrace();
 
         } catch (InvalidConfigurationException e) {
@@ -235,7 +265,45 @@ public class Configuration {
             file.renameTo(Error_Arching);
             file.deleteOnExit();
             file.delete();
-            onLoadFile(file,config,name,false);
+            onLoadFile(file, config, name, false);
+            e.printStackTrace();
+
+        }
+    }
+    public void onLoadZipConfiguration(File file, FileConfiguration config, InputStream in) {
+        File Error_Arching = new File(getDataFolder(), file.getName().split("\\.")[0] + "-Error-Arching.yml");
+        try {
+            config.load(file);
+        } catch (FileNotFoundException e) {
+            if (Error_Arching.exists()) {
+                Error_Arching.deleteOnExit();
+                Error_Arching.delete();
+            }
+            file.renameTo(Error_Arching);
+            file.deleteOnExit();
+            file.delete();
+            onLoadZipFile(file, config, in, false);
+            e.printStackTrace();
+        } catch (IOException e) {
+            if (Error_Arching.exists()) {
+                Error_Arching.deleteOnExit();
+                Error_Arching.delete();
+            }
+            file.renameTo(Error_Arching);
+            file.deleteOnExit();
+            file.delete();
+            onLoadZipFile(file, config, in, false);
+            e.printStackTrace();
+
+        } catch (InvalidConfigurationException e) {
+            if (Error_Arching.exists()) {
+                Error_Arching.deleteOnExit();
+                Error_Arching.delete();
+            }
+            file.renameTo(Error_Arching);
+            file.deleteOnExit();
+            file.delete();
+            onLoadZipFile(file, config, in, false);
             e.printStackTrace();
 
         }
@@ -243,6 +311,7 @@ public class Configuration {
     public FileConfiguration getLanguage() {
         return language;
     }
+
     public void saveLanguage() {
         try {
             getLanguage().save(language_file);
@@ -251,20 +320,85 @@ public class Configuration {
             e.printStackTrace();
         }
     }
-    private File settings_file = new File(getDataFolder(),"Settings.yml");
+
+    private File settings_file = new File(getDataFolder(), "Settings.yml");
     private FileConfiguration settings = new YamlConfiguration();
+
     private void onSettings() {
-        onLoadFile(settings_file,settings,settings_file.getName(),false);
+        onLoadFile(settings_file, settings, settings_file.getName(), false);
     }
+
     public FileConfiguration getSettings() {
         return settings;
     }
-    private File commands_file = new File(getDataFolder(),"Commands.yml");
+
+    private File commands_file = new File(getDataFolder(), "Commands.yml");
     private FileConfiguration commands = new YamlConfiguration();
+
     private void onCommands() {
-        onLoadFile(commands_file,commands,commands_file.getName(),false);
+        onLoadFile(commands_file, commands, commands_file.getName(), false);
     }
+
     public FileConfiguration getCommands() {
         return commands;
+    }
+
+    public LinkedHashMap<String, FileConfiguration> groups = new LinkedHashMap<>();
+
+    public void onGroups() {
+        File file;
+        String path = getDataFolder()+"";
+        path = path.replace("\\","/");
+        File pathf = new File(path);
+        File[] filess = (new File( path+ "/Groups")).listFiles();
+        assert filess != null;
+        if (filess.length != 0) {
+            return;
+        }
+        try {
+            int i = 0;
+            String jar = URLDecoder.decode(Functions.instance.getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+            ZipFile zip = new ZipFile(jar);
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(jar));
+            ZipInputStream zis = new ZipInputStream(bis);
+            // 遍历插件压缩包內所有内容
+            Enumeration<? extends ZipEntry> files = zip.entries();
+            ZipEntry entry ;
+            while ((entry = zis.getNextEntry())!=null) {
+                String url = files.nextElement().getName().replace("\"", "/");
+                // 只认 .class 文件
+                if (url.toLowerCase().endsWith(".yml")) {
+                    if (url.startsWith("Groups/")) {
+                        pathf = new File(path + "/" + url.split("/")[0]);
+                        if (!pathf.exists()) pathf.mkdirs();
+                        Functions.instance.print(url);
+                        file = new File(path + "/" + url.split("/")[0],url.split("/")[1]);
+                        onLoadZipFile(file, groupc, zip.getInputStream(entry), false);
+                    }
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    FileConfiguration groupc = new YamlConfiguration();
+    public List<String> group_Name = new ArrayList<>();
+    public void readGroups() {
+        groups.clear();
+        String path = getDataFolder()+"";
+        path = path.replace("\\","/");
+        File[] files = (new File( path+ "/Groups")).listFiles();
+        for (File file : files) {
+            try {
+                FileConfiguration group = new YamlConfiguration();
+                group.load(file);
+                groups.put(group.getString("Group"),group);
+                group_Name.add(group.getString("Group"));
+            } catch (IOException | InvalidConfigurationException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

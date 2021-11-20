@@ -1,6 +1,8 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
 
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.Main.DataBase;
+import org.functions.Bukkit.Main.Functions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,10 +40,10 @@ public class Accounts {
         return Functions.instance.getConfig().getBoolean("Functions.Login",true);
     }
     public static String noEnable() {
-        return new FPI().putLanguage("AccountNotInServer","&c服务器没有开启登陆注册账号功能！");
+        return new FPI().putLanguage("AccountNotInServer","&c服务器没有开启登陆注册账号功能！",null);
     }
     public static String noRegister() {
-        return new FPI().putLanguage("AccountNotRegister","&c服务器没有开启注册账号功能！");
+        return new FPI().putLanguage("AccountNotRegister","&c服务器没有开启注册账号功能！",null);
     }
     public static boolean NoLoginTeleportSpawn() {
         return Functions.instance.getConfiguration().getSettings().getBoolean("Login.NoLoginTeleportSpawn",true);

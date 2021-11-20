@@ -1,9 +1,7 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

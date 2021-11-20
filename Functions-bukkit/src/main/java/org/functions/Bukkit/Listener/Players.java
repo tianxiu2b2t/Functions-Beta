@@ -1,7 +1,6 @@
 package org.functions.Bukkit.Listener;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -11,8 +10,10 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
 import org.functions.Bukkit.API.ClickPerSeconds;
+import org.functions.Bukkit.API.Event.FAsyncPlayerChatEvent;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.*;
+import org.functions.Bukkit.Main.functions.*;
 
 import java.util.Collection;
 
@@ -58,6 +59,22 @@ public class Players implements Listener {
             }
         }
     }
+    //.@EventHandler
+    //.public void chat(AsyncPlayerChatEvent event) {
+    //.    FAsyncPlayerChatEvent fevent = new FAsyncPlayerChatEvent(event.getPlayer(),event.getMessage());
+    //.    event.setCancelled(true);
+    //.    event.setFormat("");
+    //.    event.setMessage("");
+    //.    chat(fevent);
+    //.}
+    //.public void chat(FAsyncPlayerChatEvent event) {
+    //.    Player p = event.getPlayer();
+    //.    account = new Account(p.getUniqueId());
+    //.    if (account.isLogin()) {
+    //.        p.getServer().broadcastMessage(event.getFormat());
+    //.    }
+    //.}
+
     @EventHandler
     public void join(PlayerJoinEvent event) {
         Player p = event.getPlayer();
@@ -67,7 +84,7 @@ public class Players implements Listener {
             account.teleportSpawn();
             Accounts.login.put(p.getUniqueId(),false);
             if (account.autoLogin()) {
-                p.sendMessage(fpi.putLanguage("AutoLogin","&a成功自动登陆！"));
+                p.sendMessage(fpi.putLanguage("AutoLogin","&a成功自动登陆！",p));
                 Functions.instance.print("Player: " + p.getName() + " Auto login.");
             }
         }
@@ -95,6 +112,10 @@ public class Players implements Listener {
     public void damage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
+            account = new Account(event.getEntity().getUniqueId());
+            if (!account.isLogin()) {
+                event.setCancelled(true);
+            }
             Player e = ((Player) entity).getPlayer();
             if (fpi.getRules().isEnabled(FunctionsRules.Type.FALL)) {
                 if (FPI.fall.get(e.getUniqueId()) != null) {

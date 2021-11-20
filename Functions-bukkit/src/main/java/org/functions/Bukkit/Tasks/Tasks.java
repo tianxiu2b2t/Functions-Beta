@@ -1,11 +1,9 @@
 package org.functions.Bukkit.Tasks;
 
 import org.bukkit.entity.Player;
-import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.FPI;
-import org.functions.Bukkit.Main.Accounts;
-import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.Updater;
+import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.Updater;
 
 public class Tasks implements Runnable {
     FPI fpi = new FPI();

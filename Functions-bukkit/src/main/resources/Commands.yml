@@ -10,6 +10,7 @@ NotLogin:
     - "changepassword"
     - "cp"
     - "mailcode"
+    - "mailogin"
   #禁用 全部(all)
   Disallow: all
 BeLogin:

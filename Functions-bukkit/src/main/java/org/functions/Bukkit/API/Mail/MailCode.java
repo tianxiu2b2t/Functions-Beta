@@ -1,9 +1,9 @@
 package org.functions.Bukkit.API.Mail;
 
 import org.functions.Bukkit.API.FPI;
-import org.functions.Bukkit.Main.Account;
+import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.RandomCode;
+import org.functions.Bukkit.Main.functions.RandomCode;
 
 import java.util.UUID;
 

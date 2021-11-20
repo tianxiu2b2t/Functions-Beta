@@ -1,7 +1,8 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
+
+import org.functions.Bukkit.Main.Functions;
 
 import java.sql.SQLException;
-import java.text.Format;
 import java.util.UUID;
 
 public class Operators {

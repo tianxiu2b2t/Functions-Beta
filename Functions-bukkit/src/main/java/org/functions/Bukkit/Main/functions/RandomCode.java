@@ -1,6 +1,4 @@
-package org.functions.Bukkit.Main;
-
-import org.functions.Bukkit.API.FPI;
+package org.functions.Bukkit.Main.functions;
 
 import java.util.ArrayList;
 import java.util.List;

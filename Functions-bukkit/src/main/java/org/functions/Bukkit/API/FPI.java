@@ -1,19 +1,25 @@
 package org.functions.Bukkit.API;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
+import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.API.serverPing.PingResponse;
 import org.functions.Bukkit.API.serverPing.ServerAddress;
 import org.functions.Bukkit.API.serverPing.ServerPinger;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.FunctionsRules;
+import org.functions.Bukkit.Main.PlayerManager;
+import org.functions.Bukkit.Main.functions.FunctionsRules;
+import org.functions.Bukkit.Main.functions.Group;
+import org.functions.Bukkit.Main.functions.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -93,14 +99,29 @@ public class FPI {
     public FunctionsRules.Type getRulesType(String name) {
         return FunctionsRules.Type.valueOf(name);
     }
-    public String replace(Object msg) {
+    public String replace(Object msg,Player player) {
         String m = msg.toString();
-        return m.replace("&","§").replace("%lines%","\n");
+        if (player!=null) {
+            if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
+                m = PlaceholderAPI.setPlaceholders(player, m);
+            } else {
+                String[] s = m.split("%");
+                String temp = "";
+                for (int i = 1; i < s.length; i = i+2) {
+                    Functions.instance.print("a");
+                        Functions.instance.print("b");
+                        temp = s[i].replace("functions_","");
+                        m = m.replace("%"+s[i]+"%",onRequest(player,temp));
+                        Functions.instance.print("c");
+                }
+            }
+        }
+        return m.replace("&","§").replace("%lines%","\n").replace("none","");
     }
     public PingResponse getServerList(ServerAddress address, int timeout) {
         return ServerPinger.fetchData(address, timeout);
     }
-    public String putLanguage(String path, Object Default) {
+    public String putLanguage(String path, Object Default, Player player) {
         if (Functions.instance.getConfiguration().getLanguage().getString(path)==null) {
             Functions.instance.getConfiguration().getLanguage().addDefault(path, Default);
             Functions.instance.getConfiguration().getLanguage().options().copyDefaults(true);
@@ -109,32 +130,38 @@ public class FPI {
             Functions.instance.getConfiguration().saveLanguage();
             //return Functions.instance.Prefix() + replace(Default);
         }
-        return Functions.instance.Prefix() + replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()));
+        String text = Functions.instance.Prefix() + replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()),player);
+        if (player != null) {
+            if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
+                return PlaceholderAPI.setPlaceholders(player, text);
+            }
+        }
+        return text;
     }
     public String NoPrefixPutLanguage(String path, Object Default) {
-        putLanguage(path,Default);
-        return replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()));
+        putLanguage(path,Default,null);
+        return replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()),null);
     }
     public String noPermission(String permission) {
-        return putLanguage("NotPermission","&c你没有该 %permission% 权限！").replace("%permission%",permission);
+        return putLanguage("NotPermission","&c你没有该 %permission% 权限！",null).replace("%permission%",permission);
     }
     public String changeBooleanToText(boolean Boolean) {
         return Boolean ? NoPrefixPutLanguage("TextTrue","&a是") : NoPrefixPutLanguage("TextFalse","&c否");
     }
     public String onDisallowCommand(String cmd) {
-         return putLanguage("DisallowCommand","&c%command% 这条指令已被管理员禁止！").replace("%command%",cmd);
+         return putLanguage("DisallowCommand","&c%command% 这条指令已被管理员禁止！",null).replace("%command%",cmd);
     }
     public String noPlayer() {
-        return putLanguage("ConsoleUses","&c你不能使用属于玩家的指令！");
+        return putLanguage("ConsoleUses","&c你不能使用属于玩家的指令！",null);
     }
     public String noOperator() {
-        return putLanguage("NotPermission","&c你不是管理员！");
+        return putLanguage("NotPermission","&c你不是管理员！",null);
     }
     public String noServer() {
-        return putLanguage("NotPermission","&c你不能使用属于控制台的指令！");
+        return putLanguage("NotPermission","&c你不能使用属于控制台的指令！",null);
     }
     public String subcmd() {
-        return putLanguage("CommandLengthSmall","&c你的指令长度不能少于该指令需要的长度！");
+        return putLanguage("CommandLengthSmall","&c你的指令长度不能少于该指令需要的长度！",null);
     }
     public PluginManager getPluginManager() {
         return getServer().getPluginManager();
@@ -149,8 +176,8 @@ public class FPI {
         new Listeners(Functions.instance,"org.functions.Bukkit.Listener").register();
         //Functions.instance.print("Successfully.");
     }
-    public void sendMessage(String path,Object Default,Player p) {
-        p.sendMessage(putLanguage(path,Default));
+    public void putsendMessage(String path,Object Default,Player p) {
+        p.sendMessage(putLanguage(path,Default,p));
     }
     public void registerCommand() {
         new Commands(Functions.instance,"org.functions.Bukkit.Commands.Defaults").register();
@@ -196,5 +223,49 @@ public class FPI {
     }
     public String getPlayerAddress(UUID uuid) {
         return getPlayerAddress(getPlayer(uuid));
+    }
+    public Group getGroup(String Name) {
+        return new Group(Functions.instance.getConfiguration().groups.get(Name));
+    }
+    /************************* PlaceholderAPIHook **********************************/
+    public String onRequest(OfflinePlayer player, String params) {
+        PlayerManager pm = Functions.instance.getPlayerManager();
+        if (params.equalsIgnoreCase("economy")) {
+            return pm.getUser(player.getUniqueId()).getEconomy().display();
+        }
+        if (params.equalsIgnoreCase("bank")) {
+            return pm.getUser(player.getUniqueId()).getBank().display();
+        }
+        if (params.equalsIgnoreCase("prefix")) {
+            //return pm.getUser(player.getUniqueId()).getPrefixes().getPrefix();
+        }
+        if (params.equalsIgnoreCase("player_display")) {
+
+        }
+        if (params.equalsIgnoreCase("suffix")) {
+
+        }
+        if (params.equalsIgnoreCase("tps")) {
+
+        }
+        if (params.equalsIgnoreCase("detail_tps")) {
+
+        }
+        if (params.equalsIgnoreCase("servername")) {
+
+        }
+        if (params.equalsIgnoreCase("recoverypasswordservername")) {
+
+        }
+        if (params.equalsIgnoreCase("ping")) {
+
+        }
+        if (params.equalsIgnoreCase("cps")) {
+
+        }
+        if (params.equalsIgnoreCase("max_cps")) {
+
+        }
+        return "This is params is unknown(I author is unhappy.)";
     }
 }

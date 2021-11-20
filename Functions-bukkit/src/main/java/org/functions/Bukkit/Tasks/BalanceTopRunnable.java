@@ -1,6 +1,7 @@
 package org.functions.Bukkit.Tasks;
 
-import org.functions.Bukkit.Main.*;
+import org.functions.Bukkit.Main.Functions;
+import org.functions.Bukkit.Main.functions.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,7 +52,7 @@ public class BalanceTopRunnable implements Runnable{
     public static double autoGetBalance() {
         if (getDoubleAllBalance()>=0.0) {
             if ((getDoubleAllBalance() + "").split("\\.")[1].length() >= (Functions.instance.getConfiguration().getSettings().getInt("Money.limitation", 4) + 1)) {
-                return Util.parseDoubleUpFromNumber(getDoubleAllBalance(), Functions.instance.getConfiguration().getSettings().getInt("Money.limitation", 4));
+                return Utils.parseDoubleUpFromNumber(getDoubleAllBalance(), Functions.instance.getConfiguration().getSettings().getInt("Money.limitation", 4));
             }
             return getDoubleAllBalance();
         }

@@ -5,39 +5,43 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.Listener.Players;
+import org.functions.Bukkit.Main.functions.AddressLocation;
 import org.functions.Bukkit.Tasks.BalanceTopRunnable;
 import org.functions.Bukkit.Tasks.CheckAccountLogin;
 import org.functions.Bukkit.Tasks.Tasks;
+import org.functions.Bukkit.Tasks.sendPacketToClient;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public final class Functions extends JavaPlugin {
+    PlayerManager pm;
     Latest latest = null;
     public static Functions instance;
     Configuration configuration;
-    DataBase database = null;
+    public DataBase database = null;
     LinkedHashMap<String,String> table = new LinkedHashMap<>();
     public AddressLocation location = null;
     public FPI getAPI() {
         return new FPI();
     }
     public void onLoad() {
-        //File database = new File(getDataFolder(),"DataBase.db");
+        File database = new File(getDataFolder(),"DataBase.db");
+        if (database.exists()) database.deleteOnExit();
         instance = this;
-        if (!getDataFolder().exists()) getDataFolder().mkdirs();
-        String path = getDataFolder()+"";
-        path = path.replace("/","\\");
-        File file = new File(path,"Logs");
-        latest = new Latest(file);
-        configuration = new Configuration();
-        configuration.install();
         if (!(new File(getDataFolder(),"config.yml").exists())) {
             //saveConfig();
             saveDefaultConfig();
         }
+        if (!getDataFolder().exists()) getDataFolder().mkdirs();
+        String path = getDataFolder()+"";
+        path = path.replace("\\","/");
+        File file = new File(path,"Logs");
+        latest = new Latest(file);
+        configuration = new Configuration();
+        configuration.install();
         reloadConfig();
         location = new AddressLocation(getConfig().getString("AddressCheck.IPImportFile", "ip.dat"),getConfig().getString("AddressCheck.Folder",getDataFolder().getAbsolutePath()));
     }
@@ -55,12 +59,16 @@ public final class Functions extends JavaPlugin {
             database.execute("drop table if exists " + getTable("Accounts"));
             database.execute("drop table if exists " + getTable("Rules"));
             database.execute("drop table if exists " + getTable("Economy"));
+            database.execute("drop table if exists " + getTable("Users"));
 
         }
+
         database.execute("create table if not exists " + getTable("Accounts") + " ( Name TEXT, LowerName TEXT, UUID TEXT, Password TEXT, IP TEXT, AutoLogin BOOLEAN DEFAULT false, RegisterTime DEFAULT CURRENT_TIMESTAMP, Mail TEXT, Position TEXT )");
         database.execute("create table if not exists " + getTable("Rules") + " ( Rules TEXT, Enable BOOLEAN DEFAULT true )");
         database.execute("create table if not exists " + getTable("Spawn") + " ( Name TEXT, Location TEXT )");
-        database.execute("create table if not exists " + getTable("Economy") + " ( UUID Text, Economy DOUBLE DEFAULT 0 , Bank DOUBLE DEFAULT 0 )");
+        database.execute("create table if not exists " + getTable("Economy") + " ( UUID TEXT, Economy DOUBLE DEFAULT 0 , Bank DOUBLE DEFAULT 0 )");
+        database.execute("create table if not exists " + getTable("Users") + " ( UUID TEXT, 'Group' TEXT DEFAULT 'Default', Prefixes TEXT, Prefix TEXT, Suffixes TEXT, Suffix TEXT, Permissions TEXT)");
+
         //database.execute("create table if not exists " + getTable("Operators") + " ( UUID Text, Operator BOOLEAN DEFAULT false ) ");
     }
     public void reloadDataBase() {
@@ -95,13 +103,13 @@ public final class Functions extends JavaPlugin {
         saveResource(name, replace);
     }
     public void onEnable() {
-        new Metrics(this,11673);
+        new Metrics(this, 11673);
         instance = this;
         print(configuration.getSettings().getString("Mail.From"));
         if (getConfig().getString("DataBase.Type").equals("MYSQL")) {
             //database = new MySql(getConfig().getString("SaveFile.MySql.database","functions"),getConfig().getString("SaveFile.MySql.User","root"),getConfig().getString("SaveFile.MySql.Password","root"));
         } else if (getConfig().getString("DataBase.Type").equals("SQLITE")) {
-            database = new Sql(getDataFolder() + "/" + getConfig().getString("DataBase.File","DataBase.db"));
+            database = new Sql(getDataFolder() + "/" + getConfig().getString("DataBase.File", "DataBase.db"));
             database.init();
             database.connect();
             //database.connect();
@@ -110,8 +118,13 @@ public final class Functions extends JavaPlugin {
         reloadTable();
         new FPI().registerCommand();
         new FPI().registerListener();
+        pm = new PlayerManager(getServer());
         runScheduler();
         configuration.onQQAddress();
+        if (getAPI().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderAPIHook().register();
+            Functions.instance.print("Successfully register placeholder api hook.");
+        }
         // Plugin startup logic
 
     }
@@ -119,10 +132,19 @@ public final class Functions extends JavaPlugin {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
+        //.getServer().getScheduler().scheduleSyncRepeatingTask(this, pm, 0, 0);
+        //.getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
 
     }
     public void print(Object text) {
         getServer().getConsoleSender().sendMessage(Prefix() + text);
+        latest.print(text);
+    }
+    public PlayerManager getPlayerManager() {
+        return pm;
+    }
+    public void print(Object text,Object type) {
+        getServer().getConsoleSender().sendMessage(Prefix() + type + text);
         latest.print(text);
     }
     public void onDisable() {

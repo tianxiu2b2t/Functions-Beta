@@ -1,8 +1,6 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;

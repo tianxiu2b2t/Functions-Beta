@@ -1,13 +1,12 @@
 package org.functions.Bukkit.Commands.Defaults;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
-import org.functions.Bukkit.Main.Account;
-import org.functions.Bukkit.Main.Accounts;
+import org.functions.Bukkit.Main.functions.Account;
+import org.functions.Bukkit.Main.functions.Accounts;
 
 import java.util.List;
 
@@ -33,21 +32,21 @@ public class CommandRegister implements TabExecutor {
                 return true;
             }
             if (account.isLogin()) {
-                sender.sendMessage(fpi.putLanguage("AccountIsLogin","&c你的账号已登录。退出请使用/logout"));
+                sender.sendMessage(fpi.putLanguage("AccountIsLogin","&c你的账号已登录。退出请使用/logout",p));
                 return true;
             }
             if (account.exists()) {
-                sender.sendMessage(fpi.putLanguage("AccountExists","&c你的账号已注册。"));
+                sender.sendMessage(fpi.putLanguage("AccountExists","&c你的账号已注册。",p));
                 return true;
             }
             if (!args[0].equals(args[1])) {
-                sender.sendMessage(fpi.putLanguage("PasswordEquals","&c密码不一！"));
+                sender.sendMessage(fpi.putLanguage("PasswordEquals","&c密码不一！",p));
                 return true;
             }
             if (account.Register(args[0])) {
-                sender.sendMessage(fpi.putLanguage("AccountRegister","&a成功注册与登陆！"));
+                sender.sendMessage(fpi.putLanguage("AccountRegister","&a成功注册与登陆！",p));
             } else {
-                sender.sendMessage(fpi.putLanguage("AccountNotRegister","&c注册与登陆失败！"));
+                sender.sendMessage(fpi.putLanguage("AccountNotRegister","&c注册与登陆失败！",p));
             }
             return true;
         }

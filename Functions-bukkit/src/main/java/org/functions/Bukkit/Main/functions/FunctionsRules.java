@@ -1,6 +1,7 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
 
-import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.Main.DataBase;
+import org.functions.Bukkit.Main.Functions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -1,6 +1,7 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.functions.Bukkit.Main.Functions;
 
 import java.util.List;
 

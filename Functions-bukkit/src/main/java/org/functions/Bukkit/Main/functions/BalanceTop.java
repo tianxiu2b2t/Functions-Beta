@@ -1,5 +1,6 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
 
+import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Tasks.BalanceTopRunnable;
 
 import java.sql.ResultSet;

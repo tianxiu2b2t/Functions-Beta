@@ -1,13 +1,12 @@
-package org.functions.Bukkit.Main;
+package org.functions.Bukkit.Main.functions;
 
 import org.bukkit.entity.Player;
+import org.functions.Bukkit.Main.Functions;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Objects;
 
 public class Updater {
     public Updater() {
@@ -93,7 +92,7 @@ public class Updater {
         if (pre > nowversion) {
             if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
                 for (String s : message) {
-                    p.sendMessage(Functions.instance.Prefix() + Functions.instance.getAPI().replace(s).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%latest_version%", plugin_version).replace("%version%", Functions.instance.getDescription().getVersion()));
+                    p.sendMessage(Functions.instance.Prefix() + Functions.instance.getAPI().replace(s,p).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%latest_version%", plugin_version).replace("%version%", Functions.instance.getDescription().getVersion()));
                 }
             }
         }
@@ -107,7 +106,7 @@ public class Updater {
             if (pre > nowversion) {
                 if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
                     for (String s : message) {
-                        Functions.instance.print(Functions.instance.getAPI().replace(s).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%latest_version%",plugin_version).replace("%version%",Functions.instance.getDescription().getVersion()));
+                        Functions.instance.print(Functions.instance.getAPI().replace(s,null).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%latest_version%",plugin_version).replace("%version%",Functions.instance.getDescription().getVersion()));
                         check = 20*60*Functions.instance.getConfig().getLong("Updater.minutes",5);
                     }
                 }

@@ -1,13 +1,12 @@
 package org.functions.Bukkit.Commands.Defaults;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
-import org.functions.Bukkit.Main.Account;
-import org.functions.Bukkit.Main.Accounts;
+import org.functions.Bukkit.Main.functions.Account;
+import org.functions.Bukkit.Main.functions.Accounts;
 
 import java.util.List;
 
@@ -30,17 +29,17 @@ public class CommandLogin implements TabExecutor {
                 return true;
             }
             if (!account.exists()) {
-                sender.sendMessage(fpi.putLanguage("AccountNotExists","&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！"));
+                sender.sendMessage(fpi.putLanguage("AccountNotExists","&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！",p));
                 return true;
             }
             if (account.isLogin()) {
-                sender.sendMessage(fpi.putLanguage("AccountIsLogin","&c你的账号已登录。退出请使用/logout"));
+                sender.sendMessage(fpi.putLanguage("AccountIsLogin","&c你的账号已登录。退出请使用/logout",p));
                 return true;
             }
             if (account.Login(args[0])) {
-                sender.sendMessage(fpi.putLanguage("AccountLogin","&a成功登陆！"));
+                sender.sendMessage(fpi.putLanguage("AccountLogin","&a成功登陆！",p));
             } else {
-                sender.sendMessage(fpi.putLanguage("AccountPasswordWrong","&c密码错误！"));
+                sender.sendMessage(fpi.putLanguage("AccountPasswordWrong","&c密码错误！",p));
             }
             return true;
         } else {
