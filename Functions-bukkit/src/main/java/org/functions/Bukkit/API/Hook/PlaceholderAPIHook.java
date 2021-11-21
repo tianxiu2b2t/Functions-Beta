@@ -37,6 +37,6 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String params) {
-        return new FPI().onRequest(player,params);
+        return Functions.instance.getAPI().onRequest(player,params);
     }
 }

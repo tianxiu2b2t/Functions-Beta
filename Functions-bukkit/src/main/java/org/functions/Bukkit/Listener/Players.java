@@ -18,7 +18,7 @@ import org.functions.Bukkit.Main.functions.*;
 import java.util.Collection;
 
 public class Players implements Listener {
-    FPI fpi = new FPI();
+    FPI fpi = Functions.instance.getAPI();
     Account account;
     /** Bugs fix **/
     @EventHandler
@@ -59,25 +59,28 @@ public class Players implements Listener {
             }
         }
     }
-    //.@EventHandler
-    //.public void chat(AsyncPlayerChatEvent event) {
-    //.    FAsyncPlayerChatEvent fevent = new FAsyncPlayerChatEvent(event.getPlayer(),event.getMessage());
-    //.    event.setCancelled(true);
-    //.    event.setFormat("");
-    //.    event.setMessage("");
-    //.    chat(fevent);
-    //.}
-    //.public void chat(FAsyncPlayerChatEvent event) {
-    //.    Player p = event.getPlayer();
-    //.    account = new Account(p.getUniqueId());
-    //.    if (account.isLogin()) {
-    //.        p.getServer().broadcastMessage(event.getFormat());
-    //.    }
-    //.}
+    @EventHandler
+    public void chat(AsyncPlayerChatEvent event) {
+        FAsyncPlayerChatEvent fevent = new FAsyncPlayerChatEvent(event.getPlayer(),event.getMessage());
+        event.setCancelled(true);
+        event.setFormat("");
+        event.setMessage("");
+        chat(fevent);
+    }
+    public void chat(FAsyncPlayerChatEvent event) {
+        Player p = event.getPlayer();
+        account = new Account(p.getUniqueId());
+        if (account.isLogin()) {
+            p.getServer().broadcastMessage(event.getFormat());
+        } else {
+            p.sendMessage(Functions.instance.getAPI().putLanguage("NoLoginChat","&c请登录再发言！",p));
+        }
+    }
 
     @EventHandler
     public void join(PlayerJoinEvent event) {
         Player p = event.getPlayer();
+        if (fpi.cps.get(p.getUniqueId())==null) fpi.cps.put(p.getUniqueId(), new ClickPerSeconds(p.getUniqueId()));
         Functions.instance.print("Player: " + p.getName() + " Join the server. (Address: " + fpi.getPlayerAddress(p.getUniqueId()) + ")");
         account = new Account(p.getUniqueId());
         if (account.exists()) {

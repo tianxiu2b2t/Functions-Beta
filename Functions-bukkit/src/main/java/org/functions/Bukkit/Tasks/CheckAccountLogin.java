@@ -2,11 +2,12 @@ package org.functions.Bukkit.Tasks;
 
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
 
 public class CheckAccountLogin implements Runnable {
-    FPI fpi = new FPI();
+    FPI fpi = Functions.instance.getAPI();
     public void run() throws NullPointerException {
         if (Accounts.enable()) {
             for (Player p : fpi.getOnlinePlayers()) {

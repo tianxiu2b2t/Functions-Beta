@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class CommandMain implements TabExecutor {
     public void run() {
-        new FPI().getCommand("functions", new CommandMain());
+        Functions.instance.getAPI().getCommand("functions", new CommandMain());
     }
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         long start = 0;

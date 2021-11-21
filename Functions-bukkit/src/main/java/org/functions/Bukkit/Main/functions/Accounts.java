@@ -40,10 +40,10 @@ public class Accounts {
         return Functions.instance.getConfig().getBoolean("Functions.Login",true);
     }
     public static String noEnable() {
-        return new FPI().putLanguage("AccountNotInServer","&c服务器没有开启登陆注册账号功能！",null);
+        return Functions.instance.getAPI().putLanguage("AccountNotInServer","&c服务器没有开启登陆注册账号功能！",null);
     }
     public static String noRegister() {
-        return new FPI().putLanguage("AccountNotRegister","&c服务器没有开启注册账号功能！",null);
+        return Functions.instance.getAPI().putLanguage("AccountNotRegister","&c服务器没有开启注册账号功能！",null);
     }
     public static boolean NoLoginTeleportSpawn() {
         return Functions.instance.getConfiguration().getSettings().getBoolean("Login.NoLoginTeleportSpawn",true);

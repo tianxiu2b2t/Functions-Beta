@@ -8,10 +8,7 @@ import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.Listener.Players;
 import org.functions.Bukkit.Main.functions.AddressLocation;
-import org.functions.Bukkit.Tasks.BalanceTopRunnable;
-import org.functions.Bukkit.Tasks.CheckAccountLogin;
-import org.functions.Bukkit.Tasks.Tasks;
-import org.functions.Bukkit.Tasks.sendPacketToClient;
+import org.functions.Bukkit.Tasks.*;
 
 import java.io.File;
 import java.util.*;
@@ -24,10 +21,12 @@ public final class Functions extends JavaPlugin {
     public DataBase database = null;
     LinkedHashMap<String,String> table = new LinkedHashMap<>();
     public AddressLocation location = null;
+    FPI fpi;
     public FPI getAPI() {
-        return new FPI();
+        return fpi;
     }
     public void onLoad() {
+        fpi = new FPI();
         File database = new File(getDataFolder(),"DataBase.db");
         if (database.exists()) database.deleteOnExit();
         instance = this;
@@ -69,7 +68,7 @@ public final class Functions extends JavaPlugin {
         database.execute("create table if not exists " + getTable("Economy") + " ( UUID TEXT, Economy DOUBLE DEFAULT 0 , Bank DOUBLE DEFAULT 0 )");
         database.execute("create table if not exists " + getTable("Users") + " ( UUID TEXT, 'Group' TEXT DEFAULT 'Default', Prefixes TEXT, Prefix TEXT, Suffixes TEXT, Suffix TEXT, Permissions TEXT)");
 
-        //database.execute("create table if not exists " + getTable("Operators") + " ( UUID Text, Operator BOOLEAN DEFAULT false ) ");
+        database.execute("create table if not exists " + getTable("Operators") + " ( UUID Text, Operator BOOLEAN DEFAULT false ) ");
     }
     public void reloadDataBase() {
         table.clear();
@@ -103,6 +102,7 @@ public final class Functions extends JavaPlugin {
         saveResource(name, replace);
     }
     public void onEnable() {
+        fpi = new FPI();
         new Metrics(this, 11673);
         instance = this;
         print(configuration.getSettings().getString("Mail.From"));
@@ -132,9 +132,9 @@ public final class Functions extends JavaPlugin {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
-        //.getServer().getScheduler().scheduleSyncRepeatingTask(this, pm, 0, 0);
-        //.getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
-
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, pm, 0, 0);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new AnimationsTask(), 0, 0);
     }
     public void print(Object text) {
         getServer().getConsoleSender().sendMessage(Prefix() + text);

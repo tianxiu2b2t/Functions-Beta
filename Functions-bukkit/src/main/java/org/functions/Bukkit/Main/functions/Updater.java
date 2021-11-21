@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class Updater {
+    boolean check_can = false;
+    boolean info_can = false;
+    boolean now_can = false;
+    boolean new_can = false;
     public Updater() {
         check();
         info();
@@ -22,11 +26,13 @@ public class Updater {
     String curl = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/Version";
     String iurl = "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/Functions-bukkit/src/main/resources/InfoMessage";
     public void check() {
+        check_can = false;
         try {
             URL u = new URL(curl);
             InputStream is = u.openStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             pre = Integer.parseInt(br.readLine());
+            check_can = true;
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
@@ -36,6 +42,7 @@ public class Updater {
     }
     ArrayList<String> message = new ArrayList<>();
     public void getVersion() {
+        new_can = false;
         try {
             URL u = new URL(vurl);
             InputStream is = u.openStream();
@@ -48,11 +55,13 @@ public class Updater {
                     return;
                 }
             }
+            new_can = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public void info() {
+        info_can = false;
         try {
             InputStream is = Functions.instance.getResource("Version");
             BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -67,6 +76,7 @@ public class Updater {
             while ((temp = br.readLine()) != null) {
                 message.add(temp);
             }
+            info_can = true;
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
@@ -74,11 +84,13 @@ public class Updater {
     int nowversion = 0;
 
     public void now() {
+        now_can = false;
         if (Functions.instance != null) {
             try {
                 InputStream is = Functions.instance.getResource("Version");
                 BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                 nowversion = Integer.parseInt(br.readLine());
+                now_can = true;
             } catch (IOException | NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -89,6 +101,9 @@ public class Updater {
         info();
         now();
         getVersion();
+        if (!can()) {
+            return;
+        }
         if (pre > nowversion) {
             if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
                 for (String s : message) {
@@ -97,12 +112,21 @@ public class Updater {
             }
         }
     }
+    public boolean can() {
+        if (!check_can || !info_can || !now_can || !new_can) {
+            return false;
+        }
+        return true;
+    }
     public void run() {
         if (check<=0) {
             check();
             info();
             now();
             getVersion();
+            if (!can()) {
+                return;
+            }
             if (pre > nowversion) {
                 if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
                     for (String s : message) {

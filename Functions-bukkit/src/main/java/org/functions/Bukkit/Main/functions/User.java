@@ -2,6 +2,7 @@ package org.functions.Bukkit.Main.functions;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.Main.DataBase;
 import org.functions.Bukkit.Main.Functions;
 
@@ -59,11 +60,12 @@ public class User {
     }
     public String getPrefix() {
         try {
-            return db.query(select).getString("Prefix");
+            if (db.query(select).getString("Prefix")==null) return Functions.instance.getAPI().replace(getGroup().getPrefix(),getPlayer());
+            return Functions.instance.getAPI().replace(db.query(select).getString("Prefix"),getPlayer());
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return getGroup().getPrefix();
+        return Functions.instance.getAPI().replace(getGroup().getPrefix(),getPlayer());
     }
     public void setSuffixes(List<String> Suffixes) {
         db.execute("UPDATE " + table + " SET Suffixes='" + Suffixes.toString() + "' where UUID='" + uuid.toString() + "'");
@@ -81,11 +83,12 @@ public class User {
     }
     public String getSuffix() {
         try {
-            return db.query(select).getString("Suffix");
+            if (db.query(select).getString("Suffix")==null) return Functions.instance.getAPI().replace(getGroup().getSuffix(),getPlayer());
+            return Functions.instance.getAPI().replace(db.query(select).getString("Suffix"),getPlayer());
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return getGroup().getSuffix();
+        return Functions.instance.getAPI().replace(getGroup().getSuffix(),getPlayer());
     }
     public Group getGroup() {
         return group;
@@ -123,5 +126,8 @@ public class User {
         }
         ls.clear();
         return false;
+    }
+    public ClickPerSeconds getCPS() {
+        return Functions.instance.getAPI().cps.get(getPlayer().getUniqueId());
     }
 }

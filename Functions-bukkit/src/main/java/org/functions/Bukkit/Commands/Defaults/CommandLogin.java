@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
 
@@ -12,9 +13,9 @@ import java.util.List;
 
 public class CommandLogin implements TabExecutor {
     public void run() {
-        new FPI().getCommand("login", new CommandLogin());
+        Functions.instance.getAPI().getCommand("login", new CommandLogin());
     }
-    FPI fpi = new FPI();
+    FPI fpi = Functions.instance.getAPI();
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!Accounts.enable()) {

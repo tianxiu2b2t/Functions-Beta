@@ -9,13 +9,7 @@ import java.util.UUID;
 public class ClickPerSeconds {
     UUID uuid;
     int max;
-    int CPS;
-    long cpsTime;
-    long cpsMin;
     ArrayList<Long> cps = new ArrayList();
-    public int getMax() {
-        return this.max;
-    }
     public ClickPerSeconds(UUID uuid) {
         this.uuid = uuid;
     }
@@ -39,10 +33,12 @@ public class ClickPerSeconds {
         max = 0;
     }
     public void resetMax() {
+        removeCPSTimeout();
         max = 0;
     }
 
     public int getMaxCPS() {
+        removeCPSTimeout();
         return max;
     }
 

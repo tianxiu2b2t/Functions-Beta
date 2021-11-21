@@ -4,6 +4,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.Main.functions.Animation;
 
 import java.io.*;
 import java.net.*;
@@ -34,8 +35,10 @@ public class Configuration {
         onSettings();
         onRecoveryCode();
         onCommands();
-        //.onGroups();
-        //.readGroups();
+        onGroups();
+        readGroups();
+        onAnimation();
+        readAnimation();
     }
 
     public void reload() {
@@ -349,8 +352,9 @@ public class Configuration {
         File file;
         String path = getDataFolder()+"";
         path = path.replace("\\","/");
-        File pathf = new File(path);
-        File[] filess = (new File( path+ "/Groups")).listFiles();
+        File pathf = new File( path+ "/Groups");
+        pathf.mkdirs();
+        File[] filess = (pathf).listFiles();
         assert filess != null;
         if (filess.length != 0) {
             return;
@@ -369,9 +373,6 @@ public class Configuration {
                 // 只认 .class 文件
                 if (url.toLowerCase().endsWith(".yml")) {
                     if (url.startsWith("Groups/")) {
-                        pathf = new File(path + "/" + url.split("/")[0]);
-                        if (!pathf.exists()) pathf.mkdirs();
-                        Functions.instance.print(url);
                         file = new File(path + "/" + url.split("/")[0],url.split("/")[1]);
                         onLoadZipFile(file, groupc, zip.getInputStream(entry), false);
                     }
@@ -387,6 +388,7 @@ public class Configuration {
     public List<String> group_Name = new ArrayList<>();
     public void readGroups() {
         groups.clear();
+        group_Name.clear();
         String path = getDataFolder()+"";
         path = path.replace("\\","/");
         File[] files = (new File( path+ "/Groups")).listFiles();
@@ -396,6 +398,62 @@ public class Configuration {
                 group.load(file);
                 groups.put(group.getString("Group"),group);
                 group_Name.add(group.getString("Group"));
+            } catch (IOException | InvalidConfigurationException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void onAnimation() {
+        File file;
+        String path = getDataFolder()+"";
+        path = path.replace("\\","/");
+        File pathf = new File(path + "/Animations");
+        pathf.mkdirs();
+        File[] filess = (pathf).listFiles();
+        assert filess != null;
+        if (filess.length != 0) {
+            return;
+        }
+        try {
+            int i = 0;
+            String jar = URLDecoder.decode(Functions.instance.getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+            ZipFile zip = new ZipFile(jar);
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(jar));
+            ZipInputStream zis = new ZipInputStream(bis);
+            // 遍历插件压缩包內所有内容
+            Enumeration<? extends ZipEntry> files = zip.entries();
+            ZipEntry entry ;
+            while ((entry = zis.getNextEntry())!=null) {
+                String url = files.nextElement().getName().replace("\"", "/");
+                // 只认 .class 文件
+                if (url.toLowerCase().endsWith(".yml")) {
+                    if (url.startsWith("Animations/")) {
+                        file = new File(path + "/" + url.split("/")[0],url.split("/")[1]);
+                        onLoadZipFile(file, groupc, zip.getInputStream(entry), false);
+                    }
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public List<String> animations_Name = new ArrayList<>();
+    public LinkedHashMap<String, Animation> animations = new LinkedHashMap<>();
+    public void readAnimation() {
+        animations.clear();
+        animations_Name.clear();
+        String path = getDataFolder()+"";
+        path = path.replace("\\","/");
+        File[] files = (new File( path+ "/Animations")).listFiles();
+        assert files != null;
+        for (File file : files) {
+            try {
+                FileConfiguration animation = new YamlConfiguration();
+                animation.load(file);
+                animations.put(file.getName().replace(".yml",""),new Animation(animation));
+                animations_Name.add(file.getName().replace(".yml",""));
             } catch (IOException | InvalidConfigurationException e) {
                 e.printStackTrace();
             }

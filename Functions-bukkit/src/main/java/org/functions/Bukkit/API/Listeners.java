@@ -6,6 +6,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
+import org.functions.Bukkit.Main.Functions;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,7 +32,7 @@ public class Listeners {
     }
     public void register() {
         try {
-            FPI fpi = new FPI();
+            FPI fpi = Functions.instance.getAPI();
             String jar = URLDecoder.decode(this.plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
             ZipFile zip = new ZipFile(jar);
             // 遍历插件压缩包內所有内容

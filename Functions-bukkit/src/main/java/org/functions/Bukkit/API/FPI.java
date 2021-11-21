@@ -17,6 +17,7 @@ import org.functions.Bukkit.API.serverPing.ServerAddress;
 import org.functions.Bukkit.API.serverPing.ServerPinger;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.PlayerManager;
+import org.functions.Bukkit.Main.functions.AnimationManager;
 import org.functions.Bukkit.Main.functions.FunctionsRules;
 import org.functions.Bukkit.Main.functions.Group;
 import org.functions.Bukkit.Main.functions.Utils;
@@ -25,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class FPI {
+    public LinkedHashMap<String, Long> send_packet = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, String> code = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, Long> code_timeout = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, Boolean> code_verify = new LinkedHashMap<>();
@@ -102,18 +104,14 @@ public class FPI {
     public String replace(Object msg,Player player) {
         String m = msg.toString();
         if (player!=null) {
+            String[] s = m.split("%");
+            String temp = "";
+            for (int i = 1; i < s.length; i = i+2) {
+                temp = s[i].replace("functions_","");
+                m = m.replace("%"+s[i]+"%",onRequest(player,temp));
+            }
             if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
                 m = PlaceholderAPI.setPlaceholders(player, m);
-            } else {
-                String[] s = m.split("%");
-                String temp = "";
-                for (int i = 1; i < s.length; i = i+2) {
-                    Functions.instance.print("a");
-                        Functions.instance.print("b");
-                        temp = s[i].replace("functions_","");
-                        m = m.replace("%"+s[i]+"%",onRequest(player,temp));
-                        Functions.instance.print("c");
-                }
             }
         }
         return m.replace("&","§").replace("%lines%","\n").replace("none","");
@@ -237,34 +235,37 @@ public class FPI {
             return pm.getUser(player.getUniqueId()).getBank().display();
         }
         if (params.equalsIgnoreCase("prefix")) {
-            //return pm.getUser(player.getUniqueId()).getPrefixes().getPrefix();
+            return pm.getUser(player.getUniqueId()).getPrefix();
         }
         if (params.equalsIgnoreCase("player_display")) {
-
+            return pm.getUser(player.getUniqueId()).getPrefix() + player.getName() + pm.getUser(player.getUniqueId()).getSuffix() + "&r";
         }
         if (params.equalsIgnoreCase("suffix")) {
-
+            return pm.getUser(player.getUniqueId()).getSuffix();
         }
         if (params.equalsIgnoreCase("tps")) {
-
+            return Utils.TPS.getTPS();
         }
         if (params.equalsIgnoreCase("detail_tps")) {
-
+            return Utils.TPS.details_tps();
         }
         if (params.equalsIgnoreCase("servername")) {
-
+            return Functions.instance.getConfig().getString("ServerName","Unknown Server");
         }
         if (params.equalsIgnoreCase("recoverypasswordservername")) {
-
+            return Functions.instance.getConfig().getString("RecoveryPasswordServerName", "Recovery Password Unknow Server");
         }
         if (params.equalsIgnoreCase("ping")) {
-
+            return new Utils.Ping(player.getPlayer()).toString();
         }
         if (params.equalsIgnoreCase("cps")) {
-
+            return pm.getUser(player.getUniqueId()).getCPS().getCountCPS()+"";
         }
         if (params.equalsIgnoreCase("max_cps")) {
-
+            return pm.getUser(player.getUniqueId()).getCPS().getMaxCPS()+"";
+        }
+        if (params.startsWith("animation:")) {
+            return replace(AnimationManager.getAnimation(params.replace("animation:","")).getAnimation(),player.getPlayer());
         }
         return "This is params is unknown(I author is unhappy.)";
     }

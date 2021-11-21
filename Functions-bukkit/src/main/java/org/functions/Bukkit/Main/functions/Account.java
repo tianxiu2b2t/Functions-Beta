@@ -123,7 +123,7 @@ public class Account {
         return true;
     }
     public Player getPlayer() {
-        return new FPI().getServer().getPlayer(uuid);
+        return Functions.instance.getAPI().getServer().getPlayer(uuid);
     }
     public String address() {
         return getPlayer().getPlayer().getAddress().getAddress().getHostAddress();

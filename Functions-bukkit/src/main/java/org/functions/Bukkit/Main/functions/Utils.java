@@ -3,6 +3,7 @@ package org.functions.Bukkit.Main.functions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -101,6 +102,12 @@ public class Utils {
             return s;
         }
         public void send(String header, String footer) {
+            if (Functions.instance.getAPI().send_packet.get("Tab")!=null) {
+                if (System.currentTimeMillis() < Functions.instance.getAPI().send_packet.get("Tab")) {
+                    return;
+                }
+            }
+            Functions.instance.getAPI().send_packet.put("Tab",System.currentTimeMillis() + 50 * Functions.instance.getConfiguration().getSettings().getLong("Tab.sendTime",5));
                 if (header == null) {
                     header = "";
                 }
@@ -113,7 +120,8 @@ public class Utils {
                     header = colorMsg(header);
                     footer = colorMsg(footer);
                 }
-
+                header = Functions.instance.getAPI().replace(header,player);
+                footer = Functions.instance.getAPI().replace(footer,player);
                 try {
                     Class packetPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 
@@ -431,13 +439,23 @@ public class Utils {
             this.player = player;
         }
         public void send(Object Message) {
-            String msg = Message.toString();
+            if (Functions.instance.getAPI().send_packet.get("ActionBar")!=null) {
+                if (System.currentTimeMillis() < Functions.instance.getAPI().send_packet.get("ActionBar")) {
+                    return;
+                }
+            }
+            Functions.instance.getAPI().send_packet.put("ActionBar",System.currentTimeMillis() + 50 * Functions.instance.getConfiguration().getSettings().getLong("ActionBar.sendTime",5));
+
+            String msg = Functions.instance.getAPI().replace(Message.toString(),player);
             String nms = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
             UUID uuid = player.getUniqueId();
             Player p = player;
             Object packet;
             boolean high = false;
             boolean useOldMethods = false;
+            if (msg==null || msg=="") {
+                return;
+            }
             if (nms.startsWith("v_1_1") || nms.contains("v_1_16")) {
                 high = true;
             }
@@ -560,10 +578,14 @@ public class Utils {
             ScoreboardManager scoreboardManager = Functions.instance.getServer().getScoreboardManager();
             scoreboard = scoreboardManager.getNewScoreboard();
             Objective objective = scoreboard.registerNewObjective("Functions", "dummy");
+            if (display == null || ls == null) {
+                scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+                return;
+            }
             objective.setDisplayName(display);
             int i = ls.size();
             for (int s = 0; s < i; ++s) {
-                Score score = objective.getScore(ls.get(s));
+                Score score = objective.getScore(Functions.instance.getAPI().replace(ls.get(s),player));
                 score.setScore(i - s - 1);
             }
             scoreboard.clearSlot(DisplaySlot.SIDEBAR);
@@ -574,13 +596,82 @@ public class Utils {
             String prefix = getPlayerManager().getUser(player.getUniqueId()).getPrefix();
             String suffix = getPlayerManager().getUser(player.getUniqueId()).getSuffix();
             if (prefix!=null) team.setPrefix(prefix);
-            if (suffix!=null) team.setPrefix(suffix);
+            if (suffix!=null) team.setSuffix(suffix);
             team.addEntry(player.getName());
         }
         public void sendAll(String display,List<String> ls) {
+            if (Functions.instance.getAPI().send_packet.get("ScoreBoard")!=null) {
+                if (System.currentTimeMillis() < Functions.instance.getAPI().send_packet.get("ScoreBoard")) {
+                    return;
+                }
+            }
+            Functions.instance.getAPI().send_packet.put("ScoreBoard",System.currentTimeMillis() + 50 * Functions.instance.getConfiguration().getSettings().getLong("ScoreBoard.sendTime",5));
             board(display,ls);
             display();
             player.setScoreboard(scoreboard);
+        }
+    }
+    public static class Ping {
+        int i = -1;
+        public Ping(Player player) {
+            String nms = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+            if (!player.getClass().getName().equals("org.bukkit.craftbukkit." + nms + ".entity.CraftPlayer")) {
+                player = Bukkit.getPlayer(player.getUniqueId());
+            }
+
+            try {
+                Class<?> CraftPlayerClass = Class.forName("org.bukkit.craftbukkit." + nms + ".entity.CraftPlayer");
+                Object CraftPlayer = CraftPlayerClass.cast(player);
+                Method getHandle = CraftPlayer.getClass().getMethod("getHandle");
+                Object EntityPlayer = getHandle.invoke(CraftPlayer);
+                Field ping = EntityPlayer.getClass().getDeclaredField("ping");
+                i = ping.getInt(EntityPlayer);
+            } catch (Exception var7) {
+                var7.printStackTrace();
+            }
+        }
+        public String toString() {
+            return i+"";
+        }
+    }
+    public static class TPS {
+        public static double[] recentTPS() {
+            double[] d = new double[3];
+            try {
+                String nms = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+                Class MinecraftServerClass = Class.forName("net.minecraft.server."+ nms + ".MinecraftServer");
+                Object obj = MinecraftServerClass.getMethod("getServer").invoke((Object)null);
+                Field f = MinecraftServerClass.getDeclaredField("recentTps");
+                return (double[])obj.getClass().getField("recentTps").get(obj);
+            } catch (ClassNotFoundException var6) {
+                var6.printStackTrace();
+            } catch (NoSuchFieldException var7) {
+                var7.printStackTrace();
+            } catch (IllegalAccessException var8) {
+                var8.printStackTrace();
+            } catch (NoSuchMethodException var9) {
+                var9.printStackTrace();
+            } catch (InvocationTargetException var10) {
+                var10.printStackTrace();
+            }
+
+            return new double[]{-1.0D, -2.0D, -3.0D};
+        }
+        public static String details_tps() {
+            double[] tps = recentTPS();
+            String[] tpsAvg = new String[tps.length];
+
+            for(int i = 0; i < tps.length; ++i) {
+                tpsAvg[i] = format(tps[i]);
+            }
+            return StringUtils.join(tpsAvg, ", ");
+        }
+        public static String getTPS() {
+            return details_tps().split(", ")[0];
+        }
+
+        public static String format(double tps) {
+            return (tps > 18.0D ? ChatColor.GREEN : (tps > 16.0D ? ChatColor.YELLOW : ChatColor.RED)).toString() + (tps > 21.0D ? "*" : "") + Math.min((double)Math.round(tps * 100.0D) / 100.0D, 20.0D);
         }
     }
 }

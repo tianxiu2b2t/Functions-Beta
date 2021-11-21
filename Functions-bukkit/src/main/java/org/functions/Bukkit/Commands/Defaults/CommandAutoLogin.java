@@ -5,15 +5,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Account;
 
 import java.util.List;
 
 public class CommandAutoLogin implements TabExecutor {
     public void run() {
-        new FPI().getCommand("autologin", new CommandAutoLogin());
+        Functions.instance.getAPI().getCommand("autologin", new CommandAutoLogin());
     }
-    FPI fpi = new FPI();
+    FPI fpi = Functions.instance.getAPI();
     Account account;
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
