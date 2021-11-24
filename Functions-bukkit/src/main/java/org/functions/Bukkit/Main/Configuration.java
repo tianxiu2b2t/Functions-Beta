@@ -153,7 +153,7 @@ public class Configuration {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                URL url = new URL(Functions.instance.getConfig().getString("AddressCheck.IPUrl", "https://gitee.com/tianxiu2b2t/Functions-Beta/raw/master/ip.txt"));
+                URL url = new URL(Functions.instance.getConfig().getString("AddressCheck.IPUrl", "http://lt.limc.cc:38309/ip.txt"));
                 URLConnection urlc = url.openConnection();
                 urlc.setReadTimeout(5000);
                 InputStream in = urlc.getInputStream();
