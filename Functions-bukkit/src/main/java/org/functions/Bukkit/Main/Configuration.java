@@ -3,12 +3,14 @@ package org.functions.Bukkit.Main;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.util.FileUtil;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.functions.Animation;
 
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -18,6 +20,45 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 public class Configuration {
+    long size = 0;
+    public String DirSize() {
+        DecimalFormat decimalFormat = new DecimalFormat( ".00" ); //构造方法的字符格式这里如果小数不足2位,会以0补足.
+        return decimalFormat.format(getFileLength(getDataFolder()).doubleValue() / 1024 / 1024) + " MB";
+    }
+        public Long getFileLength(File dir) {
+
+            //1,定义一个求和变量
+
+            long len = 0;
+
+            //2,获取该文件夹下所有的文件和文件夹listFiles();
+
+            File[] subFiles = dir.listFiles();            //Demo1_Student.class Demo1_Student.java
+
+            //3,遍历数组
+
+            assert subFiles != null;
+            for (File subFile : subFiles) {
+
+                //4,判断是文件就计算大小并累加
+
+                if(subFile.isFile()) {
+
+                    len = len + subFile.length();
+
+                    //5,判断是文件夹,递归调用
+
+                }else {
+
+                    len = len + getFileLength(subFile);
+
+                }
+
+            }
+
+            return len;
+
+        }
     public InputStream getResource(String file) {
         return Functions.instance.getResource(file);
     }

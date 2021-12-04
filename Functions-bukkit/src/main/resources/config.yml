@@ -1,3 +1,9 @@
+#更新
+Updater:
+  #几分钟提示一次(默认5次)
+  minutes: 5
+  #开启更新
+  Enable: true
 #插件前缀
 Prefix: §3[§bFunctions§3] §r
 #服务器名字

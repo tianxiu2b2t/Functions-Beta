@@ -14,13 +14,24 @@ public class PermissionsUtils {
                 if (temp.startsWith("*")) {
                     return true;
                 }
-                String[] t = temp.split("\\.");
-                for (int i = 1; i > pm.length; i++) {
-                    if (t[i - 1].equalsIgnoreCase(pm[i - 1])) {
-                        if (t[i - 1].startsWith("*")) {
-                            return true;
-                        } else if (t[i].equalsIgnoreCase(pm[i])) {
-                            return true;
+                if (temp.contains(".")) {
+                    String[] t = temp.split("\\.");
+                    //if (t[0].equalsIgnoreCase(pm[0])) {
+                        //if (pm[1] != null) {
+                            //if (t[1].startsWith("*")) {
+                                //return true;
+                            //}
+                        //}
+                    //}
+                    for (int i = 0; i < pm.length; i++) {
+                        if (t[i].equalsIgnoreCase(pm[i])) {
+                            if (t[i+1].startsWith("*")) {
+                                return true;
+                            } else if (t[i + 1] != null || pm[i + 1] != null) {
+                                if (t[i + 1].equalsIgnoreCase(pm[i + 1])) {
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
@@ -32,11 +43,26 @@ public class PermissionsUtils {
             }
             if (temp.contains(".")) {
                 String[] t = temp.split("\\.");
-                if (t[1].startsWith("*")) {
-
+                if (t[0].equalsIgnoreCase(Permission)) {
+                    if (t[1].startsWith("*")) {
+                        return true;
+                    }
+                }
+            } else {
+                if (temp.equalsIgnoreCase(Permission)) {
+                    return true;
                 }
             }
         }
         return false;
+    }
+    public static void sendMessagePermissions(Player player, String Permission) {
+        player.sendMessage(Functions.instance.getAPI().noPermission(Permission));
+    }
+    public static boolean hasPermissionsSendMessage(Player player, String Permission) {
+        if (!hasPermissions(player,Permission)) {
+            sendMessagePermissions(player, Permission);
+        }
+        return true;
     }
 }

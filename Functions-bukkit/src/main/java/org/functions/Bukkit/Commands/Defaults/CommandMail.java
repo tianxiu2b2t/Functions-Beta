@@ -9,6 +9,7 @@ import org.functions.Bukkit.API.Mail.MailCode;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class CommandMail implements TabExecutor {
             Player p = ((Player) sender).getPlayer();
             Account account = new Account(p.getUniqueId());
             if (fpi.hasAliases("BindMail", label)) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.mail.bindmail")) {
+                    return true;
+                }
                 if (args.length < 2) {
                     sender.sendMessage(fpi.subcmd());
                     return true;
@@ -59,6 +63,9 @@ public class CommandMail implements TabExecutor {
                 return true;
             }
             if (fpi.hasAliases("RecoverPassword", label)) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.recoverpassword")) {
+                    return true;
+                }
                 if (!account.existsMail()) {
                     sender.sendMessage(fpi.putLanguage("NotMail", "&c没有找到你的邮箱。",p));
                     return true;
@@ -77,6 +84,9 @@ public class CommandMail implements TabExecutor {
                 return true;
             }
             if (fpi.hasAliases("mailcode", label)) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.mailcode")) {
+                    return true;
+                }
                 if (args.length == 0) {
                     sender.sendMessage(fpi.subcmd());
                     return true;
@@ -90,6 +100,9 @@ public class CommandMail implements TabExecutor {
                 return true;
             }
             if (fpi.hasAliases("mailogin", label)) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.mailogin")) {
+                    return true;
+                }
                 if (args.length == 0) {
                     if (!account.existsMail()) {
                         sender.sendMessage(fpi.putLanguage("NotMail", "&c没有找到你的邮箱。",p));

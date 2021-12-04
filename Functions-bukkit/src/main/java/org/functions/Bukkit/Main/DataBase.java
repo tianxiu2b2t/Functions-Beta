@@ -12,4 +12,5 @@ public interface DataBase {
     public Connection getConnection();
     public boolean changenumber(Integer integer);
     public void disconnect();
+    public void deleteFile();
 }

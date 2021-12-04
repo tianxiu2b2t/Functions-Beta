@@ -81,7 +81,7 @@ public class Updater {
             e.printStackTrace();
         }
     }
-    int nowversion = 0;
+    public int nowversion = 0;
 
     public void now() {
         now_can = false;
@@ -99,7 +99,9 @@ public class Updater {
     public void sendOp(Player p) {
         check();
         info();
-        now();
+        if (!can()) {
+            now();
+        }
         getVersion();
         if (!can()) {
             return;
@@ -122,7 +124,9 @@ public class Updater {
         if (check<=0) {
             check();
             info();
-            now();
+            if (!can()) {
+                now();
+            }
             getVersion();
             if (!can()) {
                 return;

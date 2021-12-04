@@ -15,28 +15,32 @@ public class sendPacketToClient implements Runnable {
         for (Player p : Functions.instance.getAPI().getOnlinePlayers()) {
             tab = new Utils.Tab(p);
             StringBuilder Footer = new StringBuilder();
-            if (Functions.instance.getConfiguration().getSettings().getString("Tab.Footer") != null || !Functions.instance.getConfiguration().getSettings().getString("Tab.Footer").equals("none") && !Functions.instance.getConfiguration().getSettings().getString("Tab.Footer").equals("")) {
-                for(int i = 0; i < Functions.instance.getConfiguration().getSettings().getStringList("Tab.Footer").size(); ++i) {
-                    if (i == Functions.instance.getConfiguration().getSettings().getStringList("Tab.Footer").size() - 1) {
-                        Footer.append(Functions.instance.getConfiguration().getSettings().getStringList("Tab.Footer").get(i));
-                    } else {
-                        Footer.append(Functions.instance.getConfiguration().getSettings().getStringList("Tab.Footer").get(i)).append("\n");
+            if (Functions.instance.getConfiguration().getSettings().getString("Tab.Footer") != null) {
+                if (!Functions.instance.getConfiguration().getSettings().getString("Tab.Footer").equals("none") && !Functions.instance.getConfiguration().getSettings().getString("Tab.Footer").equals("")) {
+                    for (int i = 0; i < Functions.instance.getConfiguration().getSettings().getStringList("Tab.Footer").size(); ++i) {
+                        if (i == Functions.instance.getConfiguration().getSettings().getStringList("Tab.Footer").size() - 1) {
+                            Footer.append(Functions.instance.getConfiguration().getSettings().getStringList("Tab.Footer").get(i));
+                        } else {
+                            Footer.append(Functions.instance.getConfiguration().getSettings().getStringList("Tab.Footer").get(i)).append("\n");
+                        }
                     }
                 }
             }
             StringBuilder Header = new StringBuilder();
-            if (Functions.instance.getConfiguration().getSettings().getString("Tab.Header") != null || !Functions.instance.getConfiguration().getSettings().getString("Tab.Header").equals("none") && !Functions.instance.getConfiguration().getSettings().getString("Tab.Header").equals("")) {
-                for(int i = 0; i < Functions.instance.getConfiguration().getSettings().getStringList("Tab.Header").size(); ++i) {
-                    if (i == Functions.instance.getConfiguration().getSettings().getStringList("Tab.Header").size() - 1) {
-                        Header.append(Functions.instance.getConfiguration().getSettings().getStringList("Tab.Header").get(i));
-                    } else {
-                        Header.append(Functions.instance.getConfiguration().getSettings().getStringList("Tab.Header").get(i)).append("\n");
+            if (Functions.instance.getConfiguration().getSettings().getString("Tab.Header") != null) {
+                if (!Functions.instance.getConfiguration().getSettings().getString("Tab.Header").equals("none") && !Functions.instance.getConfiguration().getSettings().getString("Tab.Header").equals("")) {
+                    for (int i = 0; i < Functions.instance.getConfiguration().getSettings().getStringList("Tab.Header").size(); ++i) {
+                        if (i == Functions.instance.getConfiguration().getSettings().getStringList("Tab.Header").size() - 1) {
+                            Header.append(Functions.instance.getConfiguration().getSettings().getStringList("Tab.Header").get(i));
+                        } else {
+                            Header.append(Functions.instance.getConfiguration().getSettings().getStringList("Tab.Header").get(i)).append("\n");
+                        }
                     }
                 }
             }
             tab.send(Header.toString(), Footer.toString());
             bar = new Utils.ActionBar(p);
-            bar.send(Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message","Welcome"));
+            bar.send(Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message",""));
             board = new Utils.ScoreBoard(p);
             List<String> ls = new ArrayList<>();
             ls.add(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines"));

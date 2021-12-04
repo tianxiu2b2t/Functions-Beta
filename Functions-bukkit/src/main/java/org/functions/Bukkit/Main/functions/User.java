@@ -38,11 +38,32 @@ public class User {
     }
     public List<String> getPermissions() {
         try {
-            return Collections.singletonList(db.query(select).getString("Permissions"));
+            if (db.query(select).getString("Permissions")!=null) return Collections.singletonList(db.query(select).getString("Permissions"));
+            return getGroup().getAllPermissions();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return getGroup().getAllPermissions();
+    }
+    public List<String> getOtherPermissions() {
+        List<String> temp = new ArrayList<>();
+        for (String s : getPermissions()) {
+            if (s.startsWith("functions")) {
+                continue;
+            }
+            temp.add(s);
+        }
+        return temp;
+    }
+    public List<String> getFunctionsPermissions() {
+        List<String> temp = new ArrayList<>();
+        for (String s : getPermissions()) {
+            if (!s.startsWith("functions")) {
+                continue;
+            }
+            temp.add(s);
+        }
+        return temp;
     }
     public void setPrefixes(List<String> prefixes) {
         db.execute("UPDATE " + table + " SET Prefixes='" + prefixes.toString() + "' where UUID='" + uuid.toString() + "'");

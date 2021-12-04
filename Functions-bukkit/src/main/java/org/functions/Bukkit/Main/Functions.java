@@ -7,13 +7,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.Listener.Players;
+import org.functions.Bukkit.Main.Server.FServer;
 import org.functions.Bukkit.Main.functions.AddressLocation;
+import org.functions.Bukkit.Main.functions.Messaging.AccountMessaging;
+import org.functions.Bukkit.Main.functions.Messaging.Messaging;
+import org.functions.Bukkit.Main.functions.Updater;
 import org.functions.Bukkit.Tasks.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public final class Functions extends JavaPlugin {
+    FServer f;
+    Messaging a;
     PlayerManager pm;
     Latest latest = null;
     public static Functions instance;
@@ -22,6 +29,7 @@ public final class Functions extends JavaPlugin {
     LinkedHashMap<String,String> table = new LinkedHashMap<>();
     public AddressLocation location = null;
     FPI fpi;
+    public Updater up;
     public FPI getAPI() {
         return fpi;
     }
@@ -62,7 +70,7 @@ public final class Functions extends JavaPlugin {
 
         }
 
-        database.execute("create table if not exists " + getTable("Accounts") + " ( Name TEXT, LowerName TEXT, UUID TEXT, Password TEXT, IP TEXT, AutoLogin BOOLEAN DEFAULT false, RegisterTime DEFAULT CURRENT_TIMESTAMP, Mail TEXT, Position TEXT )");
+        database.execute("create table if not exists " + getTable("Accounts") + " ( Name TEXT, LowerName TEXT, UUID TEXT, Password TEXT, IP TEXT, AutoLogin BOOLEAN DEFAULT false, RegisterTime DEFAULT CURRENT_TIMESTAMP, Mail TEXT, Position TEXT, GameMode TEXT, AllowFight BOOLEAN Default false)");
         database.execute("create table if not exists " + getTable("Rules") + " ( Rules TEXT, Enable BOOLEAN DEFAULT true )");
         database.execute("create table if not exists " + getTable("Spawn") + " ( Name TEXT, Location TEXT )");
         database.execute("create table if not exists " + getTable("Economy") + " ( UUID TEXT, Economy DOUBLE DEFAULT 0 , Bank DOUBLE DEFAULT 0 )");
@@ -105,6 +113,7 @@ public final class Functions extends JavaPlugin {
         fpi = new FPI();
         new Metrics(this, 11673);
         instance = this;
+        f = new FServer(getServer());
         print(configuration.getSettings().getString("Mail.From"));
         if (getConfig().getString("DataBase.Type").equals("MYSQL")) {
             //database = new MySql(getConfig().getString("SaveFile.MySql.database","functions"),getConfig().getString("SaveFile.MySql.User","root"),getConfig().getString("SaveFile.MySql.Password","root"));
@@ -119,12 +128,16 @@ public final class Functions extends JavaPlugin {
         new FPI().registerCommand();
         new FPI().registerListener();
         pm = new PlayerManager(getServer());
+        up = new Updater();
+        //a = new AccountMessaging();
+        //a.onEnable();
         runScheduler();
         configuration.onQQAddress();
         if (getAPI().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderAPIHook().register();
             Functions.instance.print("Successfully register placeholder api hook.");
         }
+        print(configuration.DirSize());
         // Plugin startup logic
 
     }
@@ -149,6 +162,7 @@ public final class Functions extends JavaPlugin {
     }
     public void onDisable() {
         // 获取在线玩家
+        //a.onDisable();
         for (Player p : getAPI().getOnlinePlayers()) {
             // Bukkit 事件新建一个
             PlayerQuitEvent event = new PlayerQuitEvent(p, ChatColor.YELLOW + p.getName() + " left the game");

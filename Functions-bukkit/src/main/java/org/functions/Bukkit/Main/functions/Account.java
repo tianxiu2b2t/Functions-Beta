@@ -1,5 +1,7 @@
 package org.functions.Bukkit.Main.functions;
 
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
@@ -42,6 +44,32 @@ public class Account {
     }
     public void setPosition() {
         db.execute("UPDATE " + table + " set Position='" + Functions.instance.getAPI().changeLocationToString(getPlayer().getLocation()) + "' where UUID='" + uuid.toString() + "';");
+    }
+    public GameMode getGameMode() {
+        if (exists()) {
+            try {
+                return GameMode.valueOf(db.query(select).getString("GameMode"));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return Bukkit.getDefaultGameMode();
+    }
+    public boolean AllowFight() {
+        if (exists()) {
+            try {
+                return Boolean.parseBoolean(db.query(select).getString("AllowFight"));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+    public void setAllowFight() {
+        db.execute("UPDATE " + table + " set AllowFight='" + getPlayer().getAllowFlight() + "' where UUID='" + uuid.toString() + "'");
+    }
+    public void setGameMode() {
+        db.execute("UPDATE " + table + " set GameMode='" + getPlayer().getGameMode().toString() + "' where UUID='" + uuid.toString() + "'");
     }
     public Location getPosition() {
         if (exists()) {
@@ -131,7 +159,7 @@ public class Account {
     public boolean Register(String password) {
         if (!exists()) {
             password = security.security(password);
-            db.execute("INSERT INTO " + this.table + " ( Name, LowerName, UUID, Password, IP ) VALUES ( '" + getPlayer().getName() + "', '" + getPlayer().getName().toLowerCase() + "', '" + uuid.toString() + "', '" + password + "', '" + getPlayer().getPlayer().getAddress().getAddress().getHostAddress() + "' )");
+            db.execute("INSERT INTO " + this.table + " ( Name, LowerName, UUID, Password, IP, GameMode, AllowFight) VALUES ( '" + getPlayer().getName() + "', '" + getPlayer().getName().toLowerCase() + "', '" + uuid.toString() + "', '" + password + "', '" + getPlayer().getPlayer().getAddress().getAddress().getHostAddress() + "', '" + Bukkit.getDefaultGameMode() + "', 'false')");
             Accounts.login.put(uuid, true);
             return true;
         }
@@ -153,6 +181,8 @@ public class Account {
                 Accounts.login.put(uuid,false);
                 setPosition();
                 teleportSpawn();
+                setGameMode();
+                getPlayer().setGameMode(GameMode.valueOf(Functions.instance.getConfiguration().getConfig().getString("Functions.NotLoginGameMode",Bukkit.getDefaultGameMode().toString())));
                 return true;
             }
             return false;
@@ -166,6 +196,7 @@ public class Account {
                     if (address().equals(getAddress())) {
                         Accounts.login.put(uuid, true);
                         teleportQuitPosition();
+                        getPlayer().setGameMode(getGameMode());
                         return true;
                     }
                     return false;
@@ -246,6 +277,7 @@ public class Account {
                         Accounts.login.put(uuid, true);
                         setAddress();
                         teleportQuitPosition();
+                        getPlayer().setGameMode(getGameMode());
                         return true;
                     } else {
                         WrongPassword();
@@ -265,6 +297,7 @@ public class Account {
                 Accounts.login.put(uuid, true);
                 setAddress();
                 teleportQuitPosition();
+                getPlayer().setGameMode(getGameMode());
                 return true;
             }
             return false;
@@ -276,7 +309,7 @@ public class Account {
                 password = security.security(password);
                 if (!getPassword().equals(password)) {
                     db.execute("UPDATE " + this.table + " SET Password='" + password + "' WHERE UUID='" + uuid + "'");
-                    Accounts.login.remove(uuid);
+                    logout();
                     return true;
                 }
                 return false;

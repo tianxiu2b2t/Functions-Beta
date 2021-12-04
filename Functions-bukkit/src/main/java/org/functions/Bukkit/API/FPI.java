@@ -22,6 +22,8 @@ import org.functions.Bukkit.Main.functions.FunctionsRules;
 import org.functions.Bukkit.Main.functions.Group;
 import org.functions.Bukkit.Main.functions.Utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,6 +35,9 @@ public class FPI {
     public static LinkedHashMap<UUID, Boolean> fall = new LinkedHashMap<>();
     public LinkedHashMap<UUID, ClickPerSeconds> cps = new LinkedHashMap<>();
     public static LinkedHashMap<String,PluginCommand> commands = new LinkedHashMap<>();
+    public Functions getInstance() {
+        return Functions.instance;
+    }
     public Server getServer() {
         return Functions.instance.getServer();
     }
@@ -268,5 +273,17 @@ public class FPI {
             return replace(AnimationManager.getAnimation(params.replace("animation:","")).getAnimation(),player.getPlayer());
         }
         return "This is params is unknown(I author is unhappy.)";
+    }
+    public String round(double min, double max) {
+        return Double.toString(round(min / max * 100.0D, 1));
+    }
+    public double round(double value, int places) {
+        if (places < 0) {
+            return 0.0D;
+        } else {
+            BigDecimal bd = new BigDecimal(value);
+            bd = bd.setScale(places, RoundingMode.HALF_UP);
+            return bd.doubleValue();
+        }
     }
 }

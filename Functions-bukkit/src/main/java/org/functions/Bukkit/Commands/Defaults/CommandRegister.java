@@ -8,6 +8,7 @@ import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class CommandRegister implements TabExecutor {
         }
         if (sender instanceof Player) {
             Player p = ((Player) sender).getPlayer();
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.register")) {
+                return true;
+            }
             Account account = new Account(p.getUniqueId());
             if (args.length < 2) {
                 sender.sendMessage(fpi.subcmd());

@@ -48,14 +48,13 @@ atPlayer: "&2@%player%&r"
     public String getSuffix() {
         return group.getString("Suffix","");
     }
-    public class Permissions {
         public List<String> getAllPermissions() {
             return group.getStringList("Permissions");
         }
         public List<String> getPermissions() {
             List<String> temp = new ArrayList<>();
             for (String s : getAllPermissions()) {
-                if (s.startsWith("functions.")) {
+                if (s.startsWith("functions")) {
                     continue;
                 }
                 temp.add(s);
@@ -65,14 +64,13 @@ atPlayer: "&2@%player%&r"
         public List<String> getFunctionsPermissions() {
             List<String> temp = new ArrayList<>();
             for (String s : getAllPermissions()) {
-                if (!s.startsWith("functions.")) {
+                if (!s.startsWith("functions")) {
                     continue;
                 }
                 temp.add(s);
             }
             return temp;
         }
-    }
     public String atPlayer() {
         return group.getString("atPlayer","&2@%player%&r");
     }

@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Main;
 
+import java.io.File;
 import java.sql.*;
 
 public class Sql implements DataBase {
@@ -72,6 +73,16 @@ public class Sql implements DataBase {
             connect.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteFile() {
+        File file = new File(name);
+        if (file.exists()) {
+            disconnect();
+            file.deleteOnExit();
+            connect();
         }
     }
 }

@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Account;
+import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
 import java.util.List;
 
@@ -17,8 +19,15 @@ public class CommandAutoLogin implements TabExecutor {
     FPI fpi = Functions.instance.getAPI();
     Account account;
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!Accounts.enable()) {
+            sender.sendMessage(Accounts.noEnable());
+            return true;
+        }
         if (sender instanceof Player) {
             Player p = ((Player) sender).getPlayer();
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.autologin")) {
+                return true;
+            }
             Account account = new Account(p.getUniqueId());
             if (!account.exists()) {
                 sender.sendMessage(fpi.putLanguage("AccountNotExists","&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！",p));

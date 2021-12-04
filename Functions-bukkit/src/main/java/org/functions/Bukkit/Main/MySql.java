@@ -73,4 +73,9 @@ public class MySql implements DataBase {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void deleteFile() {
+
+    }
 }

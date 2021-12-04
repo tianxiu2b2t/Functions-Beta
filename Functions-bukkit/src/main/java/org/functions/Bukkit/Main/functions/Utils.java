@@ -453,7 +453,7 @@ public class Utils {
             Object packet;
             boolean high = false;
             boolean useOldMethods = false;
-            if (msg==null || msg=="") {
+            if (msg==null || msg.equals("")) {
                 return;
             }
             if (nms.startsWith("v_1_1") || nms.contains("v_1_16")) {
@@ -578,15 +578,19 @@ public class Utils {
             ScoreboardManager scoreboardManager = Functions.instance.getServer().getScoreboardManager();
             scoreboard = scoreboardManager.getNewScoreboard();
             Objective objective = scoreboard.registerNewObjective("Functions", "dummy");
-            if (display == null || ls == null) {
+            if (display == null || ls == null || display.equals("")) {
                 scoreboard.clearSlot(DisplaySlot.SIDEBAR);
                 return;
             }
             objective.setDisplayName(display);
             int i = ls.size();
+            int continue_count = 0;
             for (int s = 0; s < i; ++s) {
-                Score score = objective.getScore(Functions.instance.getAPI().replace(ls.get(s),player));
-                score.setScore(i - s - 1);
+                if (ls.get(s) == null || ls.get(s).equals("")) {
+                    continue_count++;
+                    continue;
+                }
+                objective.getScore(Functions.instance.getAPI().replace(ls.get(s),player)).setScore(i - s - 1 - continue_count);
             }
             scoreboard.clearSlot(DisplaySlot.SIDEBAR);
             objective.setDisplaySlot(DisplaySlot.SIDEBAR);

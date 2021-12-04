@@ -152,6 +152,7 @@ public class Players implements Listener {
             if (fpi.cps.get(p.getUniqueId())!=null) fpi.cps.remove(p.getUniqueId());
             account.setPosition();
             account.teleportSpawn();
+            account.setGameMode();
         }
 
     }
