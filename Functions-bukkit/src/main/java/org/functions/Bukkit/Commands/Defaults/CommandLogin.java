@@ -10,6 +10,7 @@ import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandLogin implements TabExecutor {
@@ -25,10 +26,11 @@ public class CommandLogin implements TabExecutor {
         }
         if (sender instanceof Player) {
             Player p = ((Player) sender).getPlayer();
-            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.login")) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.login")) {
                 return true;
             }
-            Account account = new Account(p.getUniqueId());
+            Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
+
             if (args.length < 1) {
                 sender.sendMessage(fpi.subcmd());
                 return true;
@@ -54,6 +56,12 @@ public class CommandLogin implements TabExecutor {
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return null;
+        List<String> ls = new ArrayList<>();
+        if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.default.command.login")) {
+            if (args.length <= 1) {
+                ls.add("password");
+            }
+        }
+        return ls;
     }
 }

@@ -11,6 +11,7 @@ import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandMail implements TabExecutor {
@@ -29,9 +30,9 @@ public class CommandMail implements TabExecutor {
         if (sender instanceof Player) {
             MailCode code;
             Player p = ((Player) sender).getPlayer();
-            Account account = new Account(p.getUniqueId());
+            Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
             if (fpi.hasAliases("BindMail", label)) {
-                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.mail.bindmail")) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mail.bindmail")) {
                     return true;
                 }
                 if (args.length < 2) {
@@ -43,11 +44,15 @@ public class CommandMail implements TabExecutor {
                     return true;
                 }
                 if (account.existsMail()) {
-                    if (account.getMail().equals(args[1])) {
-                        sender.sendMessage(fpi.putLanguage("BindMailIsEquals", "&a邮箱不能于之前邮箱一样！",p));
+                    if (!account.getMail().equals(args[0])) {
+                        sender.sendMessage(fpi.putLanguage("BindMailNotIsEquals", "&c之前的邮箱与现在的邮箱不一！",p));
                         return true;
                     }
-                    if (account.setMail(args[0])) {
+                    if (account.getMail().equals(args[1])) {
+                        sender.sendMessage(fpi.putLanguage("BindMailIsEquals", "&c邮箱不能于之前邮箱一样！",p));
+                        return true;
+                    }
+                    if (account.setMail(args[1])) {
                         sender.sendMessage(fpi.putLanguage("BindMailSuccessfully", "&a成功绑定邮箱！",p));
                         return true;
                     }
@@ -63,7 +68,7 @@ public class CommandMail implements TabExecutor {
                 return true;
             }
             if (fpi.hasAliases("RecoverPassword", label)) {
-                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.recoverpassword")) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mail.recoverpassword")) {
                     return true;
                 }
                 if (!account.existsMail()) {
@@ -84,7 +89,7 @@ public class CommandMail implements TabExecutor {
                 return true;
             }
             if (fpi.hasAliases("mailcode", label)) {
-                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.mailcode")) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mail.mailcode")) {
                     return true;
                 }
                 if (args.length == 0) {
@@ -100,7 +105,7 @@ public class CommandMail implements TabExecutor {
                 return true;
             }
             if (fpi.hasAliases("mailogin", label)) {
-                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.mailogin")) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mailogin")) {
                     return true;
                 }
                 if (args.length == 0) {
@@ -139,6 +144,40 @@ public class CommandMail implements TabExecutor {
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return null;
+        if (!(sender instanceof Player)) {
+            return null;
+        }
+        List<String> ls = new ArrayList<>();
+        Player p = ((Player) sender).getPlayer();
+        Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
+        if (fpi.hasAliases("BindMail", alias)) {
+            if (PermissionsUtils.hasPermissionsSendMessage(sender, "functions.default.command.mail.bindmail")) {
+                if (args.length <= 1) {
+                    if (account.existsMail()) {
+                        ls.add(account.getMail());
+                    } else {
+                        ls.add("新邮箱@邮箱地址");
+                    }
+                }
+                if (args.length == 2) {
+                    ls.add("新邮箱@邮箱地址");
+                }
+            }
+        }
+        if (fpi.hasAliases("mailcode", alias)) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mailcode")) {
+                if (account.existsMail()) {
+                    ls.add("验证码");
+                }
+            }
+        }
+        if (fpi.hasAliases("mailogin", alias)) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mailogin")) {
+                if (account.existsMail()) {
+                    ls.add("验证码");
+                }
+            }
+        }
+        return ls;
     }
 }

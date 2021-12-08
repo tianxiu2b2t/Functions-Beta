@@ -10,6 +10,7 @@ import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandChangePassword implements TabExecutor {
@@ -25,10 +26,11 @@ public class CommandChangePassword implements TabExecutor {
         }
         if (sender instanceof Player) {
             Player p = ((Player) sender).getPlayer();
-            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.changepassword")) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.changepassword")) {
                 return true;
             }
-            account = new Account(p.getUniqueId());
+            Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
+
             if (!account.exists()) {
                 sender.sendMessage(fpi.putLanguage("AccountNotExists","&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！",p));
                 return true;
@@ -74,6 +76,20 @@ public class CommandChangePassword implements TabExecutor {
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return null;
+        List<String> ls = new ArrayList<>();
+        if (!(sender instanceof Player)) {
+            return ls;
+        }
+        Player p = ((Player) sender).getPlayer();
+        Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
+        if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.changepassword")) {
+            if (account.isLogin()) {
+                if (args.length <= 1) ls.add("旧密码");
+                if (args.length == 2 || args.length == 3) ls.add("新密码");
+            } else {
+                if (args.length <= 2) ls.add("新密码");
+            }
+        }
+        return ls;
     }
 }

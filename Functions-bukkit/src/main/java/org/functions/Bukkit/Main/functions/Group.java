@@ -64,6 +64,9 @@ atPlayer: "&2@%player%&r"
         public List<String> getFunctionsPermissions() {
             List<String> temp = new ArrayList<>();
             for (String s : getAllPermissions()) {
+                if (s.startsWith("*")) {
+                    temp.add("*");
+                }
                 if (!s.startsWith("functions")) {
                     continue;
                 }

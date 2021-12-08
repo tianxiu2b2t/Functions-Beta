@@ -9,7 +9,9 @@ import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
+import org.functions.Bukkit.Main.functions.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandAccountDelete implements TabExecutor {
@@ -25,10 +27,11 @@ public class CommandAccountDelete implements TabExecutor {
         }
         if (sender instanceof Player) {
             Player p = ((Player) sender).getPlayer();
-            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.accountdelete")) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.accountdelete")) {
                 return true;
             }
-            account = new Account(p.getUniqueId());
+            Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
+
             if (!account.exists()) {
                 sender.sendMessage(fpi.putLanguage("AccountNotExists","&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！",p));
                 return true;
@@ -62,6 +65,12 @@ public class CommandAccountDelete implements TabExecutor {
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return null;
+        List<String> ls = new ArrayList<>();
+        if (sender.isOp()) {
+            for (User u : Functions.instance.getPlayerManager().getUsers()) {
+                ls.add(u.getAccount().getLowerName());
+            }
+        }
+        return ls;
     }
 }

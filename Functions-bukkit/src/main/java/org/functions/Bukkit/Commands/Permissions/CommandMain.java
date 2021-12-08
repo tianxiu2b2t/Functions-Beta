@@ -10,6 +10,8 @@ import org.functions.Bukkit.Main.functions.Economy;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,33 +25,47 @@ public class CommandMain implements TabExecutor {
             return true;
         }
         if (args[0].equalsIgnoreCase("reload")) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.main.reload")) {
+                return true;
+            }
             start = System.currentTimeMillis();
             Functions.instance.getConfiguration().reload();
             sender.sendMessage(Functions.instance.getAPI().putLanguage("ReloadConfiguration","&a成功重载配置！ (%time-ms% ms)",null).replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
         }
         if (args[0].equalsIgnoreCase("reloadServer")) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reloadserver")) {
+                return true;
+            }
             Functions.instance.getServer().reload();
             start = System.currentTimeMillis();
             sender.sendMessage("&a成功重载服务器！ (%time-ms% ms)".replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
         }
         if (args[0].equalsIgnoreCase("reloadData")) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reloaddata")) {
+                return true;
+            }
             start = System.currentTimeMillis();
             Functions.instance.getServer().reloadData();
             sender.sendMessage(Functions.instance.getAPI().putLanguage("ReloadMinecraftData","&a成功重载原版数据！ (%time-ms% ms)",null).replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
         }
-        if (args[0].equalsIgnoreCase("database_delete")) {
-            Functions.instance.getDatabase().deleteFile();
-        }
-        if (sender instanceof Player) {
-            sender.sendMessage(PermissionsUtils.hasPermissions(((Player) sender).getPlayer(),args[0]) + "");
-        }
         return true;
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return null;
+        List<String> ls = new ArrayList<>();
+        if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reload")) {
+            ls.add("reload");
+        }
+        if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reloadserver")) {
+            ls.add("reloadserver");
+        }
+        if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reloaddata")) {
+            ls.add("reloaddata");
+        }
+        Collections.sort(ls);
+        return ls;
     }
 }

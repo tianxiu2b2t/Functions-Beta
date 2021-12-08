@@ -1,12 +1,12 @@
 Group: Default
 DisplayName: "&7默认组&r"
-Prefix: "&7"
+Prefix: "&7[Default] &r"
 Suffix: none
 Format:
-  Join: "&e%player_display% Join the %servername%"
-  Quit: "&e%player_display% Left the %servername%"
-  Chat: "<%player_display%> %message%"
+  Join: "&7[&a+&7] %player_display%"
+  Quit: "&7[&c-&7] %player_display%"
+  Chat: "<%display%> %message%"
 Hide: false
 Permissions:
   - "functions.default.*"
-atPlayer: "@3%player%&r"
+atPlayer: "&2@%player%&r"

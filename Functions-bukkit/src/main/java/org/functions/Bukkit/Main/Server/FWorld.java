@@ -5,6 +5,10 @@ import org.bukkit.World;
 import org.functions.Bukkit.Main.Functions;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class FWorld {
@@ -30,23 +34,10 @@ public class FWorld {
         }
     }
     public String getWorldStringForTime() {
-        long time = world.getTime();
-        // 1200 * 20
-        // 1200
-        //  20
-        // 24000
-        time = (time / 20 * 1200 + 60000);
-        Date date = new Date(time);
-        SimpleDateFormat sdf = new SimpleDateFormat(Functions.instance.getConfiguration().getSettings().getString("Date_GameTime","HH:ss"));
-        String[] space = sdf.format(date).split(Functions.instance.getConfiguration().getSettings().getString("Date_GameTime_split",":"));
-        int h = Integer.parseInt(space[0]);
-        int m = Integer.parseInt(space[1]);
-        String s = "none";
-        if (h > 23) {
-            h = h - 24;
-            s = h + Functions.instance.getConfiguration().getSettings().getString("Date_GameTime_split",":") + m;
-        }
-        return s;
-
+        int time = Integer.parseInt((world.getTime() % 24000L)+"");
+        return LocalTime.of(time / 1000, time % 1000 * 60 / 1000).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
+    }
+    public String getWorldStringForDayTime() {
+        return ((int)(world.getFullTime() / 24000L % 2147483647L) + "");
     }
 }

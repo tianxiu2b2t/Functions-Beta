@@ -25,10 +25,11 @@ public class CommandAutoLogin implements TabExecutor {
         }
         if (sender instanceof Player) {
             Player p = ((Player) sender).getPlayer();
-            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.autologin")) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.autologin")) {
                 return true;
             }
-            Account account = new Account(p.getUniqueId());
+            Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
+
             if (!account.exists()) {
                 sender.sendMessage(fpi.putLanguage("AccountNotExists","&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！",p));
                 return true;

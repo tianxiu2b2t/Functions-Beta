@@ -108,7 +108,7 @@ public class Account {
         }
         return Accounts.login.get(uuid);
     }
-    String matches = "[a-zA-Z0-9]*@[a-zA-Z0-9]*.[a-zA-Z0-9]*";
+    String matches = "([a-zA-Z0-9]*)@([a-zA-Z0-9]*)\\.([a-zA-Z0-9]*)";
     public boolean existsMail() {
         LinkedHashMap<UUID, String> mails = new LinkedHashMap<>();
         ResultSet rs = db.query(select_all);
@@ -170,6 +170,7 @@ public class Account {
     }
     public boolean delete() {
         if (exists()) {
+            if (getPlayer()!=null) logout();
             db.execute("DELETE FROM " + table + " WHERE UUID='" + uuid.toString() + "'");
             return true;
         }

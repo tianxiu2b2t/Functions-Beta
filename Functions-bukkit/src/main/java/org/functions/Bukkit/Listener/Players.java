@@ -80,9 +80,11 @@ public class Players implements Listener {
     @EventHandler
     public void join(PlayerJoinEvent event) {
         Player p = event.getPlayer();
+        if (!Functions.instance.getPlayerManager().exists(p.getUniqueId())) Functions.instance.getPlayerManager().run();
+        event.setJoinMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getJoin(),p));
         if (fpi.cps.get(p.getUniqueId())==null) fpi.cps.put(p.getUniqueId(), new ClickPerSeconds(p.getUniqueId()));
         Functions.instance.print("Player: " + p.getName() + " Join the server. (Address: " + fpi.getPlayerAddress(p.getUniqueId()) + ")");
-        account = new Account(p.getUniqueId());
+        account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
         if (account.exists()) {
             account.teleportSpawn();
             Accounts.login.put(p.getUniqueId(),false);
@@ -146,6 +148,7 @@ public class Players implements Listener {
     @EventHandler
     public void leave(PlayerQuitEvent event) {
         Player p = event.getPlayer();
+        event.setQuitMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getQuit(),p));
         account = new Account(p.getUniqueId());
         if (account.exists() || account.isLogin()) {
             Accounts.login.remove(p.getUniqueId());

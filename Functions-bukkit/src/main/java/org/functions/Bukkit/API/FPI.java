@@ -230,9 +230,28 @@ public class FPI {
     public Group getGroup(String Name) {
         return new Group(Functions.instance.getConfiguration().groups.get(Name));
     }
+
     /************************* PlaceholderAPIHook **********************************/
     public String onRequest(OfflinePlayer player, String params) {
         PlayerManager pm = Functions.instance.getPlayerManager();
+        if (params.equalsIgnoreCase("server_day")){
+            return getInstance().getFServer().getServerStringForDays()+"";
+        }
+        if (params.equalsIgnoreCase("server_hour")){
+            return getInstance().getFServer().getServerStringForHours()+"";
+        }
+        if (params.equalsIgnoreCase("server_minute")){
+            return getInstance().getFServer().getServerStringForMinutes()+"";
+        }
+        if (params.equalsIgnoreCase("server_second")){
+            return getInstance().getFServer().getServerStringForSeconds()+"";
+        }
+        if (params.equalsIgnoreCase("server_nanasecound")){
+            return getInstance().getFServer().getServerStringForNanaSeconds()+"";
+        }
+        if (params.equalsIgnoreCase("server_start")) {
+            return replace(getInstance().getConfiguration().getSettings().getString("ServerStart","%server_day% %server_hour%:%server_minute%:%server_second%"),null);
+        }
         if (params.equalsIgnoreCase("economy")) {
             return pm.getUser(player.getUniqueId()).getEconomy().display();
         }

@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Tasks;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Utils;
@@ -38,7 +39,7 @@ public class sendPacketToClient implements Runnable {
                     }
                 }
             }
-            tab.send(Header.toString(), Footer.toString());
+            tab.send(Header.toString(), Footer.toString(), Functions.instance.getConfiguration().getSettings().getString("PlayerList"));
             bar = new Utils.ActionBar(p);
             bar.send(Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message",""));
             board = new Utils.ScoreBoard(p);
@@ -51,6 +52,10 @@ public class sendPacketToClient implements Runnable {
                 }
             }
             board.sendAll(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.DisplayName","Functions"),ls);
+            for (Player o : Bukkit.getOnlinePlayers()) {
+                if (Functions.instance.getPlayerManager().getUser(p.getUniqueId()).isHiding()) o.hidePlayer(Functions.instance,p);
+                else o.showPlayer(Functions.instance,p);
+            }
         }
     }
 }

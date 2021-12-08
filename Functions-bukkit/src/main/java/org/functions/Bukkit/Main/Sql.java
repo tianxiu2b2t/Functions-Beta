@@ -42,7 +42,9 @@ public class Sql implements DataBase {
             //connect.close();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
+            //File file = new File(name);
+            //file.renameTo(new File(file.getName() + "_Back" + Functions.instance.getAPI().getDate() + Functions.instance.getAPI().getDateTime()));
             //new SQLException(e);
             return false;
         }
@@ -53,7 +55,9 @@ public class Sql implements DataBase {
             //connect();
             return state.executeQuery(cmd);
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
+            //File file = new File(name);
+            //file.renameTo(new File(file.getName() + "_Back" + Functions.instance.getAPI().getDate() + Functions.instance.getAPI().getDateTime()));
         }
         return null;
     }
@@ -71,14 +75,16 @@ public class Sql implements DataBase {
         try {
             state.close();
             connect.close();
+            //Thread.sleep(5L);
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
         }
     }
 
     @Override
     public void deleteFile() {
         File file = new File(name);
+        Functions.instance.print(name);
         if (file.exists()) {
             disconnect();
             file.deleteOnExit();

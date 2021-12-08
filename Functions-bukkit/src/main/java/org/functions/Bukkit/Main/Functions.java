@@ -9,18 +9,16 @@ import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.Listener.Players;
 import org.functions.Bukkit.Main.Server.FServer;
 import org.functions.Bukkit.Main.functions.AddressLocation;
-import org.functions.Bukkit.Main.functions.Messaging.AccountMessaging;
 import org.functions.Bukkit.Main.functions.Messaging.Messaging;
-import org.functions.Bukkit.Main.functions.Updater;
 import org.functions.Bukkit.Tasks.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public final class Functions extends JavaPlugin {
     FServer f;
     Messaging a;
+    //public PermissionsUtils.BukkitPermissions perms = new PermissionsUtils.BukkitPermissions();
     PlayerManager pm;
     Latest latest = null;
     public static Functions instance;
@@ -29,7 +27,6 @@ public final class Functions extends JavaPlugin {
     LinkedHashMap<String,String> table = new LinkedHashMap<>();
     public AddressLocation location = null;
     FPI fpi;
-    public Updater up;
     public FPI getAPI() {
         return fpi;
     }
@@ -74,7 +71,7 @@ public final class Functions extends JavaPlugin {
         database.execute("create table if not exists " + getTable("Rules") + " ( Rules TEXT, Enable BOOLEAN DEFAULT true )");
         database.execute("create table if not exists " + getTable("Spawn") + " ( Name TEXT, Location TEXT )");
         database.execute("create table if not exists " + getTable("Economy") + " ( UUID TEXT, Economy DOUBLE DEFAULT 0 , Bank DOUBLE DEFAULT 0 )");
-        database.execute("create table if not exists " + getTable("Users") + " ( UUID TEXT, 'Group' TEXT DEFAULT 'Default', Prefixes TEXT, Prefix TEXT, Suffixes TEXT, Suffix TEXT, Permissions TEXT)");
+        database.execute("create table if not exists " + getTable("Users") + " ( UUID TEXT, 'Group' TEXT DEFAULT 'Default', Prefixes TEXT, Prefix TEXT, Suffixes TEXT, Suffix TEXT, Permissions TEXT, Hide BOOLEAN DEFAULT false)");
 
         database.execute("create table if not exists " + getTable("Operators") + " ( UUID Text, Operator BOOLEAN DEFAULT false ) ");
     }
@@ -126,9 +123,8 @@ public final class Functions extends JavaPlugin {
         reloadDataBase();
         reloadTable();
         new FPI().registerCommand();
-        new FPI().registerListener();
+        getAPI().registerListener();
         pm = new PlayerManager(getServer());
-        up = new Updater();
         //a = new AccountMessaging();
         //a.onEnable();
         runScheduler();
@@ -137,9 +133,12 @@ public final class Functions extends JavaPlugin {
             new PlaceholderAPIHook().register();
             Functions.instance.print("Successfully register placeholder api hook.");
         }
-        print(configuration.DirSize());
+        print("Plugin folder size: " + configuration.DirSize());
         // Plugin startup logic
 
+    }
+    public FServer getFServer() {
+        return f;
     }
     public void runScheduler() {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
@@ -156,9 +155,13 @@ public final class Functions extends JavaPlugin {
     public PlayerManager getPlayerManager() {
         return pm;
     }
-    public void print(Object text,Object type) {
-        getServer().getConsoleSender().sendMessage(Prefix() + type + text);
-        latest.print(text);
+    public void print(Object text,String type) {
+        getServer().getConsoleSender().sendMessage(Prefix() + type + " " + text);
+        latest.print(type.toString() + " " + text.toString());
+    }
+    public void print(Object text,final Class<?> type) {
+        getServer().getConsoleSender().sendMessage(Prefix() + type.getName() + " " + text);
+        latest.print(type.getName() + " " + text);
     }
     public void onDisable() {
         // 获取在线玩家

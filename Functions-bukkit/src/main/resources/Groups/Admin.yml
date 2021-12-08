@@ -1,0 +1,12 @@
+Group: Default
+DisplayName: "&c管理组&r"
+Prefix: "&7[Admin] &r"
+Suffix: none
+Format:
+  Join: "&7[&a+&7] %player_display%"
+  Quit: "&7[&c-&7] %player_display%"
+  Chat: "<%display%> %message%"
+Hide: false
+Permissions:
+  - "*"
+atPlayer: "&2@%player%&r"

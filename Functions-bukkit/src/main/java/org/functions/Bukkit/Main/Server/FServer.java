@@ -1,17 +1,26 @@
 package org.functions.Bukkit.Main.Server;
 
 import org.bukkit.Server;
+import org.bukkit.World;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class FServer {
     List<FWorld> lw = new ArrayList<>();
+    LocalTime starts = LocalTime.now();
     long start = System.currentTimeMillis();
     Server server;
     public FServer(Server server) {
         this.server = server;
+        for (World w : server.getWorlds()) {
+            lw.add(new FWorld(w));
+        }
     }
 
     public Server getServer() {
@@ -21,29 +30,23 @@ public class FServer {
         return System.currentTimeMillis() - start;
     }
     public String getServerStringForTime() {
-        long s = getServerTime() / 1000;
-        long mins = 0;
-        while (s!=0) {
-            if (s >= 60) {
-                s = s - 60;
-                mins++;
-            }
-        }
-        long hours = 0;
-        while (mins!=0) {
-            if (mins >= 60) {
-                mins = mins - 60;
-                hours++;
-            }
-        }
-        long day = 0;
-        while (hours!=0) {
-            if (hours>= 24) {
-                hours = hours - 24;
-                day ++;
-            }
-        }
-        return day + ":" + hours + ":" + mins + ":" + s;
+        int day = (int)getServerTime() / (1000 * 24 * 60 * 60);
+        return day + " " + ChronoUnit.HOURS.between(starts,LocalTime.now()) + ":" + ChronoUnit.MINUTES.between(starts,LocalTime.now()) + ":" + ChronoUnit.SECONDS.between(starts,LocalTime.now());
+    }
+    public long getServerStringForDays() {
+        return (int)getServerTime() / (1000 * 24 * 60 * 60);
+    }
+    public long getServerStringForHours() {
+        return ChronoUnit.HOURS.between(starts,LocalTime.now());
+    }
+    public long getServerStringForMinutes() {
+        return ChronoUnit.MINUTES.between(starts,LocalTime.now());
+    }
+    public long getServerStringForSeconds() {
+        return ChronoUnit.SECONDS.between(starts,LocalTime.now());
+    }
+    public long getServerStringForNanaSeconds() {
+        return ChronoUnit.NANOS.between(starts,LocalTime.now());
     }
     public FWorld getWorld(UUID uuid) {
         for (FWorld world : lw) {

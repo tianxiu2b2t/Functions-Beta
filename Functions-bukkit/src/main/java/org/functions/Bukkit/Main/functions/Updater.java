@@ -4,7 +4,9 @@ import org.bukkit.entity.Player;
 import org.functions.Bukkit.Main.Functions;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -14,10 +16,7 @@ public class Updater {
     boolean now_can = false;
     boolean new_can = false;
     public Updater() {
-        check();
-        info();
         now();
-        getVersion();
     }
     long check = 0;
     int pre = 0;
@@ -99,9 +98,6 @@ public class Updater {
     public void sendOp(Player p) {
         check();
         info();
-        if (!can()) {
-            now();
-        }
         getVersion();
         if (!can()) {
             return;
@@ -115,24 +111,55 @@ public class Updater {
         }
     }
     public boolean can() {
-        if (!check_can || !info_can || !now_can || !new_can) {
-            return false;
+        return check_can && info_can && now_can && new_can;
+    }
+    public void downloader() {
+        try {
+            File dir = new File(Functions.instance.getFolder() + "/Downloader");
+            File file = new File(dir,"Functions-Beta_" + pre + ".jar");
+            if (!dir.exists()) {
+                if (!dir.mkdirs()) {
+                    return;
+                }
+            }
+            if (file.exists()) {
+                if (file.length() != 0) {
+                    return;
+                }
+            } else {
+                file.createNewFile();
+            }
+            Functions.instance.print("Now let me try download this version file.","Updater Application");
+            URL url = new URL("https://github.com/tianxiu2b2t/Functions-Beta/releases/download/" + pre + "/Functions-Beta.jar");
+            URLConnection connect = url.openConnection();
+            connect.setReadTimeout(50000);
+            connect.setConnectTimeout(50000);
+            InputStream in = connect.getInputStream();
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+                out.flush();
+            }
+            out.close();
+            in.close();
+            Functions.instance.print("All right! You can see \"" + file.getPath() + "\" folder file.","Updater Application");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return true;
     }
     public void run() {
         if (check<=0) {
+            getVersion();
             check();
             info();
-            if (!can()) {
-                now();
-            }
-            getVersion();
-            if (!can()) {
-                return;
-            }
+            //if (!can()) {
+                //return;
+            //}
             if (pre > nowversion) {
                 if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
+                    downloader();
                     for (String s : message) {
                         Functions.instance.print(Functions.instance.getAPI().replace(s,null).replace("%plugin%", Functions.instance.getDescription().getName()).replace("%url%", getURL() + pre).replace("%latest_version%",plugin_version).replace("%version%",Functions.instance.getDescription().getVersion()));
                         check = 20*60*Functions.instance.getConfig().getLong("Updater.minutes",5);

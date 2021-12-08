@@ -8,6 +8,7 @@ import org.functions.Bukkit.Main.functions.*;
 public class Tasks implements Runnable {
     FPI fpi = Functions.instance.getAPI();
     long check = 0;
+    Updater up = new Updater();
     public void run() {
         for (Player p : fpi.getOnlinePlayers()) {
             if (FPI.code_timeout.get(p.getUniqueId()) != null) {
@@ -18,6 +19,6 @@ public class Tasks implements Runnable {
                 }
             }
         }
-        fpi.getInstance().up.run();
+        up.run();
     }
 }

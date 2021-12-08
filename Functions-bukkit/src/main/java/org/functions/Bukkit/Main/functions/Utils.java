@@ -156,6 +156,65 @@ public class Utils {
                 }
 
         }
+        public void send(String header, String footer,String ListPlayer) {
+            if (Functions.instance.getAPI().send_packet.get("Tab")!=null) {
+                if (System.currentTimeMillis() < Functions.instance.getAPI().send_packet.get("Tab")) {
+                    return;
+                }
+            }
+            Functions.instance.getAPI().send_packet.put("Tab",System.currentTimeMillis() + 50 * Functions.instance.getConfiguration().getSettings().getLong("Tab.sendTime",5));
+            if (header == null) {
+                header = "";
+            }
+
+            if (footer == null) {
+                footer = "";
+            }
+
+            if (Version.isCurrentEqualOrLower(Version.v1_15_R2)) {
+                header = colorMsg(header);
+                footer = colorMsg(footer);
+            }
+            header = Functions.instance.getAPI().replace(header,player);
+            footer = Functions.instance.getAPI().replace(footer,player);
+            try {
+                Class packetPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
+
+                try {
+                    Object packet = packetPlayOutPlayerListHeaderFooter.getConstructor().newInstance();
+                    Object tabHeader = getAsIChatBaseComponent(header);
+                    Object tabFooter = getAsIChatBaseComponent(footer);
+                    if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
+                        setField(packet, "header", tabHeader);
+                        setField(packet, "footer", tabFooter);
+                    } else {
+                        setField(packet, "a", tabHeader);
+                        setField(packet, "b", tabFooter);
+                    }
+
+                    sendPacket(player, packet);
+                } catch (Exception var8) {
+                    Constructor<?> titleConstructor = null;
+                    if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {
+                        titleConstructor = packetPlayOutPlayerListHeaderFooter.getConstructor();
+                    } else if (Version.isCurrentLower(Version.v1_12_R1)) {
+                        titleConstructor = packetPlayOutPlayerListHeaderFooter.getConstructor(getAsIChatBaseComponent(header).getClass());
+                    }
+
+                    if (titleConstructor != null) {
+                        setField(titleConstructor, "b", getAsIChatBaseComponent(footer));
+                        sendPacket(player, titleConstructor);
+                    }
+                }
+            } catch (Throwable var9) {
+                var9.printStackTrace();
+            }
+            if (ListPlayer==null || ListPlayer == "") {
+                player.setPlayerListName(Functions.instance.getAPI().replace("%player_display%",player));
+                return;
+            }
+            player.setPlayerListName(Functions.instance.getAPI().replace(ListPlayer,player));
+        }
         public enum Version {
             v1_8_R1,
             v1_8_R2,

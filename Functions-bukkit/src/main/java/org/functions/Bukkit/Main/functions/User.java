@@ -151,4 +151,12 @@ public class User {
     public ClickPerSeconds getCPS() {
         return Functions.instance.getAPI().cps.get(getPlayer().getUniqueId());
     }
+    public boolean isHiding() {
+        try {
+            return Boolean.parseBoolean(db.query(select).getString("Hide"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

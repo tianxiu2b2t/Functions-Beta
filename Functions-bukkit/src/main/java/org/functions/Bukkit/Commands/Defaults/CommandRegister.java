@@ -10,6 +10,7 @@ import org.functions.Bukkit.Main.functions.Account;
 import org.functions.Bukkit.Main.functions.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandRegister implements TabExecutor {
@@ -28,7 +29,7 @@ public class CommandRegister implements TabExecutor {
         }
         if (sender instanceof Player) {
             Player p = ((Player) sender).getPlayer();
-            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.register")) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.register")) {
                 return true;
             }
             Account account = new Account(p.getUniqueId());
@@ -60,6 +61,12 @@ public class CommandRegister implements TabExecutor {
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return null;
+        List<String> ls = new ArrayList<>();
+        if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.default.command.register")) {
+            if (args.length <= 2) {
+                ls.add("password");
+            }
+        }
+        return ls;
     }
 }
