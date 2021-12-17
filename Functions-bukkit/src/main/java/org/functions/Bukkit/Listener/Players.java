@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.Event.FAsyncPlayerChatEvent;
 import org.functions.Bukkit.API.FPI;
@@ -157,6 +158,9 @@ public class Players implements Listener {
             account.teleportSpawn();
             account.setGameMode();
         }
+    }
+    @EventHandler
+    public void title(ServerListPingEvent event) {
 
     }
 }

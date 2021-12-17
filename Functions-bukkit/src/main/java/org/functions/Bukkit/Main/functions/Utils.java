@@ -1,13 +1,16 @@
 package org.functions.Bukkit.Main.functions;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import net.minecraft.server.v1_14_R1.IChatBaseComponent;
+import net.minecraft.server.v1_14_R1.PacketPlayOutChat;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Server;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.*;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.PlayerManager;
@@ -18,11 +21,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+@SuppressWarnings("all")
 public class Utils {
     public static int parseInteger(Object text) {
         return Integer.parseInt(text.toString());
@@ -456,9 +460,7 @@ public class Utils {
 
             return met.invoke(obj);
         }
-        public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
-            return Class.forName("net.minecraft.server." + getPackageVersion() + "." + name);
-        }
+
         public static Field getField(Object clazz, String name) throws Exception {
             return getField(clazz, name, true);
         }
@@ -479,6 +481,12 @@ public class Utils {
         public static void setField(Object object, String fieldName, Object fieldValue) throws Exception {
             getField(object, fieldName).set(object, fieldValue);
         }
+        public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
+            return Class.forName("net.minecraft.server." + getPackageVersion() + "." + name);
+        }
+        public static String getPackageVersion() {
+            return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        }
         public static void sendPacket(Player player, Object packet) {
             try {
                 Object playerHandle = getHandle(player);
@@ -487,9 +495,6 @@ public class Utils {
             } catch (Exception var4) {
             }
 
-        }
-        public static String getPackageVersion() {
-            return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         }
     }
     public static class ActionBar {
@@ -735,6 +740,225 @@ public class Utils {
 
         public static String format(double tps) {
             return (tps > 18.0D ? ChatColor.GREEN : (tps > 16.0D ? ChatColor.YELLOW : ChatColor.RED)).toString() + (tps > 21.0D ? "*" : "") + Math.min((double)Math.round(tps * 100.0D) / 100.0D, 20.0D);
+        }
+    }
+    public static class sendTellRaw {
+        Player player;
+        public static Object getHandle(Object obj) throws Exception {
+            return invokeMethod(obj, "getHandle");
+        }
+        public static Object invokeMethod(Object obj, String name) throws Exception {
+            return invokeMethod(obj, name, true, false);
+        }
+        public static Object invokeMethod(Object obj, String name, boolean declared, boolean superClass) throws Exception {
+            Class<?> c = superClass ? obj.getClass().getSuperclass() : obj.getClass();
+            Method met = declared ? c.getDeclaredMethod(name) : c.getMethod(name);
+            if (!Tab.JavaAccessibilities.isAccessible(met, obj)) {
+                met.setAccessible(true);
+            }
+
+            return met.invoke(obj);
+        }
+
+        public static Field getField(Object clazz, String name) throws Exception {
+            return getField(clazz, name, true);
+        }
+        public static Field getField(Object clazz, String name, boolean declared) throws Exception {
+            return getField(clazz.getClass(), name, declared);
+        }
+        public static Field getField(Class<?> clazz, String name, boolean declared) throws Exception {
+            Field field = declared ? clazz.getDeclaredField(name) : clazz.getField(name);
+            if (!Tab.JavaAccessibilities.isAccessible(field, (Object)null)) {
+                field.setAccessible(true);
+            }
+
+            return field;
+        }
+        public static Object getFieldObject(Object object, Field field) throws Exception {
+            return field.get(object);
+        }
+        public static void setField(Object object, String fieldName, Object fieldValue) throws Exception {
+            getField(object, fieldName).set(object, fieldValue);
+        }
+        public static void sendPacket(Player player, Object packet) {
+            try {
+                Object playerHandle = getHandle(player);
+                Object playerConnection = getFieldObject(playerHandle, getField(playerHandle, "playerConnection"));
+                playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+            } catch (Exception var4) {
+            }
+
+        }
+        public boolean isExists(String name) {
+            try {
+                getNMSClass(name);
+                return true;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+        public enum Version {
+            v1_8_R1,
+            v1_8_R2,
+            v1_8_R3,
+            v1_9_R1,
+            v1_9_R2,
+            v1_10_R1,
+            v1_11_R1,
+            v1_12_R1,
+            v1_13_R1,
+            v1_13_R2,
+            v1_14_R1,
+            v1_14_R2,
+            v1_15_R1,
+            v1_15_R2,
+            v1_16_R1,
+            v1_16_R2,
+            v1_16_R3,
+            v1_17_R1,
+            v1_17_R2,
+            v1_18_R1,
+            v1_18_R2;
+
+            private Integer value = Integer.valueOf(this.name().replaceAll("[^\\d.]", ""));
+            private String shortVersion = this.name().substring(0, this.name().length() - 3);
+            private static Version current;
+
+            private Version() {
+            }
+
+            public Integer getValue() {
+                return this.value;
+            }
+
+            public static Version getCurrent() {
+                if (current != null) {
+                    return current;
+                } else {
+                    String[] v = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+                    String vv = v[v.length - 1];
+                    Version[] var2 = values();
+                    int var3 = var2.length;
+
+                    for (int var4 = 0; var4 < var3; ++var4) {
+                        Version one = var2[var4];
+                        if (one.name().equalsIgnoreCase(vv)) {
+                            current = one;
+                            break;
+                        }
+                    }
+
+                    return current;
+                }
+            }
+
+            public static boolean isCurrentEqualOrHigher(Version v) {
+                return getCurrent().getValue() >= v.getValue();
+            }
+
+            public static boolean isCurrentLower(Version v) {
+                return getCurrent().getValue() < v.getValue();
+            }
+
+            public static boolean isCurrentEqualOrLower(Version v) {
+                return getCurrent().getValue() <= v.getValue();
+            }
+
+            public static boolean isCurrentEqual(Version v) {
+                return getCurrent().getValue().equals(v.getValue());
+            }
+        }
+        public void send(String text) {
+            text = Functions.instance.getAPI().replace(text,player);
+            try {
+                Class<?> ChatSerializerClass = null;
+                Class<?> IClass = getNMSClass("IChatBaseComponent");
+                Class<?> PacketPlayOutChatClass = getNMSClass("PacketPlayOutChat");
+                if (Version.isCurrentLower(Version.v1_8_R1)) {
+                    ChatSerializerClass = getNMSClass("ChatSerializer");
+                } else {
+                    ChatSerializerClass = getNMSClass("IChatBaseComponent$ChatSerializer");
+                }
+                Object chatjson = PacketPlayOutChatClass.getConstructor(getNMSClass("IChatBaseComponent")).newInstance(ChatSerializerClass.getDeclaredMethod("a",String.class).invoke(IClass,text));
+                sendPacket(player,chatjson);
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            }
+        }
+        public JsonElement parse(String parse) {
+            try {
+                return new JsonParser().parse(Functions.instance.getAPI().replace(parse, player));
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+                Functions.instance.print(parse,"[Utils.JsonParse]");
+            }
+            return null;
+        }
+        public static void main(String[] args) {
+            Scanner a = new Scanner(System.in);
+            System.out.print("> ");
+            while (a.hasNext()) {
+                final String s = a.nextLine();
+                System.out.println(IsJson(s));
+                System.out.println(joinJson(s));
+                System.out.print("> ");
+            }
+        }
+        public static boolean IsJson(String text) {
+            try {
+                new JsonParser().parse(text);
+                return true;
+            } catch (JsonParseException e) {
+                e.fillInStackTrace();
+            }
+            return false;
+        }
+        private static String joinJson(String text) {
+            return text.replace("\\","\\\\").replace("\"","\\\"");
+        }
+        public void send(JsonElement text) {
+            Functions.instance.print(text.toString(),"[Utils.JsonSend]");
+            try {
+                Class<?> ChatSerializerClass = null;
+                Class<?> IClass = getNMSClass("IChatBaseComponent");
+                Class<?> PacketPlayOutChatClass = getNMSClass("PacketPlayOutChat");
+                if (Version.isCurrentLower(Version.v1_8_R1)) {
+                    ChatSerializerClass = getNMSClass("ChatSerializer");
+                } else {
+                    ChatSerializerClass = getNMSClass("IChatBaseComponent$ChatSerializer");
+                }
+                Object chatjson = PacketPlayOutChatClass.getConstructor(getNMSClass("IChatBaseComponent")).newInstance(ChatSerializerClass.getDeclaredMethod("a",JsonElement.class).invoke(IClass,text));
+                Object ichat = IClass.cast(chatjson);
+
+                sendPacket(player,chatjson);
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public sendTellRaw(Player player) {
+            this.player = player;
+        }
+
+        public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
+            return Class.forName("net.minecraft.server." + getPackageVersion() + "." + name);
+        }
+
+        public static String getPackageVersion() {
+            return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         }
     }
 }

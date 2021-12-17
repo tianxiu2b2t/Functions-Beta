@@ -10,6 +10,7 @@ import org.functions.Bukkit.Listener.Players;
 import org.functions.Bukkit.Main.Server.FServer;
 import org.functions.Bukkit.Main.functions.AddressLocation;
 import org.functions.Bukkit.Main.functions.Messaging.Messaging;
+import org.functions.Bukkit.Main.functions.ServerTitle;
 import org.functions.Bukkit.Tasks.*;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import java.util.*;
 public final class Functions extends JavaPlugin {
     FServer f;
     Messaging a;
+    public ServerTitle title;
     //public PermissionsUtils.BukkitPermissions perms = new PermissionsUtils.BukkitPermissions();
     PlayerManager pm;
     Latest latest = null;
@@ -31,10 +33,10 @@ public final class Functions extends JavaPlugin {
         return fpi;
     }
     public void onLoad() {
+        instance = this;
         fpi = new FPI();
         File database = new File(getDataFolder(),"DataBase.db");
         if (database.exists()) database.deleteOnExit();
-        instance = this;
         if (!(new File(getDataFolder(),"config.yml").exists())) {
             //saveConfig();
             saveDefaultConfig();
@@ -59,7 +61,7 @@ public final class Functions extends JavaPlugin {
         return getConfig().getString("Prefix","§3[§bFunctions§3] §r");
     }
     public void reloadTable() {
-        if (getConfiguration().getConfig().getBoolean("Debug",true)) {
+        if (getConfiguration().getConfig().getBoolean("Debug",false)) {
             database.execute("drop table if exists " + getTable("Accounts"));
             database.execute("drop table if exists " + getTable("Rules"));
             database.execute("drop table if exists " + getTable("Economy"));
@@ -107,13 +109,14 @@ public final class Functions extends JavaPlugin {
         saveResource(name, replace);
     }
     public void onEnable() {
-        fpi = new FPI();
+        getAPI().registerCommand();
+        getAPI().registerListener();
         new Metrics(this, 11673);
         instance = this;
         f = new FServer(getServer());
         print(configuration.getSettings().getString("Mail.From"));
         if (getConfig().getString("DataBase.Type").equals("MYSQL")) {
-            //database = new MySql(getConfig().getString("SaveFile.MySql.database","functions"),getConfig().getString("SaveFile.MySql.User","root"),getConfig().getString("SaveFile.MySql.Password","root"));
+            //database = new MySql(getConfig().getString("MySql.database","functions"),getConfig().getString("MySql.User","root"),getConfig().getString("MySql.Password","root"));
         } else if (getConfig().getString("DataBase.Type").equals("SQLITE")) {
             database = new Sql(getDataFolder() + "/" + getConfig().getString("DataBase.File", "DataBase.db"));
             database.init();
@@ -122,18 +125,19 @@ public final class Functions extends JavaPlugin {
         }
         reloadDataBase();
         reloadTable();
-        new FPI().registerCommand();
-        getAPI().registerListener();
         pm = new PlayerManager(getServer());
         //a = new AccountMessaging();
         //a.onEnable();
         runScheduler();
+        title = new ServerTitle();
         configuration.onQQAddress();
         if (getAPI().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            Functions.instance.print("Now! Registering placeholder api hook");
             new PlaceholderAPIHook().register();
             Functions.instance.print("Successfully register placeholder api hook.");
         }
         print("Plugin folder size: " + configuration.DirSize());
+        f.flushMemory();
         // Plugin startup logic
 
     }
@@ -187,6 +191,7 @@ public final class Functions extends JavaPlugin {
             // 然后完成离开
             print("Successfully execute " + p.getName()  + " event.");
         }
+        title = null;
         instance = null;
         database.disconnect();
         // Plugin shutdown logic

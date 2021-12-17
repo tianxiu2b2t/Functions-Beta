@@ -18,9 +18,7 @@ public class FServer {
     Server server;
     public FServer(Server server) {
         this.server = server;
-        for (World w : server.getWorlds()) {
-            lw.add(new FWorld(w));
-        }
+        flushWorlds();
     }
 
     public Server getServer() {
@@ -49,6 +47,7 @@ public class FServer {
         return ChronoUnit.NANOS.between(starts,LocalTime.now());
     }
     public FWorld getWorld(UUID uuid) {
+        flushWorlds();
         for (FWorld world : lw) {
             if (world.getWorld().getUID().equals(uuid)) {
                 return world;
@@ -56,7 +55,47 @@ public class FServer {
         }
         return null;
     }
+    public void clearWorlds() {
+        lw.forEach(this::clearWorld);
+    }
+    public void clearWorld(FWorld world) {
+        lw.remove(world);
+    }
+    public void flushWorlds() {
+        if (lw.size() == 0) {
+            for (World w : server.getWorlds()) {
+                lw.add(new FWorld(w));
+            }
+            return;
+        }
+        lw.forEach((w)->{
+            flushWorld(server.getWorld(w.world.getUID()));
+        });
+    }
+    public void flushWorld(World world) {
+        lw.forEach((w)->{
+            if (w.getWorld().getUID().equals(world.getUID())) {
+                w.world = world;
+            }
+        });
+    }
     public List<FWorld> getWorlds() {
         return lw;
+    }
+    public boolean ReallyMemory = false;
+    public void flushMemory() {
+        Runtime runtime = Runtime.getRuntime();
+//        long max = runtime.maxMemory();
+//        long total = runtime.totalMemory();
+//        long free = runtime.freeMemory();
+//        if (free + total == max) {
+//            ReallyMemory = true;
+//        }
+//        System.out.println(max);
+//        System.out.println(free);
+//        System.out.println(total);
+//        System.out.println(total - free);
+//        System.out.println(ReallyMemory);
+        runtime.gc();
     }
 }

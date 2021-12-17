@@ -15,7 +15,7 @@ public class FAsyncPlayerChatEvent implements Cancellable {
     Player p;
     private static final HandlerList handlers = new HandlerList();
     private boolean cancel = false;
-    private final String message;
+    private String message;
     private String format = "<%1$s> %2$s";
     User user;
     public FAsyncPlayerChatEvent(Player who, String message) {
@@ -59,5 +59,17 @@ public class FAsyncPlayerChatEvent implements Cancellable {
                 }
             }
         return Functions.instance.getAPI().replace(format,p);
+    }
+    public String getRawFormat() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (message.contains(user.getGroup().atPlayer().replace("%player%",p.getName()))) {
+                message = message.replace("@" + p.getName(),user.getGroup().atPlayer().replace("%player%",p.getName()));
+            } else if (message.contains("@" + p.getName())) {
+                message = message.replace("@" + p.getName(),user.getGroup().atPlayer().replace("%player%",p.getName()));
+            } else if (message.contains(p.getName())) {
+                message = message.replace(p.getName(),user.getGroup().atPlayer().replace("%player%",p.getName()));
+            }
+        }
+        return "{\"text\":\"" + format.replace("%player_display%",Functions.instance.getAPI().replaceJson(user.getJsonChatDisplayName())).replace("%message%",Functions.instance.getAPI().replace(message,p)) + "\"}";
     }
 }

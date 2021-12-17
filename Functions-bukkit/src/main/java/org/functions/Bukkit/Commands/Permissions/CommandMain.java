@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Commands.Permissions;
 
+import com.google.gson.JsonParser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -9,6 +10,7 @@ import org.functions.Bukkit.Main.functions.Bank;
 import org.functions.Bukkit.Main.functions.Economy;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
+import org.functions.Bukkit.Main.functions.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +52,11 @@ public class CommandMain implements TabExecutor {
             Functions.instance.getServer().reloadData();
             sender.sendMessage(Functions.instance.getAPI().putLanguage("ReloadMinecraftData","&a成功重载原版数据！ (%time-ms% ms)",null).replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
+        }
+        if (sender instanceof Player) {
+            Utils.sendTellRaw raw = new Utils.sendTellRaw(((Player) sender).getPlayer());
+            raw.send(args[0]);
+            raw.send(raw.parse(args[0]));
         }
         return true;
     }

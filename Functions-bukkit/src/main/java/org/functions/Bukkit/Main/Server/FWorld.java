@@ -35,7 +35,7 @@ public class FWorld {
     }
     public String getWorldStringForTime() {
         int time = Integer.parseInt((world.getTime() % 24000L)+"");
-        return LocalTime.of(time / 1000, time % 1000 * 60 / 1000).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
+        return LocalTime.of(time / 1000, time % 1000 * 60 / 1000).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
     }
     public String getWorldStringForDayTime() {
         return ((int)(world.getFullTime() / 24000L % 2147483647L) + "");

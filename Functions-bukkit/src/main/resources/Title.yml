@@ -1,0 +1,5 @@
+Random: false
+Lines:
+  - "Hello!"
+  - "Hi!"
+FlushInterval: 1000

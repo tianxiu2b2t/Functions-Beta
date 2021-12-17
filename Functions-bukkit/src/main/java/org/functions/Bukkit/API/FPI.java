@@ -17,6 +17,7 @@ import org.functions.Bukkit.API.serverPing.ServerAddress;
 import org.functions.Bukkit.API.serverPing.ServerPinger;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.PlayerManager;
+import org.functions.Bukkit.Main.Server.FWorld;
 import org.functions.Bukkit.Main.functions.AnimationManager;
 import org.functions.Bukkit.Main.functions.FunctionsRules;
 import org.functions.Bukkit.Main.functions.Group;
@@ -233,24 +234,34 @@ public class FPI {
 
     /************************* PlaceholderAPIHook **********************************/
     public String onRequest(OfflinePlayer player, String params) {
+        if (params.equalsIgnoreCase("%lines%")) {
+            return "\n";
+        }
         PlayerManager pm = Functions.instance.getPlayerManager();
-        if (params.equalsIgnoreCase("server_day")){
-            return getInstance().getFServer().getServerStringForDays()+"";
+        if (params.equalsIgnoreCase("server_day")) {
+            return getInstance().getFServer().getServerStringForDays() + "";
         }
-        if (params.equalsIgnoreCase("server_hour")){
-            return getInstance().getFServer().getServerStringForHours()+"";
+        if (params.equalsIgnoreCase("server_hour")) {
+            return getInstance().getFServer().getServerStringForHours() + "";
         }
-        if (params.equalsIgnoreCase("server_minute")){
-            return getInstance().getFServer().getServerStringForMinutes()+"";
+        if (params.equalsIgnoreCase("server_minute")) {
+            return getInstance().getFServer().getServerStringForMinutes() + "";
         }
-        if (params.equalsIgnoreCase("server_second")){
-            return getInstance().getFServer().getServerStringForSeconds()+"";
+        if (params.equalsIgnoreCase("server_second")) {
+            return getInstance().getFServer().getServerStringForSeconds() + "";
         }
-        if (params.equalsIgnoreCase("server_nanasecound")){
-            return getInstance().getFServer().getServerStringForNanaSeconds()+"";
+        if (params.equalsIgnoreCase("server_nanasecound")) {
+            return getInstance().getFServer().getServerStringForNanaSeconds() + "";
         }
         if (params.equalsIgnoreCase("server_start")) {
-            return replace(getInstance().getConfiguration().getSettings().getString("ServerStart","%server_day% %server_hour%:%server_minute%:%server_second%"),null);
+            return replace(getInstance().getConfiguration().getSettings().getString("ServerStart", "%server_day% %server_hour%:%server_minute%:%server_second%"), null);
+        }
+        for (FWorld e : getInstance().getFServer().getWorlds()) {
+            if (params.equalsIgnoreCase("world_" + e.getWorld().getName().toLowerCase() + "_day")) {
+                return e.getWorldStringForDayTime();
+            } else if (params.equalsIgnoreCase("world_" + e.getWorld().getName().toLowerCase() + "_time")) {
+                return e.getWorldStringForDayTime();
+            }
         }
         if (params.equalsIgnoreCase("economy")) {
             return pm.getUser(player.getUniqueId()).getEconomy().display();
@@ -291,7 +302,10 @@ public class FPI {
         if (params.startsWith("animation:")) {
             return replace(AnimationManager.getAnimation(params.replace("animation:","")).getAnimation(),player.getPlayer());
         }
-        return "This is params is unknown(I author is unhappy.)";
+        return "";//"This is params is unknown(I author is unhappy.)";
+    }
+    public String replaceJson(String text) {
+        return text.replace("\\","\\\\").replace("\"","\\\"");
     }
     public String round(double min, double max) {
         return Double.toString(round(min / max * 100.0D, 1));

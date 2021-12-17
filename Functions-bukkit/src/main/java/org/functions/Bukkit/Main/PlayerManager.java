@@ -39,4 +39,11 @@ public class PlayerManager implements Runnable {
         }
         return false;
     }
+    public void sendAllTellRaw(String text) {
+        getUsers().forEach((u)->{u.sendTellRaw(text);});
+    }
+    @Deprecated
+    public void sendParseAllTellRaw(String text) {
+        getUsers().forEach((u)->{u.sendParseTellRaw(text);});
+    }
 }

@@ -41,17 +41,21 @@ public class sendPacketToClient implements Runnable {
             }
             tab.send(Header.toString(), Footer.toString(), Functions.instance.getConfiguration().getSettings().getString("PlayerList"));
             bar = new Utils.ActionBar(p);
-            bar.send(Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message",""));
+            if (Functions.instance.getConfiguration().getSettings().get("ActionBar")!=null) {
+                if (Functions.instance.getConfiguration().getSettings().get("ActionBar.Message")!=null) bar.send(Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
+            }
             board = new Utils.ScoreBoard(p);
             List<String> ls = new ArrayList<>();
-            ls.add(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines"));
-            if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").startsWith("[")) {
-                if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").endsWith("]")) {
-                    ls.clear();
-                    ls = Functions.instance.getConfiguration().getSettings().getStringList("ScoreBoard.Lines");
+            if (Functions.instance.getConfiguration().getSettings().get("ScoreBoard")!=null) {
+                ls.add(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines",""));
+                if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").startsWith("[")) {
+                    if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").endsWith("]")) {
+                        ls.clear();
+                        ls = Functions.instance.getConfiguration().getSettings().getStringList("ScoreBoard.Lines");
+                    }
                 }
+                board.sendAll(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.DisplayName", "Functions"), ls);
             }
-            board.sendAll(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.DisplayName","Functions"),ls);
             for (Player o : Bukkit.getOnlinePlayers()) {
                 if (Functions.instance.getPlayerManager().getUser(p.getUniqueId()).isHiding()) o.hidePlayer(Functions.instance,p);
                 else o.showPlayer(Functions.instance,p);

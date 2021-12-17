@@ -72,7 +72,6 @@ public class Commands {
                         if (url.startsWith(packageName + ".")) {
                             Class<?> c = Class.forName(url);
                             c.getMethod("run", null).invoke(c.newInstance(), null);
-
                         }
                 }
             }

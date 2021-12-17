@@ -25,7 +25,7 @@ public class Configuration {
         DecimalFormat decimalFormat = new DecimalFormat( ".00" ); //构造方法的字符格式这里如果小数不足2位,会以0补足.
         return decimalFormat.format(getFileLength(getDataFolder()).doubleValue() / 1024 / 1024) + " MB";
     }
-        public Long getFileLength(File dir) {
+    public Long getFileLength(File dir) {
 
             //1,定义一个求和变量
 
@@ -80,6 +80,7 @@ public class Configuration {
         readGroups();
         onAnimation();
         readAnimation();
+        onServerTitle();
     }
 
     public void reload() {
@@ -156,6 +157,11 @@ public class Configuration {
             return new String(bs, newCharset);
         }
         return null;
+    }
+    public FileConfiguration title = new YamlConfiguration();
+    private File ftitle = new File(getDataFolder(),"Title.yml");
+    public void onServerTitle() {
+        onLoadFile(ftitle, title, "Title.yml", false);
     }
 
     public void onQQAddress() {

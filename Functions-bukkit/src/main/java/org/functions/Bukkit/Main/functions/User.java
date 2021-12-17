@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Main.functions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.ClickPerSeconds;
@@ -20,6 +21,7 @@ public class User {
     String select;
     Group group = null;
     public String select_all = "SELECT * FROM " + Functions.instance.getTable("Users");
+    Utils.sendTellRaw send;
     public User(UUID uuid) {
         this.uuid = uuid;
         if (!exists()) {
@@ -31,7 +33,7 @@ public class User {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
     public void setPermissions(List<String> permissions) {
         db.execute("UPDATE " + table + " SET Permissions='" + permissions.toString() + "' where UUID='" + uuid.toString() + "'");
@@ -158,5 +160,17 @@ public class User {
             e.printStackTrace();
         }
         return false;
+    }
+    public String getDisplayName() {
+        return getPrefix() + getPlayer().getName() + getSuffix();
+    }
+    public void sendTellRaw(String text) {
+        send.send(text);
+    }
+    public void sendParseTellRaw(String text) {
+        send.send(send.parse(text));
+    }
+    public String getJsonChatDisplayName() {
+        return "{\"text\":\"" + getDisplayName() + "%lines%UUID: " + uuid.toString() + "%lines%金币" + getEconomy().getBalance() + "%lines%银行" + getBank().getBalance() + "\"}";
     }
 }
