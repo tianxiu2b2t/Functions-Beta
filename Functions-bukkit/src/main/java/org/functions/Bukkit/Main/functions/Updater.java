@@ -33,6 +33,7 @@ public class Updater {
             pre = Integer.parseInt(br.readLine());
             check_can = true;
         } catch (IOException | NumberFormatException e) {
+            check = 20*60*Functions.instance.getConfig().getLong("Updater.minutes",5);
             e.printStackTrace();
         }
     }
@@ -56,6 +57,7 @@ public class Updater {
             }
             new_can = true;
         } catch (IOException e) {
+            check = 20*60*Functions.instance.getConfig().getLong("Updater.minutes",5);
             e.printStackTrace();
         }
     }
@@ -77,6 +79,7 @@ public class Updater {
             }
             info_can = true;
         } catch (IOException | NumberFormatException e) {
+            check = 20*60*Functions.instance.getConfig().getLong("Updater.minutes",5);
             e.printStackTrace();
         }
     }
@@ -91,6 +94,7 @@ public class Updater {
                 nowversion = Integer.parseInt(br.readLine());
                 now_can = true;
             } catch (IOException | NumberFormatException e) {
+                check = 20*60*Functions.instance.getConfig().getLong("Updater.minutes",5);
                 e.printStackTrace();
             }
         }

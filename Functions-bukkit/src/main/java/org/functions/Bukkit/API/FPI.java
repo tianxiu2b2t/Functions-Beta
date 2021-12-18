@@ -1,10 +1,7 @@
 package org.functions.Bukkit.API;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
@@ -151,15 +148,31 @@ public class FPI {
         }
         return text;
     }
-    public String NoPrefixPutLanguage(String path, Object Default) {
-        putLanguage(path,Default,null);
-        return replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()),null);
+    public String NoPrefixPutLanguage(String path, Object Default, Player player) {
+        if (Functions.instance.getConfiguration().getLanguage().getString(path)==null) {
+            Functions.instance.getConfiguration().getLanguage().addDefault(path, Default);
+            Functions.instance.getConfiguration().getLanguage().options().copyDefaults(true);
+            Functions.instance.getConfiguration().getLanguage().options().copyHeader();
+            //Functions.instance.getConfiguration().getLanguage().set(path, Default);
+            Functions.instance.getConfiguration().saveLanguage();
+            //return Functions.instance.Prefix() + replace(Default);
+        }
+        String text = replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()),player);
+        if (player != null) {
+            if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
+                return PlaceholderAPI.setPlaceholders(player, text);
+            }
+        }
+        return text;
     }
     public String noPermission(String permission) {
         return putLanguage("NotPermission","&c你没有该 %permission% 权限！",null).replace("%permission%",permission);
     }
     public String changeBooleanToText(boolean Boolean) {
-        return Boolean ? NoPrefixPutLanguage("TextTrue","&a是") : NoPrefixPutLanguage("TextFalse","&c否");
+        if (Boolean) {
+            return NoPrefixPutLanguage("TextTrue","&a是",null);
+        }
+        return NoPrefixPutLanguage("TextFalse","&c否",null);
     }
     public String onDisallowCommand(String cmd) {
          return putLanguage("DisallowCommand","&c%command% 这条指令已被管理员禁止！",null).replace("%command%",cmd);

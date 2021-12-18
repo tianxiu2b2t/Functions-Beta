@@ -4,14 +4,12 @@ import com.google.gson.*;
 import net.minecraft.server.v1_14_R1.IChatBaseComponent;
 import net.minecraft.server.v1_14_R1.PacketPlayOutChat;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.*;
+import org.functions.Bukkit.API.WorldBlock;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.PlayerManager;
 
@@ -959,6 +957,178 @@ public class Utils {
 
         public static String getPackageVersion() {
             return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        }
+    }
+    public static class Fill {
+        public static String replace(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,Material need, Material replace) {
+            String s = "";
+            WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));
+            WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
+            WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
+            WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
+            Functions.instance.print(s1.getX() + " " + s2.getX());
+            int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
+            int status = 0;
+            int air = 0;
+            if (s1.getY() >= -64 && s2.getY() < world.getMaxHeight()) {
+                World w = world;
+                for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
+                    for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
+                        for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
+                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            boolean is = true;
+                            for (Material f : anti) {
+                                if (wb.getBlock() == null || wb.getBlock().getType() == f || wb.getBlock().getType() == replace) {
+                                    air++;
+                                    is = false;
+                                }
+                            }
+                            if (is) {
+                                if (wb.getBlock().getType() == need) {
+                                    status = status + wb.set(replace);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            s = "{\"pos1\":\"" + t1.getX() + "," + t1.getY() + "," + t1.getZ() + "\"},{\"pos2\":\"" + t2.getX() + "," + t2.getY() + "," + t2.getZ() + "\"},{\"fillsize\":\"" + size + "\"},{\"successfill\"" + status + "\"},{\"air\"" + air + "\"}";
+            return s;
+        }
+        public static String destroy(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti) {
+            String s = "";
+            WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));
+            WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
+            WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
+            WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
+            Functions.instance.print(s1.getX() + " " + s2.getX());
+            int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
+            int status = 0;
+            int air = 0;
+            if (s1.getY() >= -64 && s2.getY() < world.getMaxHeight()) {
+                World w = world;
+                for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
+                    for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
+                        for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
+                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            boolean is = true;
+                            for (Material f : anti) {
+                                if (wb.getBlock() == null || wb.getBlock().getType() == f || wb.getBlock().getType() == Material.AIR) {
+                                    air++;
+                                    is = false;
+                                }
+                            }
+                            if (is) {
+                                status = status + wb.destroy();
+                            }
+                        }
+                    }
+                }
+            }
+            s = "{\"pos1\":\"" + t1.getX() + "," + t1.getY() + "," + t1.getZ() + "\"},{\"pos2\":\"" + t2.getX() + "," + t2.getY() + "," + t2.getZ() + "\"},{\"fillsize\":\"" + size + "\"},{\"successfill\"" + status + "\"},{\"air\"" + air + "\"}";
+            return s;
+        }
+        public static String Quietdestroy(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti) {
+            String s = "";
+            WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));
+            WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
+            WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
+            WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
+            Functions.instance.print(s1.getX() + " " + s2.getX());
+            int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
+            int status = 0;
+            int air = 0;
+            if (s1.getY() >= -64 && s2.getY() < world.getMaxHeight()) {
+                World w = world;
+                for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
+                    for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
+                        for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
+                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            boolean is = true;
+                            for (Material f : anti) {
+                                if (wb.getBlock() == null || wb.getBlock().getType() == f || wb.getBlock().getType() == Material.AIR) {
+                                    air++;
+                                    is = false;
+                                }
+                            }
+                            if (is) {
+                                status = status + wb.QuietDestroy();
+                            }
+                        }
+                    }
+                }
+            }
+            s = "{\"pos1\":\"" + t1.getX() + "," + t1.getY() + "," + t1.getZ() + "\"},{\"pos2\":\"" + t2.getX() + "," + t2.getY() + "," + t2.getZ() + "\"},{\"fillsize\":\"" + size + "\"},{\"successfill\"" + status + "\"},{\"air\"" + air + "\"}";
+            return s;
+        }
+        public static String destroy(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,boolean quiet) {
+            return quiet ? destroy(world, x, y, z, dx, dy, dz, anti) : Quietdestroy(world, x, y, z, dx, dy, dz, anti);
+        }
+        public static String keep(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,Material keep) {
+            String s = "";
+            WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));
+            WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
+            WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
+            WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
+            Functions.instance.print(s1.getX() + " " + s2.getX());
+            int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
+            int status = 0;
+            int air = 0;
+            if (s1.getY() >= -64 && s2.getY() < world.getMaxHeight()) {
+                World w = world;
+                for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
+                    for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
+                        for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
+                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            boolean is = true;
+                            for (Material f : anti) {
+                                if (wb.getBlock() != null || wb.getBlock().getType() == f || wb.getBlock().getType() == keep) {
+                                    air++;
+                                    is = false;
+                                }
+                            }
+                            if (is) {
+                                status = status + wb.set(keep);
+                            }
+                        }
+                    }
+                }
+            }
+            s = "{\"pos1\":\"" + t1.getX() + "," + t1.getY() + "," + t1.getZ() + "\"},{\"pos2\":\"" + t2.getX() + "," + t2.getY() + "," + t2.getZ() + "\"},{\"fillsize\":\"" + size + "\"},{\"successfill\"" + status + "\"},{\"air\"" + air + "\"}";
+            return s;
+        }
+        public static String fill(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,String mode,Material block) {
+            String s = "";
+            WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));
+            WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
+            WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
+            WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
+            Functions.instance.print(s1.getX() + " " + s2.getX());
+            int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
+            int status = 0;
+            int air = 0;
+            if (s1.getY() >= -64 && s2.getY() < world.getMaxHeight()) {
+                World w = world;
+                for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
+                    for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
+                        for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
+                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            boolean is = true;
+                            for (Material f : anti) {
+                                if (wb.getBlock() == null || wb.getBlock().getType() == f || wb.getBlock().getType() == block) {
+                                    air++;
+                                    is = false;
+                                }
+                            }
+                            if (is) {
+                                status = status + wb.set(block);
+                            }
+                        }
+                    }
+                }
+            }
+            s = "{\"pos1\":\"" + t1.getX() + "," + t1.getY() + "," + t1.getZ() + "\"},{\"pos2\":\"" + t2.getX() + "," + t2.getY() + "," + t2.getZ() + "\"},{\"fillsize\":\"" + size + "\"},{\"successfill\"" + status + "\"},{\"air\"" + air + "\"}";
+            return s;
         }
     }
 }

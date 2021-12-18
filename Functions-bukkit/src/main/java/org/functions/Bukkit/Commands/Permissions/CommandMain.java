@@ -1,6 +1,7 @@
 package org.functions.Bukkit.Commands.Permissions;
 
 import com.google.gson.JsonParser;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -12,10 +13,7 @@ import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 import org.functions.Bukkit.Main.functions.Utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class CommandMain implements TabExecutor {
     public void run() {
@@ -41,7 +39,7 @@ public class CommandMain implements TabExecutor {
             }
             Functions.instance.getServer().reload();
             start = System.currentTimeMillis();
-            sender.sendMessage("&a成功重载服务器！ (%time-ms% ms)".replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
+            sender.sendMessage("§3[§bFunctions-ReloadServerAPI§3] §a成功重载服务器！ (%time-ms% ms)".replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
         }
         if (args[0].equalsIgnoreCase("reloadData")) {
@@ -54,9 +52,9 @@ public class CommandMain implements TabExecutor {
             return true;
         }
         if (sender instanceof Player) {
-            Utils.sendTellRaw raw = new Utils.sendTellRaw(((Player) sender).getPlayer());
-            raw.send(args[0]);
-            raw.send(raw.parse(args[0]));
+            List<Material> a = new ArrayList<>();
+            a.add(Material.BEDROCK);
+            sender.sendMessage(Utils.Fill.destroy(((Player) sender).getWorld(),Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),a,true));
         }
         return true;
     }
