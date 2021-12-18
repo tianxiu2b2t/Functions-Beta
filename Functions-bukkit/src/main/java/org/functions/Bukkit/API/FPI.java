@@ -107,6 +107,15 @@ public class FPI {
     public FunctionsRules.Type getRulesType(String name) {
         return FunctionsRules.Type.valueOf(name);
     }
+    public String replace(Object msg,Player player,String[] option,String[] value) {
+        String m = msg.toString();
+        if (option.length == value.length) {
+            for (int i = 0; i < option.length; i++) {
+                m = m.replace(option[i],value[i]);
+            }
+        }
+        return replace(m,player);
+    }
     public String replace(Object msg,Player player) {
         String m = msg.toString();
         if (player!=null) {
@@ -233,6 +242,16 @@ public class FPI {
     }
 
     /************************* PlaceholderAPIHook **********************************/
+    public String onRequest(OfflinePlayer player, String params,String[] option,String[] value) {
+        if (option.length != value.length) {
+            return onRequest(player,params);
+        }
+        String s = params;
+        for (int i = 0; i < option.length;i++) {
+            s = s.replace(option[i],value[i]);
+        }
+        return onRequest(player,params);
+    }
     public String onRequest(OfflinePlayer player, String params) {
         if (params.equalsIgnoreCase("%lines%")) {
             return "\n";

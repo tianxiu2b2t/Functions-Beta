@@ -72,4 +72,16 @@ public class FAsyncPlayerChatEvent implements Cancellable {
         }
         return "{\"text\":\"" + format.replace("%player_display%",Functions.instance.getAPI().replaceJson(user.getJsonChatDisplayName())).replace("%message%",Functions.instance.getAPI().replace(message,p)) + "\"}";
     }
+    public String getRawChat() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (message.contains(user.getGroup().atPlayer().replace("%player%",p.getName()))) {
+                message = message.replace("@" + p.getName(),user.getGroup().atPlayer().replace("%player%",p.getName()));
+            } else if (message.contains("@" + p.getName())) {
+                message = message.replace("@" + p.getName(),user.getGroup().atPlayer().replace("%player%",p.getName()));
+            } else if (message.contains(p.getName())) {
+                message = message.replace(p.getName(),user.getGroup().atPlayer().replace("%player%",p.getName()));
+            }
+        }
+        return "{\"text\":\"" + Functions.instance.getAPI().replace(format.replace("%message%",message),p) + "\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + Functions.instance.getAPI().replaceJson(user.getJsonChatDisplayName()) +"\"}}";
+    }
 }
