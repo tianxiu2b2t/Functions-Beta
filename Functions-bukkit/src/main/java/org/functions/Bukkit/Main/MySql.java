@@ -78,4 +78,7 @@ public class MySql implements DataBase {
     public void deleteFile() {
 
     }
+    public boolean parseBoolean(int i) {
+        return i != 0;
+    }
 }

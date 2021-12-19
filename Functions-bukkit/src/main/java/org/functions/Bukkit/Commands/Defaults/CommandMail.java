@@ -165,14 +165,14 @@ public class CommandMail implements TabExecutor {
             }
         }
         if (fpi.hasAliases("mailcode", alias)) {
-            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mailcode")) {
+            if (PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mailcode")) {
                 if (account.existsMail()) {
                     ls.add("验证码");
                 }
             }
         }
         if (fpi.hasAliases("mailogin", alias)) {
-            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mailogin")) {
+            if (PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.mailogin")) {
                 if (account.existsMail()) {
                     ls.add("验证码");
                 }

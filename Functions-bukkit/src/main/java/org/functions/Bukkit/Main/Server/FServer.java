@@ -2,6 +2,8 @@ package org.functions.Bukkit.Main.Server;
 
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +16,7 @@ import java.util.UUID;
 public class FServer {
     List<FWorld> lw = new ArrayList<>();
     LocalTime starts = LocalTime.now();
+    //LocalTime starts = LocalTime.of(13,0);
     long start = System.currentTimeMillis();
     Server server;
     public FServer(Server server) {
@@ -35,13 +38,13 @@ public class FServer {
         return (int)getServerTime() / (1000 * 24 * 60 * 60);
     }
     public long getServerStringForHours() {
-        return ChronoUnit.HOURS.between(starts,LocalTime.now());
+        return ChronoUnit.HOURS.between(starts,LocalTime.now()) % 24;
     }
     public long getServerStringForMinutes() {
-        return ChronoUnit.MINUTES.between(starts,LocalTime.now());
+        return ChronoUnit.MINUTES.between(starts,LocalTime.now()) % 60 * 60 / 60;
     }
     public long getServerStringForSeconds() {
-        return ChronoUnit.SECONDS.between(starts,LocalTime.now());
+        return ChronoUnit.SECONDS.between(starts,LocalTime.now()) % 60;
     }
     public long getServerStringForNanaSeconds() {
         return ChronoUnit.NANOS.between(starts,LocalTime.now());
@@ -97,5 +100,41 @@ public class FServer {
 //        System.out.println(total - free);
 //        System.out.println(ReallyMemory);
         runtime.gc();
+    }
+    public int getCountEntities() {
+        return getEntities().size();
+    }
+    public int getCountEntities(World world) {
+        return getWorldEntities(world).size();
+    }
+    public int getCountItems() {
+        return getItems().size();
+    }
+    public int getCountItems(World world) {
+        return getWorldItems(world).size();
+    }
+    public List<Entity> getWorldEntities(World world) {
+        return world.getEntities();
+    }
+    public List<Entity> getWorldItems(World world) {
+        List<Entity> ls = new ArrayList<>();
+        for (Entity e : world.getEntities()) {
+            if (e.getType() == EntityType.DROPPED_ITEM) ls.add(e);
+        }
+        return ls;
+    }
+    public List<Entity> getEntities() {
+        List<Entity> ls = new ArrayList<>();
+        server.getWorlds().forEach((w)->{
+            ls.addAll(getWorldEntities(w));
+        });
+        return ls;
+    }
+    public List<Entity> getItems() {
+        List<Entity> ls = new ArrayList<>();
+        server.getWorlds().forEach((w)->{
+            ls.addAll(getWorldItems(w));
+        });
+        return ls;
     }
 }

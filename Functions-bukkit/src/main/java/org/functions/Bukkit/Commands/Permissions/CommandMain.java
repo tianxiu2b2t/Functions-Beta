@@ -51,11 +51,11 @@ public class CommandMain implements TabExecutor {
             sender.sendMessage(Functions.instance.getAPI().putLanguage("ReloadMinecraftData","&a成功重载原版数据！ (%time-ms% ms)",null).replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
         }
-        if (sender instanceof Player) {
-            List<Material> a = new ArrayList<>();
-            a.add(Material.BEDROCK);
-            sender.sendMessage(Utils.Fill.destroy(((Player) sender).getWorld(),Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),a,true));
-        }
+//        if (sender instanceof Player) {
+//            List<Material> a = new ArrayList<>();
+//            a.add(Material.BEDROCK);
+//            sender.sendMessage(Utils.Fill.destroy(((Player) sender).getWorld(),Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),a,true));
+//        }
         return true;
     }
 
@@ -64,10 +64,10 @@ public class CommandMain implements TabExecutor {
         if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reload")) {
             ls.add("reload");
         }
-        if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reloadserver")) {
+        if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reloadserver")) {
             ls.add("reloadserver");
         }
-        if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reloaddata")) {
+        if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.command.permissions.main.reloaddata")) {
             ls.add("reloaddata");
         }
         Collections.sort(ls);

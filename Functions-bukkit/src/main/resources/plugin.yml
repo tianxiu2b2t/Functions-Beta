@@ -3,39 +3,39 @@ version: '${project.version}'
 main: org.functions.Bukkit.Main.Functions
 prefix: Functions
 loadbefore: [ Functions ]
-authors: [ None ]
+authors: [ 2b2ttianxiu ]
 description: None
-website: None
+website: https://gitee.com/tianxiu2b2t/Functions-Beta, https://github.com/tianxiu2b2t/Functions-Beta
 commands:
   functions:
-    description: Functions's Main commands.
+    description: Functions' Main commands.
     aliases: [funs, function]
   login:
-    description: Functions's Accounts login.
+    description: Functions' Accounts login.
     aliases: [l]
   register:
-    description: Functions's Accounts register.
+    description: Functions' Accounts register.
     aliases: [reg]
   bindmail:
-    description: Functions's Accounts bind mail.
+    description: Functions' Accounts bind mail.
     aliases: [bd,changemail,cm]
   recoverpassword:
-    description: Functions's Accounts recover password(recovery password mail code).
+    description: Functions' Accounts recover password(recovery password mail code).
     aliases: [rp]
   mailcode:
-    description: Functions's Accounts mail code(verify code).
+    description: Functions' Accounts mail code(verify code).
     aliases: [mc]
   mailogin:
-    description: Functions's Account mail login.
+    description: Functions' Account mail login.
     aliases: [ml]
   changepassword:
-    description: Functions's Accounts change password.
+    description: Functions' Accounts change password.
     aliases: [cp]
   logout:
-    description: Functions's Accounts log out.
+    description: Functions' Accounts log out.
   accountdelete:
-    description: Functions's Accounts delete.
+    description: Functions' Accounts delete.
     aliases: [accountdel, delaccount]
   autologin:
-    description: Functions's Accounts autologin settings.
+    description: Functions' Accounts autologin settings.
     aliases: [al]

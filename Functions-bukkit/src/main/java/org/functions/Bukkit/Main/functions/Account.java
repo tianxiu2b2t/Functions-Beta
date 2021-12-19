@@ -170,7 +170,7 @@ public class Account {
     }
     public boolean delete() {
         if (exists()) {
-            if (getPlayer()!=null) logout();
+            if (getPlayer().isOnline()) logout();
             db.execute("DELETE FROM " + table + " WHERE UUID='" + uuid.toString() + "'");
             return true;
         }
@@ -218,6 +218,8 @@ public class Account {
     }
     public boolean getAutoLogin() {
         try {
+            System.out.println(Boolean.parseBoolean(db.query(select).getString("AutoLogin")));
+            System.out.println(db.query(select).getString("AutoLogin"));
             return Boolean.parseBoolean(db.query(select).getString("AutoLogin"));
         } catch (SQLException var2) {
             var2.printStackTrace();

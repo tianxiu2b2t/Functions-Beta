@@ -13,4 +13,5 @@ public interface DataBase {
     public boolean changenumber(Integer integer);
     public void disconnect();
     public void deleteFile();
+    public boolean parseBoolean(int i);
 }

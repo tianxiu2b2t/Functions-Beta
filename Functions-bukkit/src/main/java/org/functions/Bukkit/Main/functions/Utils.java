@@ -1,11 +1,8 @@
 package org.functions.Bukkit.Main.functions;
 
 import com.google.gson.*;
-import net.minecraft.server.v1_14_R1.IChatBaseComponent;
-import net.minecraft.server.v1_14_R1.PacketPlayOutChat;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.*;
@@ -1062,7 +1059,7 @@ public class Utils {
             return s;
         }
         public static String destroy(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,boolean quiet) {
-            return quiet ? destroy(world, x, y, z, dx, dy, dz, anti) : Quietdestroy(world, x, y, z, dx, dy, dz, anti);
+            return quiet ? Quietdestroy(world, x, y, z, dx, dy, dz, anti) : destroy(world, x, y, z, dx, dy, dz, anti);
         }
         public static String keep(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,Material keep) {
             String s = "";

@@ -71,7 +71,15 @@ public class Commands {
                         // 条件: 在commands包内，不是子类
                         if (url.startsWith(packageName + ".")) {
                             Class<?> c = Class.forName(url);
-                            c.getMethod("run", null).invoke(c.newInstance(), null);
+                            if (!url.endsWith("anti.class")) {
+                                for (Method e : c.getMethods()) {
+                                    if (e.getName().equals("run")) {
+                                        c.getMethod("run", null).invoke(c.newInstance(), null);
+                                    } else if (e.getName().startsWith("get")) {
+                                        Object cmd = e.invoke(c.newInstance(), null);
+                                    }
+                                }
+                            }
                         }
                 }
             }

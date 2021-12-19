@@ -35,6 +35,32 @@ public class User {
         }
         send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
+    public User(Player player) {
+        this.uuid = player.getUniqueId();
+        if (!exists()) {
+            db.execute("INSERT INTO " + table + " ( UUID ) VALUES ( '" + uuid.toString() + "' )");
+        }
+        select = "SELECT * FROM " + table + " WHERE UUID='" + uuid.toString() + "'";
+        try {
+            group = new Group(db.query(select).getString(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
+    }
+    public User(OfflinePlayer player) {
+        this.uuid = player.getUniqueId();
+        if (!exists()) {
+            db.execute("INSERT INTO " + table + " ( UUID ) VALUES ( '" + uuid.toString() + "' )");
+        }
+        select = "SELECT * FROM " + table + " WHERE UUID='" + uuid.toString() + "'";
+        try {
+            group = new Group(db.query(select).getString(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
+    }
     public void setPermissions(List<String> permissions) {
         db.execute("UPDATE " + table + " SET Permissions='" + permissions.toString() + "' where UUID='" + uuid.toString() + "'");
     }
@@ -116,6 +142,9 @@ public class User {
     public Group getGroup() {
         return group;
     }
+    public void setGroup(String name) {
+        db.execute("UPDATE " + table + " Set 'Group'='" + name + "' where UUID='" + uuid.toString() + "'");
+    }
     public Economy getEconomy() {
         return new Economy(uuid);
     }
@@ -165,10 +194,10 @@ public class User {
         return getPrefix() + getPlayer().getName() + getSuffix();
     }
     public void sendTellRaw(String text) {
-        send.send(text);
+        if (Functions.instance.getServer().getOfflinePlayer(uuid).isOnline()) send.send(text);
     }
     public void sendParseTellRaw(String text) {
-        send.send(send.parse(text));
+        if (Functions.instance.getServer().getOfflinePlayer(uuid).isOnline()) send.send(send.parse(text));
     }
     public String getJsonChatDisplayName() {
         return "{\"text\":\"" + getDisplayName() + "%lines%UUID: " + uuid.toString() + "%lines%金币" + getEconomy().getBalance() + "%lines%银行" + getBank().getBalance() + "\"}";

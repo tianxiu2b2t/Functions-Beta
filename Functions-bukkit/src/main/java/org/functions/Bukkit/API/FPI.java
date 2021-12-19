@@ -115,14 +115,16 @@ public class FPI {
     }
     public String replace(Object msg,Player player) {
         String m = msg.toString();
-        if (player!=null) {
-            String[] s = m.split("%");
-            String temp = "";
-            for (int i = 1; i < s.length; i = i+2) {
-                temp = s[i].replace("functions_","");
+        String[] s = m.split("%");
+        String temp = "";
+        for (int i = 1; i < s.length; i = i+2) {
+            temp = s[i].replace("functions_","");
+            if (!onRequest(player,temp).equalsIgnoreCase(temp)) {
                 m = m.replace("%"+s[i]+"%",onRequest(player,temp));
             }
-            if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
+        }
+        if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
+            if (player!=null) {
                 m = PlaceholderAPI.setPlaceholders(player, m);
             }
         }
@@ -130,6 +132,9 @@ public class FPI {
     }
     public PingResponse getServerList(ServerAddress address, int timeout) {
         return ServerPinger.fetchData(address, timeout);
+    }
+    public String putLanguage(String path, Object Default, Player player,String[] option,String[] value) {
+        return replace(putLanguage(path, Default, player),player,option,value);
     }
     public String putLanguage(String path, Object Default, Player player) {
         if (Functions.instance.getConfiguration().getLanguage().getString(path)==null) {
@@ -168,11 +173,8 @@ public class FPI {
     public String noPermission(String permission) {
         return putLanguage("NotPermission","&c你没有该 %permission% 权限！",null).replace("%permission%",permission);
     }
-    public String changeBooleanToText(boolean Boolean) {
-        if (Boolean) {
-            return NoPrefixPutLanguage("TextTrue","&a是",null);
-        }
-        return NoPrefixPutLanguage("TextFalse","&c否",null);
+    public String changeBooleanToText(boolean is) {
+        return is ? NoPrefixPutLanguage("TextTrue","&a是",null) : NoPrefixPutLanguage("TextFalse","&c否",null);
     }
     public String onDisallowCommand(String cmd) {
          return putLanguage("DisallowCommand","&c%command% 这条指令已被管理员禁止！",null).replace("%command%",cmd);
@@ -269,7 +271,6 @@ public class FPI {
         if (params.equalsIgnoreCase("%lines%")) {
             return "\n";
         }
-        PlayerManager pm = Functions.instance.getPlayerManager();
         if (params.equalsIgnoreCase("server_day")) {
             return getInstance().getFServer().getServerStringForDays() + "";
         }
@@ -295,20 +296,32 @@ public class FPI {
                 return e.getWorldStringForDayTime();
             }
         }
-        if (params.equalsIgnoreCase("economy")) {
-            return pm.getUser(player.getUniqueId()).getEconomy().display();
-        }
-        if (params.equalsIgnoreCase("bank")) {
-            return pm.getUser(player.getUniqueId()).getBank().display();
-        }
-        if (params.equalsIgnoreCase("prefix")) {
-            return pm.getUser(player.getUniqueId()).getPrefix();
-        }
-        if (params.equalsIgnoreCase("player_display")) {
-            return pm.getUser(player.getUniqueId()).getPrefix() + player.getName() + pm.getUser(player.getUniqueId()).getSuffix() + "&r";
-        }
-        if (params.equalsIgnoreCase("suffix")) {
-            return pm.getUser(player.getUniqueId()).getSuffix();
+        if (player!=null) {
+            PlayerManager pm = Functions.instance.getPlayerManager();
+            if (params.equalsIgnoreCase("economy")) {
+                return pm.getUser(player.getUniqueId()).getEconomy().display();
+            }
+            if (params.equalsIgnoreCase("bank")) {
+                return pm.getUser(player.getUniqueId()).getBank().display();
+            }
+            if (params.equalsIgnoreCase("prefix")) {
+                return pm.getUser(player.getUniqueId()).getPrefix();
+            }
+            if (params.equalsIgnoreCase("player")) {
+                return player.getName();
+            }
+            if (params.equalsIgnoreCase("player_display")) {
+                return pm.getUser(player.getUniqueId()).getPrefix() + player.getName() + pm.getUser(player.getUniqueId()).getSuffix() + "&r";
+            }
+            if (params.equalsIgnoreCase("suffix")) {
+                return pm.getUser(player.getUniqueId()).getSuffix();
+            }
+            if (params.equalsIgnoreCase("cps")) {
+                return pm.getUser(player.getUniqueId()).getCPS().getCountCPS()+"";
+            }
+            if (params.equalsIgnoreCase("max_cps")) {
+                return pm.getUser(player.getUniqueId()).getCPS().getMaxCPS()+"";
+            }
         }
         if (params.equalsIgnoreCase("tps")) {
             return Utils.TPS.getTPS();
@@ -325,16 +338,10 @@ public class FPI {
         if (params.equalsIgnoreCase("ping")) {
             return new Utils.Ping(player.getPlayer()).toString();
         }
-        if (params.equalsIgnoreCase("cps")) {
-            return pm.getUser(player.getUniqueId()).getCPS().getCountCPS()+"";
-        }
-        if (params.equalsIgnoreCase("max_cps")) {
-            return pm.getUser(player.getUniqueId()).getCPS().getMaxCPS()+"";
-        }
         if (params.startsWith("animation:")) {
             return replace(AnimationManager.getAnimation(params.replace("animation:","")).getAnimation(),player.getPlayer());
         }
-        return "";//"This is params is unknown(I author is unhappy.)";
+        return params;//"This is params is unknown(I author is unhappy.)";
     }
     public String replaceJson(String text) {
         return text.replace("\\","\\\\").replace("\"","\\\"");

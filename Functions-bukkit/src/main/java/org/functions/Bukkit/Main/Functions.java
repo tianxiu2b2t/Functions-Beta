@@ -69,7 +69,7 @@ public final class Functions extends JavaPlugin {
 
         }
 
-        database.execute("create table if not exists " + getTable("Accounts") + " ( Name TEXT, LowerName TEXT, UUID TEXT, Password TEXT, IP TEXT, AutoLogin BOOLEAN DEFAULT false, RegisterTime DEFAULT CURRENT_TIMESTAMP, Mail TEXT, Position TEXT, GameMode TEXT, AllowFight BOOLEAN Default false)");
+        database.execute("create table if not exists " + getTable("Accounts") + " ( Name TEXT, LowerName TEXT, UUID TEXT, Password TEXT, IP TEXT, AutoLogin TEXT DEFAULT false, RegisterTime DEFAULT CURRENT_TIMESTAMP, Mail TEXT, Position TEXT, GameMode TEXT, AllowFight TEXT Default false)");
         database.execute("create table if not exists " + getTable("Rules") + " ( Rules TEXT, Enable BOOLEAN DEFAULT true )");
         database.execute("create table if not exists " + getTable("Spawn") + " ( Name TEXT, Location TEXT )");
         database.execute("create table if not exists " + getTable("Economy") + " ( UUID TEXT, Economy DOUBLE DEFAULT 0 , Bank DOUBLE DEFAULT 0 )");
@@ -147,9 +147,9 @@ public final class Functions extends JavaPlugin {
     public void runScheduler() {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
+        //getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, pm, 0, 0);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
+        //getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new AnimationsTask(), 0, 0);
     }
     public void print(Object text) {

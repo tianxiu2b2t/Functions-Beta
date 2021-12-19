@@ -29,6 +29,9 @@ atPlayer: "&2@%player%&r"
     public Group(String group) {
         this.group = Functions.instance.getConfiguration().groups.get(group);
     }
+    public String getGroupName() {
+        return group.getString("Group","");
+    }
 
     public FileConfiguration getGroup() {
         return group;
@@ -48,10 +51,128 @@ atPlayer: "&2@%player%&r"
     public String getSuffix() {
         return group.getString("Suffix","");
     }
-        public List<String> getAllPermissions() {
+    public void setPrefix(String name) {
+        group.set("Prefix",name);
+    }
+    public void setSuffix(String name) {
+        group.set("Suffix",name);
+    }
+    public List<String> getPrefixes() {
+        return group.getStringList("Prefixes");
+    }
+    public List<String> getSuffixes() {
+        return group.getStringList("Suffixes");
+    }
+    public void setPrefixes(List<String> prefixes) {
+        group.set("Prefixes",prefixes);
+        save();
+    }
+    public void setSuffixes(List<String> suffixes) {
+        group.set("Suffixes",suffixes);
+        save();
+    }
+    public boolean addPrefixes(String name) {
+        boolean is = false;
+        for (String s : getPrefixes()) {
+            if (s.equalsIgnoreCase(name)) {
+                is = true;
+                break;
+            }
+        }
+        if (is) {
+            List<String> ls = getPrefixes();
+            ls.add(name);
+            setPrefixes(ls);
+        }
+        return is;
+    }
+    public boolean addSuffixes(String name) {
+        boolean is = false;
+        for (String s : getSuffixes()) {
+            if (s.equalsIgnoreCase(name)) {
+                is = true;
+                break;
+            }
+        }
+        if (is) {
+            List<String> ls = getSuffixes();
+            ls.add(name);
+            setPrefixes(ls);
+        }
+        return is;
+    }
+    public boolean removePrefixes(String name) {
+        boolean is = true;
+        for (String s : getPrefixes()) {
+            if (!s.equalsIgnoreCase(name)) {
+                is = false;
+                break;
+            }
+        }
+        if (is) {
+            List<String> ls = getPrefixes();
+            ls.add(name);
+            setPrefixes(ls);
+        }
+        return is;
+    }
+    public boolean removeSuffixes(String name) {
+        boolean is = true;
+        for (String s : getSuffixes()) {
+            if (!s.equalsIgnoreCase(name)) {
+                is = false;
+                break;
+            }
+        }
+        if (is) {
+            List<String> ls = getSuffixes();
+            ls.add(name);
+            setPrefixes(ls);
+        }
+        return is;
+    }
+    public List<String> getAllPermissions() {
             return group.getStringList("Permissions");
         }
-        public List<String> getPermissions() {
+    public void setAllPermissions(List<String> permissions) {
+        group.set("Permissions",permissions);
+        save();
+    }
+    public boolean addAllPermissions(String name) {
+        boolean is = true;
+        for (String e : getAllPermissions()) {
+            if (e.equalsIgnoreCase(name)) {
+                is = false;
+                break;
+            }
+        }
+        if (is) {
+            List<String> ls = getAllPermissions();
+            ls.add(name);
+            setAllPermissions(ls);
+        }
+        return is;
+    }
+    public boolean removeAllPermissions(String name) {
+        boolean is = false;
+        for (String e : getAllPermissions()) {
+            if (e.equalsIgnoreCase(name)) {
+                is = true;
+                break;
+            }
+        }
+        if (is) {
+            List<String> ls = getAllPermissions();
+            ls.remove(name);
+            setAllPermissions(ls);
+        }
+        return is;
+    }
+    public void save() {
+        Functions.instance.getConfiguration().saveGroups();
+    }
+
+    public List<String> getPermissions() {
             List<String> temp = new ArrayList<>();
             for (String s : getAllPermissions()) {
                 if (s.startsWith("functions")) {

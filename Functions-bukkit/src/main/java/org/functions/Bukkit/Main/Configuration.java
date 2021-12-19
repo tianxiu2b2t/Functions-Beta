@@ -393,7 +393,6 @@ public class Configuration {
         return commands;
     }
 
-    public LinkedHashMap<String, FileConfiguration> groups = new LinkedHashMap<>();
 
     public void onGroups() {
         File file;
@@ -425,30 +424,43 @@ public class Configuration {
                     }
                 }
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     FileConfiguration groupc = new YamlConfiguration();
     public List<String> group_Name = new ArrayList<>();
+    LinkedHashMap<String, File> fileGroup = new LinkedHashMap<>();
+    public LinkedHashMap<String, FileConfiguration> groups = new LinkedHashMap<>();
     public void readGroups() {
         groups.clear();
         group_Name.clear();
+        fileGroup.clear();
         String path = getDataFolder()+"";
         path = path.replace("\\","/");
         File[] files = (new File( path+ "/Groups")).listFiles();
+        if (files == null) onGroups();
         for (File file : files) {
             try {
                 FileConfiguration group = new YamlConfiguration();
                 group.load(file);
                 groups.put(group.getString("Group"),group);
                 group_Name.add(group.getString("Group"));
+                fileGroup.put(group.getString("Group"),file);
             } catch (IOException | InvalidConfigurationException e) {
                 e.printStackTrace();
             }
         }
+    }
+    public void saveGroups() {
+        fileGroup.forEach((n,f)->{
+            try {
+                groups.get(n).save(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        readGroups();
     }
     public void onAnimation() {
         File file;
