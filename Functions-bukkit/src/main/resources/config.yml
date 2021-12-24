@@ -9,7 +9,7 @@ Prefix: §3[§bFunctions§3] §r
 #服务器名字
 ServerName: "Unknown Server"
 #邮箱找回密码服务器名字
-RecoveryPasswordServerName: "Recovery Password Unknow Server"
+RecoveryPasswordServerName: "Recovery Password Unknown Server"
 #语言配置
 #如果没有语言文字则生成中文
 Language: zh-cn

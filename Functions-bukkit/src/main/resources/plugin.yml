@@ -39,3 +39,7 @@ commands:
   autologin:
     description: Functions' Accounts autologin settings.
     aliases: [al]
+  group:
+    description: Functions' Group controls.
+  user:
+    description: Functions' User controls.

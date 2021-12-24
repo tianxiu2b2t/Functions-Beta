@@ -5,6 +5,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.API.WorldBlock;
 import org.functions.Bukkit.Main.DataBase;
 import org.functions.Bukkit.Main.Functions;
 
@@ -82,7 +83,10 @@ public class Account {
         return getSpawnPosition();
     }
     public Location getSpawnPosition() {
-        return Functions.instance.getAPI().formatLocation(Functions.instance.getConfiguration().getSettings().getString("Login.Spawn",Functions.instance.getAPI().changeLocationToString(getPlayer().getWorld().getSpawnLocation())));
+        Location position = getPlayer().getWorld().getSpawnLocation();
+        WorldBlock worldBlock = new WorldBlock(position);
+        position.setY(worldBlock.onGroundY());
+        return Functions.instance.getAPI().formatLocation(Functions.instance.getConfiguration().getSettings().getString("Login.Spawn",Functions.instance.getAPI().changeLocationToString(position)));
 
     }
     public boolean teleportSpawn() {

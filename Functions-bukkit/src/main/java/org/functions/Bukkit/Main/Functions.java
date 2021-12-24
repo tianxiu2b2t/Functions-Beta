@@ -147,9 +147,9 @@ public final class Functions extends JavaPlugin {
     public void runScheduler() {
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
-        //getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, pm, 0, 0);
-        //getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new AnimationsTask(), 0, 0);
     }
     public void print(Object text) {

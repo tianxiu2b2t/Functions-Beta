@@ -13,6 +13,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.Event.FAsyncPlayerChatEvent;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.API.WorldBlock;
 import org.functions.Bukkit.Main.*;
 import org.functions.Bukkit.Main.functions.*;
 
@@ -95,7 +96,7 @@ public class Players implements Listener {
             }
         }
         if (p.isOp()) {
-            new Updater().sendOp(p);
+            new Updater().test(p);
         }
     }
     @EventHandler(priority = EventPriority.HIGHEST)

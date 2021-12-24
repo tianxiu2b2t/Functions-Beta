@@ -64,6 +64,36 @@ public class User {
     public void setPermissions(List<String> permissions) {
         db.execute("UPDATE " + table + " SET Permissions='" + permissions.toString() + "' where UUID='" + uuid.toString() + "'");
     }
+    public boolean addPermissions(String name) {
+        boolean is = true;
+        for (String e : getPermissions()) {
+            if (e.equalsIgnoreCase(name)) {
+                is = false;
+                break;
+            }
+        }
+        if (is) {
+            List<String> ls = getPermissions();
+            ls.add(name);
+            setPermissions(ls);
+        }
+        return is;
+    }
+    public boolean removePermissions(String name) {
+        boolean is = false;
+        for (String e : getPermissions()) {
+            if (e.equalsIgnoreCase(name)) {
+                is = true;
+                break;
+            }
+        }
+        if (is) {
+            List<String> ls = getPermissions();
+            ls.remove(name);
+            setPermissions(ls);
+        }
+        return is;
+    }
     public List<String> getPermissions() {
         try {
             if (db.query(select).getString("Permissions")!=null) return Collections.singletonList(db.query(select).getString("Permissions"));
