@@ -121,6 +121,8 @@ public class Utils {
                 }
                 header = Functions.instance.getAPI().replace(header,player);
                 footer = Functions.instance.getAPI().replace(footer,player);
+                header = Functions.instance.getAPI().replaceJson(header);
+                footer = Functions.instance.getAPI().replaceJson(footer);
                 try {
                     Class packetPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 

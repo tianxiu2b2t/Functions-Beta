@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Main;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -197,25 +198,38 @@ public class Configuration {
 
 
         File file = wry;
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                URL url = new URL(Functions.instance.getConfig().getString("AddressCheck.IPUrl", "http://lt.limc.cc:38309/ip.txt"));
-                URLConnection urlc = url.openConnection();
-                urlc.setReadTimeout(5000);
-                InputStream in = urlc.getInputStream();
-                OutputStream out = new FileOutputStream(file);
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                    out.flush();
+        if (file.exists()) {
+            return;
+        } else if (file.length() != 0) {
+            return;
+        }
+        try {
+            file.createNewFile();
+            Bukkit.getServer().getScheduler().runTaskAsynchronously(Functions.instance, new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(Functions.instance.getConfig().getString("AddressCheck.IPUrl", "https://gitee.com/tianxiu2b2t/Functions-Beta/attach_files/925232/download/ip.txt"));
+                        URLConnection urlc = url.openConnection();
+                        urlc.setUseCaches(true);
+                        urlc.setDoOutput(true);
+                        InputStream in = urlc.getInputStream();
+                        OutputStream out = new FileOutputStream(file);
+                        byte[] buf = new byte[1024];
+                        int len;
+                        while ((len = in.read(buf)) > 0) {
+                            out.write(buf, 0, len);
+                            out.flush();
+                        }
+                        out.close();
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                out.close();
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

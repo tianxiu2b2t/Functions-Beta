@@ -222,8 +222,6 @@ public class Account {
     }
     public boolean getAutoLogin() {
         try {
-            System.out.println(Boolean.parseBoolean(db.query(select).getString("AutoLogin")));
-            System.out.println(db.query(select).getString("AutoLogin"));
             return Boolean.parseBoolean(db.query(select).getString("AutoLogin"));
         } catch (SQLException var2) {
             var2.printStackTrace();

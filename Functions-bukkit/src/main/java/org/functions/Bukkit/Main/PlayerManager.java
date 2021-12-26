@@ -29,8 +29,15 @@ public class PlayerManager implements Runnable {
             offlineuser.add(new User(p.getUniqueId()));
         }
         alluser.clear();
-        alluser.addAll(user);
-        alluser.addAll(offlineuser);
+        for (Player p : server.getOnlinePlayers()) {
+            alluser.add(new User(p.getUniqueId()));
+        }
+        for (OfflinePlayer p : server.getOfflinePlayers()) {
+            if (p.isOnline()) {
+                continue;
+            }
+            alluser.add(new User(p.getUniqueId()));
+        }
         groups.clear();
         Functions.instance.getConfiguration().group_Name.forEach((name)->{
             groups.add(new Group(Functions.instance.getConfiguration().groups.get(name)));

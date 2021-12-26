@@ -72,19 +72,16 @@ atPlayer: "&2@%player%&r"
         save();
     }
     public boolean addPrefixes(String name) {
-        boolean is = false;
+        //boolean is = false;
         for (String s : getPrefixes()) {
             if (s.equalsIgnoreCase(name)) {
-                is = true;
-                break;
+                return false;
             }
         }
-        if (is) {
             List<String> ls = getPrefixes();
             ls.add(name);
             setPrefixes(ls);
-        }
-        return is;
+            return true;
     }
     public boolean addSuffixes(String name) {
         boolean is = false;
@@ -116,6 +113,16 @@ atPlayer: "&2@%player%&r"
         }
         return is;
     }
+    public String removePrefixes(int number) {
+        boolean is = true;
+        String s = null;
+        if (getPrefixes().size() >= number) {
+            List<String> ls = getPrefixes();
+            s = ls.remove(number);
+            setPrefixes(ls);
+        }
+        return s;
+    }
     public boolean removeSuffixes(String name) {
         boolean is = true;
         for (String s : getSuffixes()) {
@@ -130,6 +137,16 @@ atPlayer: "&2@%player%&r"
             setPrefixes(ls);
         }
         return is;
+    }
+    public String removeSuffixes(int number) {
+        boolean is = true;
+        String s = null;
+        if (getSuffixes().size() >= number) {
+            List<String> ls = getSuffixes();
+            s = ls.remove(number);
+            setSuffixes(ls);
+        }
+        return s;
     }
     public List<String> getAllPermissions() {
             return group.getStringList("Permissions");

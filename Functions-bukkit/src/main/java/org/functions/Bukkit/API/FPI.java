@@ -104,6 +104,24 @@ public class FPI {
     public FunctionsRules.Type getRulesType(String name) {
         return FunctionsRules.Type.valueOf(name);
     }
+    public String replace(Object msg,Player player,String[] option_value) {
+        String m = msg.toString();
+        if (option_value.length % 2 == 0) {
+            for (int i = 0; i < option_value.length; i++) {
+                m = m.replace(option_value[i],option_value[i = i + 1]);
+            }
+        }
+        return replace(m,player);
+    }
+    public String replace(Object msg,Player player,Object[] option_value) {
+        String m = msg.toString();
+        if (option_value.length % 2 == 0) {
+            for (int i = 0; i < option_value.length; i++) {
+                m = m.replace("%" + option_value[i]+"%",option_value[i = i + 1]+"");
+            }
+        }
+        return replace(m,player);
+    }
     public String replace(Object msg,Player player,String[] option,String[] value) {
         String m = msg.toString();
         if (option.length == value.length) {
@@ -132,6 +150,12 @@ public class FPI {
     }
     public PingResponse getServerList(ServerAddress address, int timeout) {
         return ServerPinger.fetchData(address, timeout);
+    }
+    public String putLanguage(String path, Object Default, Player player,Object[] option_value) {
+        return replace(putLanguage(path, Default, player),player,option_value);
+    }
+    public String putLanguage(String path, Object Default, Player player,String[] option_value) {
+        return replace(putLanguage(path, Default, player),player,option_value);
     }
     public String putLanguage(String path, Object Default, Player player,String[] option,String[] value) {
         return replace(putLanguage(path, Default, player),player,option,value);

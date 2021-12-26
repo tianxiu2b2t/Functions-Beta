@@ -73,7 +73,8 @@ public class Players implements Listener {
         Player p = event.getPlayer();
         account = new Account(p.getUniqueId());
         if (account.isLogin()) {
-            p.getServer().broadcastMessage(event.getFormat());
+            p.getServer().getConsoleSender().sendMessage(event.getFormat());
+            p.getServer().getOnlinePlayers().forEach(ps->{ps.sendMessage(event.getFormat());});
         } else {
             p.sendMessage(Functions.instance.getAPI().putLanguage("NoLoginChat","&c请登录再发言！",p));
         }

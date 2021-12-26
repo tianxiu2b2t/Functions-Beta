@@ -33,42 +33,46 @@ public class Updater {
             int valueNowVersion = Integer.parseInt(args[3]);
             Functions.instance.print(latest_version + "|" + valueNowVersion  + "|" + valueWebVersion  + "|" + message.toString());
         }*/
-        if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
-            if (player != null) {
-                LinkedHashMap<String, Object> link = getAllInfo();
-                int now = Integer.parseInt(link.get("local_version") + "");
-                int pre = Integer.parseInt(link.get("latest_version") + "");
-                if (pre > now) {
-                    downloader(pre);
-                    String plugin = link.get("latest_plugin") + "";
-                    List<String> messages = new ArrayList<>();
-                    link.forEach((name, e) -> {
-                        if (name.startsWith("InfoMessage_")) {
-                            messages.add(Functions.instance.getAPI().replace(e, player, new String[]{"%plugin%", "%latest_version%", "%url%", "%version%", "local_version"}, new String[]{plugin, pre + "", "https://gitee.com/tianxiu2b2t/Functions-Beta/releases/" + pre, plugin_version, now + ""}));
-                        }
-                    });
-                    messages.forEach(player::sendMessage);
-                    return;
+        LinkedHashMap<String, Object> link = new LinkedHashMap<>();
+        if (link.size() != 0) {
+            if (check <= 0) link = getAllInfo();
+            if (Functions.instance.getConfig().getBoolean("Updater.Enable", true)) {
+                if (player != null) {
+                    //LinkedHashMap<String, Object> link = getAllInfo();
+                    int now = Integer.parseInt(link.get("local_version") + "");
+                    int pre = Integer.parseInt(link.get("latest_version") + "");
+                    if (pre > now) {
+                        downloader(pre);
+                        String plugin = link.get("latest_plugin") + "";
+                        List<String> messages = new ArrayList<>();
+                        link.forEach((name, e) -> {
+                            if (name.startsWith("InfoMessage_")) {
+                                messages.add(Functions.instance.getAPI().replace(e, player, new String[]{"%plugin%", "%latest_version%", "%url%", "%version%", "local_version"}, new String[]{plugin, pre + "", "https://gitee.com/tianxiu2b2t/Functions-Beta/releases/" + pre, plugin_version, now + ""}));
+                            }
+                        });
+                        messages.forEach(player::sendMessage);
+                        return;
+                    }
                 }
-            }
-            if (check <= 0) {
-                LinkedHashMap<String, Object> link = getAllInfo();
-                int now = Integer.parseInt(link.get("local_version") + "");
-                int pre = Integer.parseInt(link.get("latest_version") + "");
-                if (pre > now) {
-                    downloader(pre);
-                    String plugin = link.get("latest_plugin") + "";
-                    List<String> messages = new ArrayList<>();
-                    link.forEach((name, e) -> {
-                        if (name.startsWith("InfoMessage_")) {
-                            messages.add(Functions.instance.getAPI().replace(e, player, new String[]{"%plugin%", "%latest_version%", "%url%", "%version%", "local_version"}, new String[]{plugin, pre + "", "https://gitee.com/tianxiu2b2t/Functions-Beta/releases/" + pre, plugin_version, now + ""}));
-                        }
-                    });
-                    messages.forEach(Functions.instance::print);
+                if (check <= 0) {
+                    //LinkedHashMap<String, Object> link = getAllInfo();
+                    int now = Integer.parseInt(link.get("local_version") + "");
+                    int pre = Integer.parseInt(link.get("latest_version") + "");
+                    if (pre > now) {
+                        downloader(pre);
+                        String plugin = link.get("latest_plugin") + "";
+                        List<String> messages = new ArrayList<>();
+                        link.forEach((name, e) -> {
+                            if (name.startsWith("InfoMessage_")) {
+                                messages.add(Functions.instance.getAPI().replace(e, player, new String[]{"%plugin%", "%latest_version%", "%url%", "%version%", "local_version"}, new String[]{plugin, pre + "", "https://gitee.com/tianxiu2b2t/Functions-Beta/releases/" + pre, plugin_version, now + ""}));
+                            }
+                        });
+                        messages.forEach(Functions.instance::print);
+                    }
+                    check = 20 * 60 * Functions.instance.getConfig().getLong("Updater.minutes", 5);
                 }
-                check = 20 * 60 * Functions.instance.getConfig().getLong("Updater.minutes", 5);
+                check--;
             }
-            check--;
         }
     }
     public int getNowVersion() {

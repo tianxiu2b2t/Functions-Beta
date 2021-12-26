@@ -2,9 +2,14 @@ package org.functions.Bukkit.Main.Server;
 
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.functions.Bukkit.Main.Functions;
 
+import java.io.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -136,5 +141,28 @@ public class FServer {
             ls.addAll(getWorldItems(w));
         });
         return ls;
+    }
+    public boolean isBc() {
+        File dir = Functions.instance.getFolder().getAbsoluteFile().getParentFile().getParentFile();
+        File spigot = null;
+        if (dir.listFiles()!=null) {
+            for (File file : dir.listFiles()) {
+                if (!file.getName().endsWith("spigot.yml")) {
+                    continue;
+                }
+                spigot = file;
+            }
+        }
+        if (spigot == null) {
+            return false;
+        }
+        try {
+            FileConfiguration fileConfiguration = new YamlConfiguration();
+            fileConfiguration.load(spigot);
+            return fileConfiguration.getBoolean("settings.bungeecord");
+        } catch (IOException | InvalidConfigurationException e) {
+
+        }
+        return false;
     }
 }

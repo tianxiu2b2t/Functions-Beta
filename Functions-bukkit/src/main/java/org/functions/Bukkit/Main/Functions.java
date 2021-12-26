@@ -3,13 +3,16 @@ package org.functions.Bukkit.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.Listener.Players;
 import org.functions.Bukkit.Main.Server.FServer;
 import org.functions.Bukkit.Main.functions.AddressLocation;
+import org.functions.Bukkit.Main.functions.Messaging.Control;
 import org.functions.Bukkit.Main.functions.Messaging.Messaging;
+import org.functions.Bukkit.Main.functions.Messaging.RegisterMessaging;
 import org.functions.Bukkit.Main.functions.ServerTitle;
 import org.functions.Bukkit.Tasks.*;
 
@@ -17,8 +20,8 @@ import java.io.File;
 import java.util.*;
 
 public final class Functions extends JavaPlugin {
+    Control control;
     FServer f;
-    Messaging a;
     public ServerTitle title;
     //public PermissionsUtils.BukkitPermissions perms = new PermissionsUtils.BukkitPermissions();
     PlayerManager pm;
@@ -136,7 +139,10 @@ public final class Functions extends JavaPlugin {
             new PlaceholderAPIHook().register();
             Functions.instance.print("Successfully register placeholder api hook.");
         }
+        print("Is BungeeCord: " + f.isBc());
         print("Plugin folder size: " + configuration.DirSize());
+        control = new Control();
+        control.onEnable();
         f.flushMemory();
         // Plugin startup logic
 
@@ -167,7 +173,14 @@ public final class Functions extends JavaPlugin {
         getServer().getConsoleSender().sendMessage(Prefix() + type.getName() + " " + text);
         latest.print(type.getName() + " " + text);
     }
+
+    public Control getMessaging() {
+        return control;
+    }
+
     public void onDisable() {
+        control.onDisable();
+        control = null;
         // 获取在线玩家
         //a.onDisable();
         for (Player p : getAPI().getOnlinePlayers()) {

@@ -43,3 +43,6 @@ commands:
     description: Functions' Group controls.
   user:
     description: Functions' User controls.
+  server:
+    description: Functions' BungeeCord controls.
+    aliases: [servers,funserver]

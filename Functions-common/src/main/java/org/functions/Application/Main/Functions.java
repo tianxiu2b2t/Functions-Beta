@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class Functions {
-    static JFrame gui = new JFrame("Functions application");
+    static JFrame gui;
     public static Functions instance;
     static boolean bukkit = false;
     static boolean spigot = false;
@@ -48,12 +48,13 @@ public class Functions {
     }
     public static void run() {
         is();
+        gui = new JFrame("Functions application");
         gui.setTitle("Functions Application");
         //gui.setUndecorated(true);
         gui.setBounds(600,300,500,600);
         gui.setBackground(Color.CYAN);
-        //Image image = ImageIO.read(Objects.requireNonNull(Functions.class.getResourceAsStream("Icon.png")));
-        //gui.setIconImage(image);
+        Image image = new ImageIcon(Objects.requireNonNull(Functions.instance.getClass().getResource("/Icon.png"))).getImage();
+        gui.setIconImage(image);
         gui.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         if (bukkit) {
             gui.setTitle("Functions Bukkit Application");
