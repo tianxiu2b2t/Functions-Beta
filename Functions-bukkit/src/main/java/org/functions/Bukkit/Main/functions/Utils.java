@@ -965,7 +965,6 @@ public class Utils {
             WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
             WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
             WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
-            Functions.instance.print(s1.getX() + " " + s2.getX());
             int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
             int status = 0;
             int air = 0;
@@ -974,7 +973,7 @@ public class Utils {
                 for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
                     for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
                         for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
-                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            WorldBlock wb = new WorldBlock(var17, var16, var15, w);
                             boolean is = true;
                             for (Material f : anti) {
                                 if (wb.getBlock() == null || wb.getBlock().getType() == f || wb.getBlock().getType() == replace) {
@@ -1000,7 +999,6 @@ public class Utils {
             WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
             WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
             WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
-            Functions.instance.print(s1.getX() + " " + s2.getX());
             int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
             int status = 0;
             int air = 0;
@@ -1009,7 +1007,7 @@ public class Utils {
                 for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
                     for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
                         for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
-                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            WorldBlock wb = new WorldBlock(var17, var16, var15, w);
                             boolean is = true;
                             for (Material f : anti) {
                                 if (wb.getBlock() == null || wb.getBlock().getType() == f || wb.getBlock().getType() == Material.AIR) {
@@ -1033,7 +1031,6 @@ public class Utils {
             WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
             WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
             WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
-            Functions.instance.print(s1.getX() + " " + s2.getX());
             int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
             int status = 0;
             int air = 0;
@@ -1042,7 +1039,7 @@ public class Utils {
                 for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
                     for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
                         for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
-                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            WorldBlock wb = new WorldBlock(var17, var16, var15, w);
                             boolean is = true;
                             for (Material f : anti) {
                                 if (wb.getBlock() == null || wb.getBlock().getType() == f || wb.getBlock().getType() == Material.AIR) {
@@ -1069,7 +1066,6 @@ public class Utils {
             WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
             WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
             WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
-            Functions.instance.print(s1.getX() + " " + s2.getX());
             int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
             int status = 0;
             int air = 0;
@@ -1078,7 +1074,7 @@ public class Utils {
                 for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
                     for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
                         for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
-                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            WorldBlock wb = new WorldBlock(var17, var16, var15, w);
                             boolean is = true;
                             for (Material f : anti) {
                                 if (wb.getBlock() != null || wb.getBlock().getType() == f || wb.getBlock().getType() == keep) {
@@ -1102,7 +1098,6 @@ public class Utils {
             WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
             WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
             WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
-            Functions.instance.print(s1.getX() + " " + s2.getX());
             int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
             int status = 0;
             int air = 0;
@@ -1111,7 +1106,7 @@ public class Utils {
                 for(int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
                     for (int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
                         for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
-                            WorldBlock wb = new WorldBlock(var15, var16, var17, w);
+                            WorldBlock wb = new WorldBlock(var17, var16, var15, w);
                             boolean is = true;
                             for (Material f : anti) {
                                 if (wb.getBlock() == null || wb.getBlock().getType() == f || wb.getBlock().getType() == block) {

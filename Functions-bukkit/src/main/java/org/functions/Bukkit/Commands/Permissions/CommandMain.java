@@ -1,6 +1,7 @@
 package org.functions.Bukkit.Commands.Permissions;
 
 import com.google.gson.JsonParser;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -51,11 +52,9 @@ public class CommandMain implements TabExecutor {
             sender.sendMessage(Functions.instance.getAPI().putLanguage("ReloadMinecraftData","&a成功重载原版数据！ (%time-ms% ms)",null).replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
         }
-        if (sender instanceof Player) {
-            List<Material> a = new ArrayList<>();
-            a.add(Material.BEDROCK);
-            sender.sendMessage(Utils.Fill.destroy(((Player) sender).getWorld(),Integer.parseInt(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),a,true));
-        }
+        List<Material> a = new ArrayList<>();
+        a.add(Material.BEDROCK);
+        sender.sendMessage(Utils.Fill.destroy(Bukkit.getWorld(args[0]),Integer.parseInt(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),Integer.parseInt(args[6]),a,false));
         return true;
     }
 

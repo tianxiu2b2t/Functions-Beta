@@ -51,10 +51,12 @@ public class Functions {
         gui = new JFrame("Functions application");
         gui.setTitle("Functions Application");
         //gui.setUndecorated(true);
-        gui.setBounds(600,300,500,600);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        gui.setBounds(screenSize.width/4,screenSize.height/4,screenSize.width/2,screenSize.height/2);
         gui.setBackground(Color.CYAN);
         Image image = new ImageIcon(Objects.requireNonNull(Functions.instance.getClass().getResource("/Icon.png"))).getImage();
         gui.setIconImage(image);
+        //gui.setBackground(new Color(gui.getBackground().getRed(),gui.getBackground().getGreen(),gui.getBackground().getBlue(),100));
         gui.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         if (bukkit) {
             gui.setTitle("Functions Bukkit Application");
@@ -67,6 +69,8 @@ public class Functions {
         }
         text.setBounds(50,50,50,50);
         gui.add(text);
+        text.setText("Hello world");
+        text.paintImmediately(text.getBounds());
         gui.setVisible(true);
     }
     static JTextArea text = new JTextArea();

@@ -22,7 +22,7 @@ public class FServer {
     List<FWorld> lw = new ArrayList<>();
     LocalTime starts = LocalTime.now();
     //LocalTime starts = LocalTime.of(13,0);
-    long start = System.currentTimeMillis();
+    final long start = System.currentTimeMillis();
     Server server;
     public FServer(Server server) {
         this.server = server;
@@ -43,16 +43,32 @@ public class FServer {
         return (int)getServerTime() / (1000 * 24 * 60 * 60);
     }
     public long getServerStringForHours() {
-        return ChronoUnit.HOURS.between(starts,LocalTime.now()) % 24;
+        long t = ChronoUnit.HOURS.between(starts,LocalTime.now());
+        if (t < 0) {
+            t = t + 24;
+        }
+        return t;
     }
     public long getServerStringForMinutes() {
-        return ChronoUnit.MINUTES.between(starts,LocalTime.now()) % 60 * 60 / 60;
+        long t = ChronoUnit.MINUTES.between(starts,LocalTime.now()) % 60 * 60 / 60;
+        if (t < 0) {
+            t = t + 60;
+        }
+        return t;
     }
     public long getServerStringForSeconds() {
-        return ChronoUnit.SECONDS.between(starts,LocalTime.now()) % 60;
+        long t = ChronoUnit.SECONDS.between(starts,LocalTime.now()) % 60;
+        if (t < 0) {
+            t = t + 60;
+        }
+        return t;
     }
     public long getServerStringForNanaSeconds() {
-        return ChronoUnit.NANOS.between(starts,LocalTime.now());
+        long t = ChronoUnit.NANOS.between(starts,LocalTime.now());
+        if (t < 0) {
+            t = t + 1000;
+        }
+        return t;
     }
     public FWorld getWorld(UUID uuid) {
         flushWorlds();
@@ -165,4 +181,8 @@ public class FServer {
         }
         return false;
     }
+    public Functions getInstance() {
+        return Functions.instance;
+    }
+
 }

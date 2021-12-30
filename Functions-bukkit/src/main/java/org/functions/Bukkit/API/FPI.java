@@ -292,7 +292,10 @@ public class FPI {
         return onRequest(player,params);
     }
     public String onRequest(OfflinePlayer player, String params) {
-        if (params.equalsIgnoreCase("%lines%")) {
+        if (params.equalsIgnoreCase("plugin_prefix")) {
+            return getInstance().Prefix();
+        }
+        if (params.equalsIgnoreCase("lines")) {
             return "\n";
         }
         if (params.equalsIgnoreCase("server_day")) {

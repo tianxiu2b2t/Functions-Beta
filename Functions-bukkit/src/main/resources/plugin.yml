@@ -46,3 +46,6 @@ commands:
   server:
     description: Functions' BungeeCord controls.
     aliases: [servers,funserver]
+  info:
+    description: Functions' Tick Per Seconds Check Info.
+    aliases: [tps]

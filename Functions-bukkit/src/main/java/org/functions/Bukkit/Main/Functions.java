@@ -178,11 +178,7 @@ public final class Functions extends JavaPlugin {
         return control;
     }
 
-    public void onDisable() {
-        control.onDisable();
-        control = null;
-        // 获取在线玩家
-        //a.onDisable();
+    public void onDisableSettings() {
         for (Player p : getAPI().getOnlinePlayers()) {
             // Bukkit 事件新建一个
             PlayerQuitEvent event = new PlayerQuitEvent(p, ChatColor.YELLOW + p.getName() + " left the game");
@@ -204,9 +200,17 @@ public final class Functions extends JavaPlugin {
             // 然后完成离开
             print("Successfully execute " + p.getName()  + " event.");
         }
+    }
+    public void onDisable() {
+        onDisableSettings();
+        control.onDisable();
+        control = null;
+        // 获取在线玩家
+        //a.onDisable();
         title = null;
         instance = null;
         database.disconnect();
+        database = null;
         // Plugin shutdown logic
     }
     public Configuration getConfiguration() {

@@ -165,4 +165,12 @@ public class Players implements Listener {
     public void title(ServerListPingEvent event) {
 
     }
+    @EventHandler
+    public void onServerStop(org.bukkit.event.server.PluginDisableEvent event) {
+        if (event.getPlugin().getDescription().getName().equalsIgnoreCase("Functions")) {
+            Functions.instance.print("Now execute all player quit event.");
+            Functions.instance.onDisableSettings();
+            Functions.instance.print("All right. Normal Stop Server.");
+        }
+    }
 }
