@@ -59,7 +59,7 @@ public class PlayerManager implements Runnable {
     }
     public boolean getUserIsInList(UUID uuid) {
         for (User user : alluser) {
-            if (user.getOfflinePlayer().getUniqueId().equals(uuid)) {
+            if (user.getOfflinePlayer().getUniqueId().toString().equals(uuid.toString())) {
                 return true;
             }
         }
@@ -72,7 +72,7 @@ public class PlayerManager implements Runnable {
     public User getUser(UUID uuid) {
         run();
         for (User u : alluser) {
-            if (u.getOfflinePlayer().getUniqueId().equals(uuid)) {
+            if (u.getOfflinePlayer().getUniqueId().toString().equals(uuid.toString())) {
                 return u;
             }
         }

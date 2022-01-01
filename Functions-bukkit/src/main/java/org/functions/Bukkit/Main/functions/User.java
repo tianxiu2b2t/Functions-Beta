@@ -267,6 +267,7 @@ public class User {
     }
     public void setGroup(String name) {
         db.execute("UPDATE " + table + " Set 'Group'='" + name + "' where UUID='" + uuid.toString() + "'");
+        group = new Group(name);
     }
     public Economy getEconomy() {
         return new Economy(uuid);
