@@ -35,12 +35,13 @@ public class Sql implements DataBase {
         try {
             //init();
             //connect();
-            connect.setAutoCommit(true);
             if (state.isClosed()) {
                 init();
                 connect();
             }
+            connect.setAutoCommit(false);
             state.executeUpdate(cmd);
+            connect.commit();
             //connect.commit();
             //state.close();
             //connect.close();
@@ -61,6 +62,7 @@ public class Sql implements DataBase {
                 init();
                 connect();
             }
+            connect.commit();
             return state.executeQuery(cmd);
         } catch (SQLException e) {
             e.fillInStackTrace();
@@ -81,6 +83,7 @@ public class Sql implements DataBase {
 
     public void disconnect() {
         try {
+            connect.commit();
             if (!state.isClosed()) {
                 state.close();
             }

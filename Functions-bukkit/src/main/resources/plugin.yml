@@ -49,3 +49,5 @@ commands:
   info:
     description: Functions' Tick Per Seconds Check Info.
     aliases: [tps]
+  seed:
+    description: Functions' Check Worlds Seeds.

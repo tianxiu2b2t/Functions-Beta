@@ -20,7 +20,7 @@ public class FAsyncPlayerChatEvent implements Cancellable {
     User user;
     public FAsyncPlayerChatEvent(Player who, String message) {
         p = who;
-        user = new User(who.getUniqueId());
+        user = Functions.instance.getPlayerManager().getUser(p.getUniqueId());
         this.message = message;
         format = user.getGroup().getChat();
     }

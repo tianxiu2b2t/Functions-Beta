@@ -28,17 +28,18 @@ public class Players implements Listener {
         if ((b.getBlock().getLocation().getY() == (double)(b.getBlock().getWorld().getMaxHeight() - 1) || b.getBlock().getLocation().getY() == 0.0D || b.getBlock().getLocation().getY() == -64.0D) && b.getItem().getType().name().endsWith("SHULKER_BOX")) {
             b.setCancelled(true);
             Location loc = b.getBlock().getLocation();
-            Collection<Entity> entities = loc.getWorld().getNearbyEntities(loc,256,256,256);
+            Collection<Entity> entities = loc.getWorld().getNearbyEntities(loc, 256, 256, 256);
             Player player = null;
             for (Entity e : entities) {
                 if (!(e instanceof Player)) {
                     continue;
                 }
-                player = (Player)e;
+                player = (Player) e;
             }
-            assert player != null;
-            fpi.sendOperators("§c[ERROR] One of the players tried to crash the server! Player name: " + player.getName() + " Position: " + fpi.BlockLocationToString(loc));
-            //fpi.sendConsole("§c[ERROR] One of the players tried to crash the server! Player name: " + player.getName() + " Position: " + api.changeLocationToString(loc));
+            if (player != null) {
+                fpi.sendOperators("§c[ERROR] One of the players tried to crash the server! Player name: " + player.getName() + " Position: " + fpi.BlockLocationToString(loc));
+                fpi.getInstance().print("§c[ERROR] One of the players tried to crash the server! Player name: " + player.getName() + " Position: " + fpi.BlockLocationToString(loc));
+            }
         }
     }
     /** Player event **/
@@ -83,17 +84,20 @@ public class Players implements Listener {
     @EventHandler
     public void join(PlayerJoinEvent event) {
         Player p = event.getPlayer();
+        Functions.instance.getPlayerManager().run();
         if (!Functions.instance.getPlayerManager().exists(p.getUniqueId())) Functions.instance.getPlayerManager().run();
         event.setJoinMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getJoin(),p));
         if (fpi.cps.get(p.getUniqueId())==null) fpi.cps.put(p.getUniqueId(), new ClickPerSeconds(p.getUniqueId()));
         Functions.instance.print("Player: " + p.getName() + " Join the server. (Address: " + fpi.getPlayerAddress(p.getUniqueId()) + ")");
         account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
-        if (account.exists()) {
-            account.teleportSpawn();
-            Accounts.login.put(p.getUniqueId(),false);
-            if (account.autoLogin()) {
-                p.sendMessage(fpi.putLanguage("AutoLogin","&a成功自动登陆！",p));
-                Functions.instance.print("Player: " + p.getName() + " Auto login.");
+        if (Accounts.enable()) {
+            if (account.exists()) {
+                account.teleportSpawn();
+                Accounts.login.put(p.getUniqueId(), false);
+                if (account.autoLogin()) {
+                    p.sendMessage(fpi.putLanguage("AutoLogin", "&a成功自动登陆！", p));
+                    Functions.instance.print("Player: " + p.getName() + " Auto login.");
+                }
             }
         }
         if (p.isOp()) {
@@ -150,15 +154,17 @@ public class Players implements Listener {
     }
     @EventHandler
     public void leave(PlayerQuitEvent event) {
+        Functions.instance.getPlayerManager().run();
         Player p = event.getPlayer();
         event.setQuitMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getQuit(),p));
         account = new Account(p.getUniqueId());
-        if (account.exists() || account.isLogin()) {
-            Accounts.login.remove(p.getUniqueId());
-            if (fpi.cps.get(p.getUniqueId())!=null) fpi.cps.remove(p.getUniqueId());
-            account.setPosition();
-            account.teleportSpawn();
-            account.setGameMode();
+        if (Accounts.enable()) {
+            if (account.exists() || account.isLogin()) {
+                Accounts.login.remove(p.getUniqueId());
+                if (fpi.cps.get(p.getUniqueId()) != null) fpi.cps.remove(p.getUniqueId());
+                account.setPosition();
+                account.setGameMode();
+            }
         }
     }
     @EventHandler

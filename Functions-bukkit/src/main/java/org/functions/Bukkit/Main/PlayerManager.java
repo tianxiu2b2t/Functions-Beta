@@ -18,25 +18,16 @@ public class PlayerManager implements Runnable {
     Server server;
     public PlayerManager(Server server) {
         this.server = server;
+        run();
     }
     public void run() {
-        user.clear();
-        for (Player p : server.getOnlinePlayers()) {
-            user.add(new User(p.getUniqueId()));
-        }
-        offlineuser.clear();
         for (OfflinePlayer p : server.getOfflinePlayers()) {
-            offlineuser.add(new User(p.getUniqueId()));
-        }
-        alluser.clear();
-        for (Player p : server.getOnlinePlayers()) {
-            alluser.add(new User(p.getUniqueId()));
-        }
-        for (OfflinePlayer p : server.getOfflinePlayers()) {
-            if (p.isOnline()) {
-                continue;
+            if (alluser.size() == 0) {
+                alluser.add(new User(p.getUniqueId()));
             }
-            alluser.add(new User(p.getUniqueId()));
+            if (!getUserIsInList(p.getUniqueId())) {
+                alluser.add(new User(p.getUniqueId()));
+            }
         }
         groups.clear();
         Functions.instance.getConfiguration().group_Name.forEach((name)->{
@@ -44,38 +35,53 @@ public class PlayerManager implements Runnable {
         });
     }
     public List<Group> getGroups() {
+        run();
         return groups;
     }
     public List<User> getAllUser() {
+        run();
         return alluser;
     }
     public Group getGroup(String name) {
+        run();
         for (Group e : groups) {
             if (e.getGroupName().equalsIgnoreCase(name)) return e;
         }
         return null;
     }
     public List<User> getGroupUser(Group group) {
-        List<User> t = user;
-        for (User u : user) {
+        run();
+        List<User> t = alluser;
+        for (User u : alluser) {
             if (u.getGroup() != group) t.remove(u);
         }
         return t;
     }
+    public boolean getUserIsInList(UUID uuid) {
+        for (User user : alluser) {
+            if (user.getOfflinePlayer().getUniqueId().equals(uuid)) {
+                return true;
+            }
+        }
+        return false;
+    }
     public List<User> getUsers() {
-        return user;
+        run();
+        return alluser;
     }
     public User getUser(UUID uuid) {
-        for (User u : user) {
-            if (u.getPlayer().getUniqueId().toString().equals(uuid.toString())) {
+        run();
+        for (User u : alluser) {
+            if (u.getOfflinePlayer().getUniqueId().equals(uuid)) {
                 return u;
             }
         }
-        return null;
+        return getUser(uuid);
     }
     public boolean exists(UUID uuid) {
-        for (User u : user) {
-            if (u.getPlayer().getUniqueId().toString().equals(uuid.toString())) {
+        run();
+        for (User u : alluser) {
+            if (u.getOfflinePlayer().getUniqueId().toString().equals(uuid.toString())) {
                 return true;
             }
         }

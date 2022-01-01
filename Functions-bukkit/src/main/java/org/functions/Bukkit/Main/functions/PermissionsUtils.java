@@ -110,6 +110,12 @@ public class PermissionsUtils {
         }
         return true;
     }
+    public static boolean hasPermissionsSendMessage(CommandSender player, String Permission,boolean Tab) {
+        if (Tab) {
+            return !hasPermissionsSendMessage(player, Permission);
+        }
+        return hasPermissionsSendMessage(player, Permission);
+    }
     public static boolean hasPermissionsSendMessage(Player player, String Permission) {
         if (!hasPermissions(player,Permission)) {
             sendMessagePermissions(player, Permission);

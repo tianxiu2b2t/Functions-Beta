@@ -286,6 +286,9 @@ public class User {
     public boolean exists() {
         List<String> ls = new ArrayList<>();
         ResultSet rs = db.query(select_all);
+        if (rs == null) {
+            return false;
+        }
         try {
             while (rs.next()) {
                 ls.add(rs.getString("UUID"));

@@ -30,6 +30,10 @@ public class CommandUser implements TabExecutor {
             sender.sendMessage(fpi.putLanguage("NotFindUser","&c找不到 %user% !",null,new String[]{"%user%"},new String[]{args[0]}));
             return true;
         }
+        if (args.length == 2) {
+            sender.sendMessage(fpi.subcmd());
+            return true;
+        }
         if (args[1].equalsIgnoreCase("set")) {
             if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.set")) {
                 return true;
@@ -407,13 +411,19 @@ public class CommandUser implements TabExecutor {
             Functions.instance.getPlayerManager().getAllUser().forEach(e-> {
                ls.add(e.getOfflinePlayer().getName());
             });
+            if (args[0] != null) {
+                ls.clear();
+                Functions.instance.getPlayerManager().getAllUser().forEach(e-> {
+                    if (e.getOfflinePlayer().getName().toLowerCase().startsWith(args[0].toLowerCase())) ls.add(e.getOfflinePlayer().getName());
+                });
+            }
         }
         if (args.length == 2) {
-            if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.set")) ls.add("set");
-            if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefix")) ls.add("prefix");
-            if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffix")) ls.add("suffix");
-            if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffixes")) ls.add("suffixes");
-            if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefixes")) ls.add("prefixes");
+            if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.set")) ls.add("set");
+            if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefix")) ls.add("prefix");
+            if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffix")) ls.add("suffix");
+            if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffixes")) ls.add("suffixes");
+            if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefixes")) ls.add("prefixes");
         }
         if (args.length == 3) {
             if (args[1].equalsIgnoreCase("suffixes")) {
