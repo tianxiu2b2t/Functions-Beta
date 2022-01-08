@@ -51,3 +51,15 @@ commands:
     aliases: [tps]
   seed:
     description: Functions' Check Worlds Seeds.
+  fly:
+    description: Functions' Player Allow Fly.
+  spawn:
+    description: Functions' World Spawn Teleport.
+  invisibility:
+    description: Functions' Invisibility player. hide player.
+    aliases: [hide]
+  show:
+    description: Functions' unInvisibility player. show player.
+    aliases: [uninvisibility]
+  ping:
+    description: Functions' get player ping ms.

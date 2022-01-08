@@ -87,11 +87,44 @@ public class PlayerManager implements Runnable {
         }
         return false;
     }
+    public User getUser(String name) {
+        run();
+        for (User u : alluser) {
+            if (u.getOfflinePlayer().getName().toLowerCase().equalsIgnoreCase(name.toLowerCase())) {
+                return u;
+            }
+        }
+        return getUser(name);
+    }
+    public User getUser(String name,boolean exists) {
+        if (exists) {
+            run();
+            for (User u : alluser) {
+                if (u.getOfflinePlayer().getName().toLowerCase().equalsIgnoreCase(name.toLowerCase())) {
+                    return u;
+                }
+            }
+            return null;
+        }
+        return getUser(name);
+    }
+    public boolean exists(String name) {
+        run();
+        for (User u : alluser) {
+            if (u.getOfflinePlayer().getName().toLowerCase().equalsIgnoreCase(name.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
     public void sendAllTellRaw(String text) {
         getUsers().forEach((u)->{u.sendTellRaw(text);});
     }
     @Deprecated
     public void sendParseAllTellRaw(String text) {
         getUsers().forEach((u)->{u.sendParseTellRaw(text);});
+    }
+    public String NotFound(String name) {
+        return Functions.instance.getAPI().putLanguage("NotFoundUser","&cm没有找到 %player% 用户!",null,new Object[]{"player",name});
     }
 }

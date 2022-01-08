@@ -34,8 +34,13 @@ public class FWorld {
         }
     }
     public String getWorldStringForTime() {
-        int time = Integer.parseInt((world.getTime() % 24000L)+"");
-        return LocalTime.of(time / 1000, time % 1000 * 60 / 1000).format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
+        int time = (int)((world.getTime() % 24000L) + 6000L);
+        int hour = time / 1000;
+        if (hour >= 24) {
+            hour = hour - 24;
+        }
+        LocalTime localtime =  LocalTime.of(hour, time % 1000 * 60 / 1000);
+        return localtime.getHour() + ":" + localtime.getMinute();
     }
     public String getWorldStringForDayTime() {
         return ((int)(world.getFullTime() / 24000L % 2147483647L) + "");

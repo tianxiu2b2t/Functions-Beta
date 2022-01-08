@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.ClickPerSeconds;
+import org.functions.Bukkit.API.SpeedPerSeconds;
 import org.functions.Bukkit.Main.DataBase;
 import org.functions.Bukkit.Main.Functions;
 
@@ -12,12 +13,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class User {
+public class User implements IUser {
     UUID uuid;
     DataBase db = Functions.instance.database;
     String table = Functions.instance.getTable("Users");
     String select;
     Group group = null;
+    List<String> permissions = new ArrayList<>();
+    List<String> prefixes = new ArrayList<>();
+    List<String> suffixes = new ArrayList<>();
+    String prefix = "";
+    String suffix = "";
+    boolean hide = false;
     public String select_all = "SELECT * FROM " + Functions.instance.getTable("Users");
     Utils.sendTellRaw send;
     public User(UUID uuid) {
@@ -57,9 +64,10 @@ public class User {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
+        //send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
     public void setPermissions(List<String> permissions) {
+        this.permissions = permissions;
         db.execute("UPDATE " + table + " SET Permissions='" + ListToString(permissions) + "' where UUID='" + uuid.toString() + "'");
     }
     public boolean addPermissions(String name) {
@@ -93,13 +101,21 @@ public class User {
         return is;
     }
     public List<String> getPermissions() {
+        if (DelayGet.users.get(uuid.toString()+"getPermissions")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getPermissions") <= System.currentTimeMillis()) {
+                return permissions;
+            }
+            DelayGet.users.remove(uuid.toString()+"getPermissions");
+            DelayGet.users.put(uuid.toString()+"getPermissions",System.currentTimeMillis());
+        }
+        permissions = getGroup().getAllPermissions();
         try {
-            if (db.query(select).getString("Permissions")!=null) return StringToList(db.query(select).getString("Permissions"));
-            return getGroup().getAllPermissions();
+            if (db.query(select).getString("Permissions")!=null) permissions = StringToList(db.query(select).getString("Permissions"));
+            return permissions;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return getGroup().getAllPermissions();
+        return permissions;
     }
     public List<String> getOtherPermissions() {
         List<String> temp = new ArrayList<>();
@@ -122,41 +138,67 @@ public class User {
         return temp;
     }
     public void setPrefixes(List<String> prefixes) {
+        this.prefixes = prefixes;
         db.execute("UPDATE " + table + " SET Prefixes='" + ListToString(prefixes) + "' where UUID='" + uuid.toString() + "'");
     }
     public List<String> getPrefixes() {
+        if (DelayGet.users.get(uuid.toString()+"getPrefixes")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getPrefixes") <= System.currentTimeMillis()) {
+                return prefixes;
+            }
+            DelayGet.users.remove(uuid.toString()+"getPrefixes");
+            DelayGet.users.put(uuid.toString()+"getPrefixes",System.currentTimeMillis());
+        }
         try {
-            return StringToList(db.query(select).getString("Prefixes"));
+            prefixes = StringToList(db.query(select).getString("Prefixes"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return prefixes;
     }
     public void setPrefix(String prefix) {
+        this.prefix = prefix;
         db.execute("UPDATE " + table + " SET Prefix='" + prefix + "' where UUID='" + uuid.toString() + "'");
     }
     public String getPrefix() {
+        if (DelayGet.users.get(uuid.toString()+"getPrefix")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getPrefixes") <= System.currentTimeMillis()) {
+                return prefix;
+            }
+            DelayGet.users.remove(uuid.toString()+"getPrefix");
+            DelayGet.users.put(uuid.toString()+"getPrefix",System.currentTimeMillis());
+        }
+        prefix = Functions.instance.getAPI().replace(getGroup().getPrefix(),getPlayer());
         try {
-            if (db.query(select).getString("Prefix")==null) return Functions.instance.getAPI().replace(getGroup().getPrefix(),getPlayer());
-            return Functions.instance.getAPI().replace(db.query(select).getString("Prefix"),getPlayer());
+            String t = db.query(select).getString("Prefix");
+            if (t!=null) prefix = Functions.instance.getAPI().replace(t,getPlayer());
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Functions.instance.getAPI().replace(getGroup().getPrefix(),getPlayer());
+        return prefix;
     }
     public void setSuffixes(List<String> Suffixes) {
+        this.suffixes = Suffixes;
         db.execute("UPDATE " + table + " SET Suffixes='" + ListToString(Suffixes) + "' where UUID='" + uuid.toString() + "'");
     }
     public List<String> getSuffixes() {
+        if (DelayGet.users.get(uuid.toString()+"getSuffixes")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getSuffixes") <= System.currentTimeMillis()) {
+                return suffixes;
+            }
+            DelayGet.users.remove(uuid.toString()+"getSuffixes");
+            DelayGet.users.put(uuid.toString()+"getSuffixes",System.currentTimeMillis());
+        }
         try {
-            return StringToList(db.query(select).getString("Suffixes"));
+            suffixes = StringToList(db.query(select).getString("Suffixes"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return suffixes;
     }
-    public void setSuffix(String prefix) {
-        db.execute("UPDATE " + table + " SET Suffix='" + prefix + "' where UUID='" + uuid.toString() + "'");
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+        db.execute("UPDATE " + table + " SET Suffix='" + suffix + "' where UUID='" + uuid.toString() + "'");
     }
 
     public String ListToString(List<String> list) {
@@ -180,13 +222,21 @@ public class User {
     }
 
     public String getSuffix() {
+        if (DelayGet.users.get(uuid.toString()+"getSuffix")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getSuffix") <= System.currentTimeMillis()) {
+                return suffix;
+            }
+            DelayGet.users.remove(uuid.toString()+"getSuffix");
+            DelayGet.users.put(uuid.toString()+"getSuffix",System.currentTimeMillis());
+        }
+        suffix = Functions.instance.getAPI().replace(getGroup().getSuffix(),getPlayer());
         try {
-            if (db.query(select).getString("Suffix")==null) return Functions.instance.getAPI().replace(getGroup().getSuffix(),getPlayer());
-            return Functions.instance.getAPI().replace(db.query(select).getString("Suffix"),getPlayer());
+            String t = db.query(select).getString("Suffix");
+            if (t!=null) suffix = Functions.instance.getAPI().replace(t,getPlayer());
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Functions.instance.getAPI().replace(getGroup().getSuffix(),getPlayer());
+        return suffix;
     }
     public boolean addPrefixes(String name) {
         //boolean is = false;
@@ -212,6 +262,7 @@ public class User {
         setSuffixes(ls);
         return true;
     }
+    @Deprecated
     public boolean removePrefixes(String name) {
         boolean is = true;
         for (String s : getPrefixes()) {
@@ -237,6 +288,7 @@ public class User {
         }
         return s;
     }
+    @Deprecated
     public boolean removeSuffixes(String name) {
         boolean is = true;
         for (String s : getSuffixes()) {
@@ -309,13 +361,29 @@ public class User {
     public ClickPerSeconds getCPS() {
         return Functions.instance.getAPI().cps.get(getPlayer().getUniqueId());
     }
+
+    public SpeedPerSeconds getSPS() {
+        return null;//Functions.instance.getAPI().sps.get(getPlayer().getUniqueId());
+    }
+
     public boolean isHiding() {
+        if (DelayGet.users.get(uuid.toString()+"isHiding")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"isHiding") <= System.currentTimeMillis()) {
+                return hide;
+            }
+            DelayGet.users.remove(uuid.toString()+"isHiding");
+            DelayGet.users.put(uuid.toString()+"isHiding",System.currentTimeMillis());
+        }
         try {
-            return Boolean.parseBoolean(db.query(select).getString("Hide"));
+            hide = Boolean.parseBoolean(db.query(select).getString("Hide"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return hide;
+    }
+    public void setInvisibility(boolean invisibility) {
+        db.execute("UPDATE " + table + " Set 'Hide'='" + invisibility + "' where UUID='" + uuid.toString() + "'");
+
     }
     public String getDisplayName() {
         return getPrefix() + getPlayer().getName() + getSuffix();

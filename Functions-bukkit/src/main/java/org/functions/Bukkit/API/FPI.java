@@ -32,6 +32,7 @@ public class FPI {
     public static LinkedHashMap<UUID, Boolean> code_verify = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, Boolean> fall = new LinkedHashMap<>();
     public LinkedHashMap<UUID, ClickPerSeconds> cps = new LinkedHashMap<>();
+    public LinkedHashMap<UUID, SpeedPerSeconds> sps = new LinkedHashMap<>();
     public static LinkedHashMap<String,PluginCommand> commands = new LinkedHashMap<>();
     public Functions getInstance() {
         return Functions.instance;
@@ -41,6 +42,9 @@ public class FPI {
     }
     public PluginCommand command(String cmd) {
         return getServer().getPluginCommand(cmd);
+    }
+    public void getCommand(String[] args,TabExecutor te) {
+        Arrays.asList(args).forEach(s->getCommand(s,te));
     }
     public void getCommand(String s, TabExecutor te) {
         Functions.instance.getCommand(s).setExecutor(te);
@@ -291,7 +295,38 @@ public class FPI {
         }
         return onRequest(player,params);
     }
+    public List<OfflinePlayer> getAdminPlayers() {
+        List<OfflinePlayer> ls = new ArrayList<>();
+        for (OfflinePlayer p : getServer().getOfflinePlayers()) {
+            if (!p.isOp()) continue;
+            ls.add(p);
+        }
+        return ls;
+    }
+    public List<Player> getOnlineAdminPlayers() {
+        List<Player> ls = new ArrayList<>();
+        getAdminPlayers().forEach(e->{if (e.isOnline()) ls.add(e.getPlayer());});
+        return ls;
+    }
     public String onRequest(OfflinePlayer player, String params) {
+        if (params.equalsIgnoreCase("online_players")) {
+            return getOnlinePlayers().size()+"";
+        }
+        if (params.equalsIgnoreCase("offline_players")) {
+            return (getServer().getOfflinePlayers().length - getOnlinePlayers().size())+"";
+        }
+        if (params.equalsIgnoreCase("offline_admin_players")) {
+            return (getAdminPlayers().size() - getOnlineAdminPlayers().size())+"";
+        }
+        if (params.equalsIgnoreCase("online_admin_players")) {
+            return getOnlineAdminPlayers().size()+"";
+        }
+        if (params.equalsIgnoreCase("date")) {
+            return getDate();
+        }
+        if (params.equalsIgnoreCase("time")) {
+            return getTime();
+        }
         if (params.equalsIgnoreCase("plugin_prefix")) {
             return getInstance().Prefix();
         }
@@ -320,7 +355,7 @@ public class FPI {
             if (params.equalsIgnoreCase("world_" + e.getWorld().getName().toLowerCase() + "_day")) {
                 return e.getWorldStringForDayTime();
             } else if (params.equalsIgnoreCase("world_" + e.getWorld().getName().toLowerCase() + "_time")) {
-                return e.getWorldStringForDayTime();
+                return e.getWorldStringForTime();
             }
         }
         if (player!=null) {
@@ -349,6 +384,9 @@ public class FPI {
             if (params.equalsIgnoreCase("max_cps")) {
                 return pm.getUser(player.getUniqueId()).getCPS().getMaxCPS()+"";
             }
+            if (params.equalsIgnoreCase("ping")) {
+                return new Utils.Ping(player.getPlayer()).toString();
+            }
         }
         if (params.equalsIgnoreCase("tps")) {
             return Utils.TPS.getTPS();
@@ -361,9 +399,6 @@ public class FPI {
         }
         if (params.equalsIgnoreCase("recoverypasswordservername")) {
             return Functions.instance.getConfig().getString("RecoveryPasswordServerName", "Recovery Password Unknow Server");
-        }
-        if (params.equalsIgnoreCase("ping")) {
-            return new Utils.Ping(player.getPlayer()).toString();
         }
         if (params.startsWith("animation:")) {
             return replace(AnimationManager.getAnimation(params.replace("animation:","")).getAnimation(),player.getPlayer());

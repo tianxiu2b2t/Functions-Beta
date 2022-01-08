@@ -12,6 +12,8 @@ import org.functions.Bukkit.Main.functions.PermissionsUtils;
 import org.functions.Bukkit.Main.functions.User;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class CommandAccountDelete implements TabExecutor {
@@ -25,24 +27,26 @@ public class CommandAccountDelete implements TabExecutor {
             sender.sendMessage(Accounts.noEnable());
             return true;
         }
-        if (sender instanceof Player) {
-            Player p = ((Player) sender).getPlayer();
-            if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.accountdelete")) {
-                return true;
-            }
-            Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
+        if (args.length == 0) {
+            if (sender instanceof Player) {
+                Player p = ((Player) sender).getPlayer();
+                if (!PermissionsUtils.hasPermissionsSendMessage(p, "functions.default.command.accountdelete")) {
+                    return true;
+                }
+                Account account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
 
-            if (!account.exists()) {
-                sender.sendMessage(fpi.putLanguage("AccountNotExists","&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！",p));
-                return true;
-            }
-            if (!account.isLogin()) {
-                sender.sendMessage(fpi.putLanguage("AccountIsNotLogin", "&c你的账号没有登录。请使用/login <密码> 登陆！",p));
-                return true;
-            }
-            if (account.delete()) {
-                sender.sendMessage(fpi.putLanguage("AccountIsDelete","&a成功删除账号！",p));
-                return true;
+                if (!account.exists()) {
+                    sender.sendMessage(fpi.putLanguage("AccountNotExists", "&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！", p));
+                    return true;
+                }
+                if (!account.isLogin()) {
+                    sender.sendMessage(fpi.putLanguage("AccountIsNotLogin", "&c你的账号没有登录。请使用/login <密码> 登陆！", p));
+                    return true;
+                }
+                if (account.delete()) {
+                    sender.sendMessage(fpi.putLanguage("AccountIsDelete", "&a成功删除账号！", p));
+                    return true;
+                }
             }
         }
         if (sender.isOp()) {
@@ -67,10 +71,17 @@ public class CommandAccountDelete implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> ls = new ArrayList<>();
         if (sender.isOp()) {
-            for (User u : Functions.instance.getPlayerManager().getUsers()) {
-                ls.add(u.getAccount().getLowerName());
+            for (User u : Functions.instance.getPlayerManager().getAllUser()) {
+                if (args.length >= 1) {
+                    if (u.getAccount().getLowerName().contains(args[0])) {
+                        ls.add(u.getAccount().getLowerName());
+                    }
+                } else {
+                    ls.add(u.getAccount().getLowerName());
+                }
             }
         }
+        Collections.sort(ls);
         return ls;
     }
 }

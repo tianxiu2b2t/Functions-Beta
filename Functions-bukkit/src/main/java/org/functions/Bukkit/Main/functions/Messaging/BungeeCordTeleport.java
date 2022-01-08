@@ -6,7 +6,7 @@ import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Messaging.BungeeCord.GetServer;
 import org.functions.Bukkit.Main.functions.Messaging.BungeeCord.Teleport;
 
-public class Control implements PluginMessageListener {
+public class BungeeCordTeleport implements ListenerMessaging {
     GetServer getBcServer;
     Teleport BcTeleport;
     Functions instance = Functions.instance;

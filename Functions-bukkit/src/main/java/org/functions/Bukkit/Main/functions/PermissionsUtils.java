@@ -59,14 +59,17 @@ public class PermissionsUtils {
                                 if (t.length == i) {
                                     return true;
                                 }
-                                if (t.length >= (i + 1)) {
-                                    if (t[i + 1] != null) {
-                                        if (t[i + 1].startsWith("*")) {
+                                int ts = i + 1;
+                                // t .length = 5;
+                                // 5 < 6
+                                if (t.length == ts) {
+                                    if (t[ts] != null) {
+                                        if (t[ts].startsWith("*")) {
                                             return true;
                                         }
                                     }
-                                } else if (t[i + 1] != null || pm[i + 1] != null) {
-                                    if (t[i + 1].equalsIgnoreCase(pm[i + 1])) {
+                                } else if (t[i] != null || pm[i] != null) {
+                                    if (t[i].equalsIgnoreCase(pm[i])) {
                                         return true;
                                     }
                                 }

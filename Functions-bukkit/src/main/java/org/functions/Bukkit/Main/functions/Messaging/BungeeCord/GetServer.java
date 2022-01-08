@@ -57,9 +57,7 @@ public class GetServer {
             String ServerName = "";
             try {
                 ServerName = in.readUTF();
-                System.out.println(ServerName);
                 SL = in.readUTF().split(", ");
-                System.out.println(SL);
             } catch (IOException var12) {
             }
 

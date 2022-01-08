@@ -6,6 +6,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
+import org.functions.Bukkit.Main.functions.PermissionsUtils;
 import org.functions.Bukkit.Main.functions.User;
 
 import java.util.List;
@@ -19,12 +20,16 @@ public class CommandWorldControl implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (fpi.hasAliases("seed",label)) {
             if (sender instanceof Player) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.seed")) {
+                    return true;
+                }
                 Player p = ((Player) sender);
                 User user = Functions.instance.getPlayerManager().getUser(p.getUniqueId());
                 fpi.getInstance().getFServer().getWorlds().forEach(e->{
                     String text = fpi.putLanguage("ShowWorldsSeed","&a世界 %world% 的种子为 %seed%",null,new Object[]{"world",e.getWorld().getName(),"seed",e.getWorld().getSeed()});
                     user.sendTellRaw("[{\"text\":\"" + text + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + e.getWorld().getSeed() + "\"}}]");
                 });
+                return true;
             }
             fpi.getInstance().getFServer().getWorlds().forEach(e->{
                 sender.sendMessage(fpi.putLanguage("ShowWorldsSeed","&a世界 %world% 的种子为 %seed%",null,new Object[]{"world",e.getWorld().getName(),"seed",e.getWorld().getSeed()}));

@@ -8,16 +8,21 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.Event.FAsyncPlayerChatEvent;
 import org.functions.Bukkit.API.FPI;
+import org.functions.Bukkit.API.SpeedPerSeconds;
 import org.functions.Bukkit.API.WorldBlock;
 import org.functions.Bukkit.Main.*;
 import org.functions.Bukkit.Main.functions.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class Players implements Listener {
     FPI fpi = Functions.instance.getAPI();
@@ -109,16 +114,18 @@ public class Players implements Listener {
         Player p = event.getPlayer();
         account = new Account(p.getUniqueId());
         if (!account.isLogin()) {
-            event.setTo(new Location(event.getFrom().getWorld(), event.getFrom().getX(),event.getFrom().getY(),event.getFrom().getZ(),event.getTo().getYaw(),event.getTo().getPitch()));
+            event.setTo(new Location(event.getFrom().getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), event.getTo().getYaw(), event.getTo().getPitch()));
             return;
             //event.setTo(event.getFrom());
         }
         if (fpi.getRules().isEnabled(FunctionsRules.Type.FALL)) {
             if (event.getTo().getY() < -64) {
                 FPI.fall.put(p.getUniqueId(), true);
-                event.getPlayer().teleport(new Location(event.getTo().getWorld(), event.getTo().getX(), event.getPlayer().getWorld().getMaxHeight(), event.getTo().getZ(),event.getTo().getYaw(),event.getTo().getPitch()));
+                event.getPlayer().teleport(new Location(event.getTo().getWorld(), event.getTo().getX(), event.getPlayer().getWorld().getMaxHeight(), event.getTo().getZ(), event.getTo().getYaw(), event.getTo().getPitch()));
             }
         }
+        //if (fpi.sps.get(p.getUniqueId())==null) fpi.sps.put(event.getPlayer().getUniqueId(),new SpeedPerSeconds(event.getPlayer().getUniqueId()));
+        //fpi.sps.get(event.getPlayer().getUniqueId()).count();
     }
     @EventHandler
     public void damage(EntityDamageEvent event) {
@@ -162,6 +169,8 @@ public class Players implements Listener {
             if (account.exists() || account.isLogin()) {
                 Accounts.login.remove(p.getUniqueId());
                 if (fpi.cps.get(p.getUniqueId()) != null) fpi.cps.remove(p.getUniqueId());
+                //if (fpi.sps.get(p.getUniqueId())==null) fpi.sps.remove(event.getPlayer().getUniqueId());
+
                 account.setPosition();
                 account.setGameMode();
             }
@@ -170,6 +179,44 @@ public class Players implements Listener {
     @EventHandler
     public void title(ServerListPingEvent event) {
 
+    }
+    @EventHandler
+    public void death(PlayerDeathEvent event) {
+        Player p = event.getEntity();
+        event.setKeepInventory(Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep",false));
+        event.setKeepLevel(Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep",false));
+        if (Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep",false)) event.setDroppedExp(0);
+        Functions.instance.print("The player: " + p.getName() + " death is keep inventory and level");
+    }
+
+    @EventHandler
+    public void EntityExplode(EntityExplodeEvent event) {
+        Entity entity = event.getEntity();
+        List<String> list = new ArrayList<>();
+        list.add("creeper");
+        list.add("ender_dragon");
+        list.add("fireball");
+        list.add("small_fireball");
+        list.add("wither");
+        list.add("wither_skull");
+        list.add("minecart_tnt");
+        list.add("primed_tnt");
+        if (Functions.instance.getConfiguration().getSettings().getStringList("EntityExplode.List").size() != 0) list = Functions.instance.getConfiguration().getSettings().getStringList("EntityExplode.List");
+        if (!(entity instanceof Player)) {
+            list.forEach(type->{
+                if (entity.getType().name().toLowerCase().equalsIgnoreCase(type.toLowerCase())) {
+                    event.setCancelled(true);
+                    event.setYield(0);
+                    Functions.instance.print("The entity: " + entity.getName() + " cancelled explosion");
+                    return;
+                }
+                if (entity.getType().name().toLowerCase().contains(type.toLowerCase())) {
+                    event.setCancelled(true);
+                    event.setYield(0);
+                    Functions.instance.print("Fuzzy entity: " + entity.getName() + " cancelled explosion");
+                }
+            });
+        }
     }
     @EventHandler
     public void onServerStop(org.bukkit.event.server.PluginDisableEvent event) {

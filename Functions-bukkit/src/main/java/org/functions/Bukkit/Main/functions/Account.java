@@ -82,6 +82,11 @@ public class Account {
         }
         return getSpawnPosition();
     }
+    private void login() {
+        Accounts.login.put(uuid, true);
+        teleportQuitPosition();
+        getPlayer().setGameMode(getGameMode());
+    }
     public Location getSpawnPosition() {
         Location position = getPlayer().getWorld().getSpawnLocation();
         WorldBlock worldBlock = new WorldBlock(position);

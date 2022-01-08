@@ -31,6 +31,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.functions.Bukkit.Main.functions.Updater;
 
 public class Metrics {
     //11673
@@ -244,6 +245,9 @@ public class Metrics {
             baseJsonBuilder.appendField("service", serviceJsonBuilder.build());
             baseJsonBuilder.appendField("serverUUID", serverUuid);
             baseJsonBuilder.appendField("metricsVersion", METRICS_VERSION);
+            // Functions edit is start.
+            baseJsonBuilder.appendField("FunctionsVersion", new Updater().getNowVersion());
+            // Functions edit is end.
             JsonObjectBuilder.JsonObject data = baseJsonBuilder.build();
             scheduler.execute(
                     () -> {

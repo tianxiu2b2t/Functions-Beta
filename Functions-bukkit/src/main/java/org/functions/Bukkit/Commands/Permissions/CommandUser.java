@@ -349,11 +349,11 @@ public class CommandUser implements TabExecutor {
                     sender.sendMessage(fpi.putLanguage("NumberFormatTooSmall","&c%string% 的数字太小啦",null,new String[]{"%string%"},new String[]{args[3]}));
                     return true;
                 }
-                if (user.getPrefixes().size() <= i) {
+                if (user.getSuffixes().size() <= i) {
                     sender.sendMessage(fpi.putLanguage("NumberBigUserSuffixes","&c用户 %user% 的尾街组数量 %size% 大于或等于 %number%",null,new String[]{"%user%","%number%","%size%"},new String[]{user.getName(),i+"",user.getPrefixes().size()+""}));
                     return true;
                 }
-                String s = user.removePrefixes(i);
+                String s = user.removeSuffixes(i);
                 if (s != null) {
                     sender.sendMessage(fpi.putLanguage("RemoveSuffixesUser","&a用户 %user% 的尾街 \"%suffix%\" 成功移除",null,new Object[]{"user",user.getOfflinePlayer().getName(),"suffix",s}));
                     return true;
@@ -375,11 +375,11 @@ public class CommandUser implements TabExecutor {
                     sender.sendMessage(fpi.putLanguage("NumberFormatTooSmall","&c%string% 的数字太小啦",null,new String[]{"%string%"},new String[]{args[3]}));
                     return true;
                 }
-                if (user.getPrefixes().size() < i) {
+                if (user.getSuffixes().size() < i) {
                     sender.sendMessage(fpi.putLanguage("NumberBigUserSuffixes","&c用户 %user% 的尾街组数量 %size% 大于 %number%",null,new String[]{"%user%","%number%","%size%"},new String[]{user.getName(),i+"",user.getPrefixes().size()+""}));
                     return true;
                 }
-                user.setPrefix(user.getPrefixes().get(i));
+                user.setSuffix(user.getPrefixes().get(i));
                 sender.sendMessage(fpi.putLanguage("ChangeSuffixesUser","&a成功切换 %user% 的 \"%suffix%\" 头街",null,new String[]{"%user%",user.getName(),"%suffix%", user.getSuffix()}));
                 return true;
             }
