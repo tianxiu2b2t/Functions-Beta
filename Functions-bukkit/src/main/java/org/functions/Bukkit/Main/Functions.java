@@ -1,13 +1,20 @@
 package org.functions.Bukkit.Main;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.Listener.Players;
 import org.functions.Bukkit.Main.Server.FServer;
+import org.functions.Bukkit.Main.functions.YamlUsers;
 import org.functions.Bukkit.Main.functions.AddressLocation;
 import org.functions.Bukkit.Main.functions.Messaging.BungeeCordTeleport;
 import org.functions.Bukkit.Main.functions.ServerTitle;
@@ -17,6 +24,7 @@ import java.io.File;
 import java.util.*;
 
 public final class Functions extends JavaPlugin {
+    YamlUsers yamlUsers;
     BungeeCordTeleport bungeeCordTeleport;
     FServer f;
     public ServerTitle title;
@@ -50,6 +58,8 @@ public final class Functions extends JavaPlugin {
         configuration.install();
         reloadConfig();
         location = new AddressLocation(getConfig().getString("AddressCheck.IPImportFile", "ip.dat"),getConfig().getString("AddressCheck.Folder",getDataFolder().getAbsolutePath()));
+        file = new File(path,"Users");
+        yamlUsers = new YamlUsers(file);
     }
     public DataBase getDatabase() {
         return database;
@@ -141,8 +151,16 @@ public final class Functions extends JavaPlugin {
         bungeeCordTeleport = new BungeeCordTeleport();
         bungeeCordTeleport.onEnable();
         f.flushMemory();
+        // recipe
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("packet_ice"),new ItemStack(Material.PACKED_ICE)).shape("xxx","xxx","xxx").setIngredient('x',Material.ICE);
+        getServer().addRecipe(recipe);
         // Plugin startup logic
-
+    }
+    public YamlUsers yamlUsers() {
+        String path = getDataFolder()+"";
+        path = path.replace("\\","/");
+        File file = new File(path,"Users");
+        return yamlUsers != null ? yamlUsers : new YamlUsers(file);
     }
     public FServer getFServer() {
         return f;

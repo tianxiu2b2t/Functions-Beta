@@ -7,6 +7,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
+import org.bukkit.inventory.ItemStack;
 import org.functions.Bukkit.Main.Functions;
 
 import java.io.*;
@@ -184,5 +186,10 @@ public class FServer {
     public Functions getInstance() {
         return Functions.instance;
     }
-
+    public int getEntitiesItemStack(World world) {
+        return getWorldItems(world).stream().mapToInt(e -> ((Item) e).getItemStack().getAmount()).sum();
+    }
+    public int getEntitiesItemStacks() {
+        return server.getWorlds().stream().mapToInt(this::getEntitiesItemStack).sum();
+    }
 }

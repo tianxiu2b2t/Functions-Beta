@@ -8,16 +8,15 @@ import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.SpeedPerSeconds;
 import org.functions.Bukkit.Main.DataBase;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.PlayerManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class User implements IUser {
+public class SQLUser implements IUser {
     UUID uuid;
-    //DataBase db = Functions.instance.database;
-    //String table = Functions.instance.getTable("Users");
+    DataBase db = Functions.instance.database;
+    String table = Functions.instance.getTable("Users");
     String select;
     Group group = null;
     List<String> permissions = new ArrayList<>();
@@ -26,35 +25,50 @@ public class User implements IUser {
     String prefix = "";
     String suffix = "";
     boolean hide = false;
-    //public String select_all = "SELECT * FROM " + Functions.instance.getTable("Users");
+    public String select_all = "SELECT * FROM " + Functions.instance.getTable("Users");
     Utils.sendTellRaw send;
-    public User(UUID uuid) {
+    public SQLUser(UUID uuid) {
         this.uuid = uuid;
         if (!exists()) {
-            Functions.instance.yamlUsers().initUserFileConfiguration(uuid);
+            db.execute("INSERT INTO " + table + " ( UUID ) VALUES ( '" + uuid.toString() + "' )");
         }
-        group = getGroup();
+        select = "SELECT * FROM " + table + " WHERE UUID='" + uuid.toString() + "'";
+        try {
+            group = new Group(db.query(select).getString(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
-    public User(Player player) {
+    public SQLUser(Player player) {
         this.uuid = player.getUniqueId();
         if (!exists()) {
-            Functions.instance.yamlUsers().initUserFileConfiguration(uuid);
+            db.execute("INSERT INTO " + table + " ( UUID ) VALUES ( '" + uuid.toString() + "' )");
         }
-        group = getGroup();
+        select = "SELECT * FROM " + table + " WHERE UUID='" + uuid.toString() + "'";
+        try {
+            group = new Group(db.query(select).getString(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
-    public User(OfflinePlayer player) {
+    public SQLUser(OfflinePlayer player) {
         this.uuid = player.getUniqueId();
         if (!exists()) {
-            Functions.instance.yamlUsers().initUserFileConfiguration(uuid);
+            db.execute("INSERT INTO " + table + " ( UUID ) VALUES ( '" + uuid.toString() + "' )");
         }
-        group = getGroup();
+        select = "SELECT * FROM " + table + " WHERE UUID='" + uuid.toString() + "'";
+        try {
+            group = new Group(db.query(select).getString(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         //send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
     public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
-        Functions.instance.yamlUsers().set(uuid,"Permissions",ListToString(permissions));
+        db.execute("UPDATE " + table + " SET Permissions='" + ListToString(permissions) + "' where UUID='" + uuid.toString() + "'");
     }
     public boolean addPermissions(String name) {
         boolean is = true;
@@ -95,7 +109,12 @@ public class User implements IUser {
             DelayGet.users.put(uuid.toString()+"getPermissions",System.currentTimeMillis() + 5000);
         }
         permissions = getGroup().getAllPermissions();
-        if (Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions")!=null) permissions = StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions"));
+        try {
+            if (db.query(select).getString("Permissions")!=null) permissions = StringToList(db.query(select).getString("Permissions"));
+            return permissions;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return permissions;
     }
     public List<String> getOtherPermissions() {
@@ -120,35 +139,66 @@ public class User implements IUser {
     }
     public void setPrefixes(List<String> prefixes) {
         this.prefixes = prefixes;
-        Functions.instance.yamlUsers().set(uuid,"Prefixes",ListToString(prefixes));
+        db.execute("UPDATE " + table + " SET Prefixes='" + ListToString(prefixes) + "' where UUID='" + uuid.toString() + "'");
     }
     public List<String> getPrefixes() {
-        prefixes = StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Prefixes"));
+        if (DelayGet.users.get(uuid.toString()+"getPrefixes")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getPrefixes") <= System.currentTimeMillis()) {
+                return prefixes;
+            }
+            DelayGet.users.remove(uuid.toString()+"getPrefixes");
+            DelayGet.users.put(uuid.toString()+"getPrefixes",System.currentTimeMillis() + 5000);
+        }
+        try {
+            prefixes = StringToList(db.query(select).getString("Prefixes"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return prefixes;
     }
     public void setPrefix(String prefix) {
         this.prefix = prefix;
-        Functions.instance.yamlUsers().set(uuid,"Prefix",prefix);
+        db.execute("UPDATE " + table + " SET Prefix='" + prefix + "' where UUID='" + uuid.toString() + "'");
     }
     public String getPrefix() {
-        String t = Functions.instance.yamlUsers().configurations.get(uuid).getString("Prefix");
-        if (t==null || t.equals("")) {
-            suffix = group.getPrefix();
-        } else {
-            suffix = Functions.instance.getAPI().replace(t, getPlayer());
+        if (DelayGet.users.get(uuid.toString()+"getPrefix")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getPrefixes") <= System.currentTimeMillis()) {
+                return prefix;
+            }
+            DelayGet.users.remove(uuid.toString()+"getPrefix");
+            DelayGet.users.put(uuid.toString()+"getPrefix",System.currentTimeMillis() + 5000);
         }
-        return suffix;
+        prefix = Functions.instance.getAPI().replace(getGroup().getPrefix(),getPlayer());
+        try {
+            String t = db.query(select).getString("Prefix");
+            if (t!=null) prefix = Functions.instance.getAPI().replace(t,getPlayer());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return prefix;
     }
     public void setSuffixes(List<String> Suffixes) {
         this.suffixes = Suffixes;
-        Functions.instance.yamlUsers().set(uuid,"Suffixes",ListToString(Suffixes));
+        db.execute("UPDATE " + table + " SET Suffixes='" + ListToString(Suffixes) + "' where UUID='" + uuid.toString() + "'");
     }
     public List<String> getSuffixes() {
-        return StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Suffixes"));
+        if (DelayGet.users.get(uuid.toString()+"getSuffixes")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getSuffixes") <= System.currentTimeMillis()) {
+                return suffixes;
+            }
+            DelayGet.users.remove(uuid.toString()+"getSuffixes");
+            DelayGet.users.put(uuid.toString()+"getSuffixes",System.currentTimeMillis() + 5000);
+        }
+        try {
+            suffixes = StringToList(db.query(select).getString("Suffixes"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return suffixes;
     }
     public void setSuffix(String suffix) {
         this.suffix = suffix;
-        Functions.instance.yamlUsers().set(uuid,"Suffix",suffix);
+        db.execute("UPDATE " + table + " SET Suffix='" + suffix + "' where UUID='" + uuid.toString() + "'");
     }
 
     public String ListToString(List<String> list) {
@@ -172,11 +222,19 @@ public class User implements IUser {
     }
 
     public String getSuffix() {
-        String t = Functions.instance.yamlUsers().configurations.get(uuid).getString("Suffix");
-        if (t==null || t.equals("")) {
-            suffix = group.getSuffix();
-        } else {
-            suffix = Functions.instance.getAPI().replace(t, getPlayer());
+        if (DelayGet.users.get(uuid.toString()+"getSuffix")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"getSuffix") <= System.currentTimeMillis()) {
+                return suffix;
+            }
+            DelayGet.users.remove(uuid.toString()+"getSuffix");
+            DelayGet.users.put(uuid.toString()+"getSuffix",System.currentTimeMillis() + 5000);
+        }
+        suffix = Functions.instance.getAPI().replace(getGroup().getSuffix(),getPlayer());
+        try {
+            String t = db.query(select).getString("Suffix");
+            if (t!=null) suffix = Functions.instance.getAPI().replace(t,getPlayer());
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return suffix;
     }
@@ -257,11 +315,10 @@ public class User implements IUser {
         return s;
     }
     public Group getGroup() {
-        if (group==null) setGroup("Default");
         return group;
     }
     public void setGroup(String name) {
-        Functions.instance.yamlUsers().set(uuid,"Group",name);
+        db.execute("UPDATE " + table + " Set 'Group'='" + name + "' where UUID='" + uuid.toString() + "'");
         group = new Group(name);
     }
     public Economy getEconomy() {
@@ -280,7 +337,26 @@ public class User implements IUser {
         return getOfflinePlayer().getPlayer();
     }
     public boolean exists() {
-        return Functions.instance.yamlUsers().exists(uuid);
+        List<String> ls = new ArrayList<>();
+        ResultSet rs = db.query(select_all);
+        if (rs == null) {
+            return false;
+        }
+        try {
+            while (rs.next()) {
+                ls.add(rs.getString("UUID"));
+            }
+        } catch (SQLException troubles) {
+            troubles.printStackTrace();
+        }
+        for (String s : ls) {
+            if (s.equalsIgnoreCase(uuid.toString())) {
+                ls.clear();
+                return true;
+            }
+        }
+        ls.clear();
+        return false;
     }
     public ClickPerSeconds getCPS() {
         return Functions.instance.getAPI().cps.get(getPlayer().getUniqueId());
@@ -291,10 +367,23 @@ public class User implements IUser {
     }
 
     public boolean isHiding() {
-        return Functions.instance.yamlUsers().configurations.get(uuid).getBoolean("Invisibility");
+        if (DelayGet.users.get(uuid.toString()+"isHiding")!=null) {
+            if (DelayGet.users.get(uuid.toString()+"isHiding") <= System.currentTimeMillis()) {
+                return hide;
+            }
+            DelayGet.users.remove(uuid.toString()+"isHiding");
+            DelayGet.users.put(uuid.toString()+"isHiding",System.currentTimeMillis() + 5000);
+        }
+        try {
+            hide = Boolean.parseBoolean(db.query(select).getString("Hide"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return hide;
     }
     public void setInvisibility(boolean invisibility) {
-        Functions.instance.yamlUsers().configurations.get(uuid).set("Invisibility",invisibility);
+        db.execute("UPDATE " + table + " Set 'Hide'='" + invisibility + "' where UUID='" + uuid.toString() + "'");
+
     }
     public String getDisplayName() {
         return getPrefix() + getPlayer().getName() + getSuffix();

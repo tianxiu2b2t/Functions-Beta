@@ -2,15 +2,22 @@ package org.functions.Bukkit.Main;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.Main.functions.Group;
 import org.functions.Bukkit.Main.functions.User;
+import org.functions.Bukkit.Main.functions.YamlUsers;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class PlayerManager implements Runnable {
+    YamlUsers yamlUsers;
+    public LinkedHashMap<UUID, FileConfiguration> configurations = new LinkedHashMap<>();
+    public LinkedHashMap<UUID, File> file = new LinkedHashMap<>();
     static List<User> user = new ArrayList<>();
     static List<User> offlineuser = new ArrayList<>();
     static List<User> alluser = new ArrayList<>();
@@ -18,6 +25,8 @@ public class PlayerManager implements Runnable {
     Server server;
     public PlayerManager(Server server) {
         this.server = server;
+        configurations = new LinkedHashMap<>();
+        file = new LinkedHashMap<>();
         run();
     }
     public void run() {

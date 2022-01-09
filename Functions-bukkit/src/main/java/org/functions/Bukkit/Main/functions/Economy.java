@@ -11,25 +11,20 @@ import java.util.UUID;
 
 public class Economy {
     UUID uuid;
-    DataBase db = Functions.instance.database;
-    String table = Functions.instance.getTable("Economy");
-    public String select_all = "SELECT * FROM " + Functions.instance.getTable("Economy");
+   // DataBase db = Functions.instance.database;
+    //String table = Functions.instance.getTable("Economy");
+    //public String select_all = "SELECT * FROM " + Functions.instance.getTable("Economy");
     public Economy(UUID uuid) {
         this.uuid = uuid;
         if (!exists()) {
-            db.execute("INSERT INTO " + table + " ( UUID , Economy , Bank ) VALUES ( '" + uuid.toString() + "' , ' 0 ', ' 0 ' )");
+            Functions.instance.yamlUsers().createUser(uuid);
         }
     }
     public double getBalance() {
-        try {
-            return db.query("SELECT * FROM " + table + " WHERE UUID='" + uuid.toString() + "'").getDouble("Economy");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0.0;
+        return Functions.instance.yamlUsers().configurations.get(uuid).getDouble("Economy",0.0D);
     }
     public void setBalance(double amount) {
-        db.execute("UPDATE " + table + " SET Economy='" + amount + "' WHERE UUID='" + uuid.toString() +"'");
+        Functions.instance.yamlUsers().set(uuid,"Economy",amount);//db.execute("UPDATE " + table + " SET Economy='" + amount + "' WHERE UUID='" + uuid.toString() +"'");
     }
     public boolean giveBalance(double amount) {
         return addBalance(amount);
@@ -87,7 +82,7 @@ public class Economy {
         return -1;
     }
     public boolean exists() {
-        List<String> ls = new ArrayList<>();
+        /*List<String> ls = new ArrayList<>();
         ResultSet rs = db.query(select_all);
         try {
             while (rs.next()) {
@@ -102,7 +97,7 @@ public class Economy {
                 return true;
             }
         }
-        ls.clear();
-        return false;
+        ls.clear();*/
+        return Functions.instance.yamlUsers().exists(uuid);
     }
 }
