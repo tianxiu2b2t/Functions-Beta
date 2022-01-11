@@ -88,7 +88,18 @@ public class User implements IUser {
     }
     public List<String> getPermissions() {
         permissions = getGroup().getAllPermissions();
-        if (Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions")!=null) permissions = StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions"));
+        if (Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions")!=null) {
+            List<String> ls = StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions"));
+            permissions.forEach(
+                    e-> {
+                        ls.forEach(f->{
+                            if (f.equalsIgnoreCase(e)) {
+                                ls.remove(f);
+                            }
+                        });
+                    });
+            permissions.addAll(ls);
+        }
         return permissions;
     }
     public List<String> getOtherPermissions() {
@@ -250,12 +261,13 @@ public class User implements IUser {
         return s;
     }
     public Group getGroup() {
-        if (group==null) setGroup("Default");
+        if (group==null) return new Group(Functions.instance.yamlUsers().configurations.get(uuid).getString("Group","Default"));
         return group;
     }
     public void setGroup(String name) {
         Functions.instance.yamlUsers().set(uuid,"Group",name);
         group = new Group(name);
+        permissions.clear();
     }
     public Economy getEconomy() {
         return new Economy(uuid);
@@ -287,16 +299,22 @@ public class User implements IUser {
         return Functions.instance.yamlUsers().configurations.get(uuid).getBoolean("Invisibility");
     }
     public void setInvisibility(boolean invisibility) {
-        Functions.instance.yamlUsers().configurations.get(uuid).set("Invisibility",invisibility);
+        Functions.instance.yamlUsers().set(uuid,"Invisibility",invisibility);
     }
     public String getDisplayName() {
         return getPrefix() + getPlayer().getName() + getSuffix();
     }
     public void sendTellRaw(String text) {
-        if (Functions.instance.getServer().getOfflinePlayer(uuid).isOnline()) send.send(text);
+        if (Functions.instance.getServer().getOfflinePlayer(uuid).isOnline()) {
+            send = new Utils.sendTellRaw(getPlayer());
+            send.send(text);
+        }
     }
     public void sendParseTellRaw(String text) {
-        if (Functions.instance.getServer().getOfflinePlayer(uuid).isOnline()) send.send(send.parse(text));
+        if (Functions.instance.getServer().getOfflinePlayer(uuid).isOnline()) {
+            send = new Utils.sendTellRaw(getPlayer());
+            send.send(text);
+        }
     }
     public String getJsonChatDisplayName() {
         return "{\"text\":\"" + getDisplayName() + "%lines%UUID: " + uuid.toString() + "%lines%金币" + getEconomy().getBalance() + "%lines%银行" + getBank().getBalance() + "\"}";

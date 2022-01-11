@@ -1,8 +1,6 @@
 name: Functions
 version: '${project.version}'
 main: org.functions.Bukkit.Main.Functions
-prefix: Functions
-loadbefore: [ Functions ]
 authors: [ 2b2ttianxiu ]
 description: None
 website: https://gitee.com/tianxiu2b2t/Functions-Beta, https://github.com/tianxiu2b2t/Functions-Beta

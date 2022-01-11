@@ -9,4 +9,7 @@ Format:
 Hide: false
 Permissions:
   - "functions.default.*"
+  - "functions.permissions.command.fly"
+  - "functions.permissions.command.seed"
+  - "functions.permissions.command.warp.teleport"
 atPlayer: "&2@%player%&r"

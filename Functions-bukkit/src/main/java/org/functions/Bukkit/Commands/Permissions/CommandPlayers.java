@@ -275,11 +275,11 @@ public class CommandPlayers implements TabExecutor {
                     return true;
                 }
                 if (!Warp.isWarp(args[0])) {
-                    sender.sendMessage(fpi.putLanguage("WarpIsNotExists", "&c地标 %warp% 不存在!", null, new Object[]{"warp", Warp.getWarp(args[1])}));
+                    sender.sendMessage(fpi.putLanguage("WarpIsNotExists", "&c地标 %warp% 不存在!", null, new Object[]{"warp", Warp.getWarp(args[0])}));
                     return true;
                 }
                 ((Player) sender).teleport(Warp.getWarpPos(args[0]));
-                sender.sendMessage(fpi.putLanguage("TeleportedToWarp","&a已成功传送到 %warp%(%position%) 处！",null,new Object[]{"warp",args[1],"position",Warp.getWarpPosString(args[1])}));
+                sender.sendMessage(fpi.putLanguage("TeleportedToWarp","&a已成功传送到 %warp%(%position%) 处！",null,new Object[]{"warp",args[0],"position",Warp.getWarpPosString(args[0])}));
                 return true;
             }
             sender.sendMessage(fpi.noPlayer());
@@ -315,7 +315,7 @@ public class CommandPlayers implements TabExecutor {
                 }
             }
             if (args.length == 2) {
-                if (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("remove")) {
+                if (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("change")) {
                     ls.clear();
                     ls.addAll(Warp.getWarps());
                 }

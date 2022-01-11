@@ -51,6 +51,12 @@ public class FPI {
         Functions.instance.getCommand(s).setTabCompleter(te);
         commands.put(s.toLowerCase(),Functions.instance.getCommand(s));
     }
+    public void clearCommands(String s, TabExecutor te) {
+        commands.forEach((name,tes)->{
+            Functions.instance.getCommand(name).setExecutor(null);
+            Functions.instance.getCommand(name).setTabCompleter(null);
+        });
+    }
     public boolean hasAliases(String cmd,String aliases) {
         cmd = cmd.toLowerCase();
         for (String s : commands.get(cmd).getAliases()) {

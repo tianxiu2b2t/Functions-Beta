@@ -118,6 +118,9 @@ public class Utils {
             return s;
         }
         public void send(String header, String footer) {
+            if (Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
+                return;
+            }
             if (Functions.instance.getAPI().send_packet.get("Tab")!=null) {
                 if (System.currentTimeMillis() < Functions.instance.getAPI().send_packet.get("Tab")) {
                     return;

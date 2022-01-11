@@ -14,7 +14,6 @@ public class sendPacketToClient implements Runnable {
     Utils.ScoreBoard board;
     public void run() {
         for (Player p : Functions.instance.getAPI().getOnlinePlayers()) {
-            tab = new Utils.Tab(p);
             StringBuilder Footer = new StringBuilder();
             if (Functions.instance.getConfiguration().getSettings().getString("Tab.Footer") != null) {
                 if (!Functions.instance.getConfiguration().getSettings().getString("Tab.Footer").equals("none") && !Functions.instance.getConfiguration().getSettings().getString("Tab.Footer").equals("")) {
@@ -39,14 +38,15 @@ public class sendPacketToClient implements Runnable {
                     }
                 }
             }
+            tab = new Utils.Tab(p);
             tab.send(Header.toString(), Footer.toString(), Functions.instance.getConfiguration().getSettings().getString("PlayerList"));
-            bar = new Utils.ActionBar(p);
             if (Functions.instance.getConfiguration().getSettings().get("ActionBar")!=null) {
+                bar = new Utils.ActionBar(p);
                 if (Functions.instance.getConfiguration().getSettings().get("ActionBar.Message")!=null) bar.send(Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
             }
-            board = new Utils.ScoreBoard(p);
             List<String> ls = new ArrayList<>();
             if (Functions.instance.getConfiguration().getSettings().get("ScoreBoard")!=null) {
+                board = new Utils.ScoreBoard(p);
                 ls.add(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines",""));
                 if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").startsWith("[")) {
                     if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").endsWith("]")) {

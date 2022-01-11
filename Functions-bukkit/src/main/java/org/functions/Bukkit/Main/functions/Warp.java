@@ -52,7 +52,8 @@ public class Warp {
         setWarpPos(name,new Location(world,x,y,z));
     }
     public static void setWarpPos(String name,Location pos) {
-        configuration.getWarps().set(name,Functions.instance.getAPI().changeLocationToString(pos));
+        if (pos!=null) configuration.getWarps().set(name,Functions.instance.getAPI().changeLocationToString(pos));
+        if (pos==null) configuration.getWarps().set(name,null);
         try {
             configuration.getWarps().save(configuration.Warps_file);
         } catch (IOException e) {
