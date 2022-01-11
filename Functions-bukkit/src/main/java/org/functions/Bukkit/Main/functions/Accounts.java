@@ -13,8 +13,28 @@ import java.util.UUID;
 
 public class Accounts {
     public static LinkedHashMap<UUID, Boolean> login = new LinkedHashMap<>();
+    public static LinkedHashMap<UUID, Long> bclogin = new LinkedHashMap<>();
     static String table = Functions.instance.getTable("Accounts");
     static DataBase db = Functions.instance.getDatabase();
+    public static boolean isBcLoginTimeOut(UUID uuid) {
+        if (Functions.instance.getFServer().isBc()) {
+            if (bclogin.get(uuid)!=null) {
+                if (bclogin.get(uuid) < System.currentTimeMillis()) {
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+    public static void reCountIsBcLoginTimeOut(UUID uuid) {
+        if (Functions.instance.getFServer().isBc()) {
+            if (bclogin.get(uuid) == null) {
+                bclogin.put(uuid, System.currentTimeMillis() + 10000);
+            } else if (isBcLoginTimeOut(uuid)) {
+                bclogin.remove(uuid);
+            }
+        }
+    }
     public static List<Account> getAccounts() {
         List<Account> accounts = new ArrayList<>();
         ResultSet rs = db.query("SELECT * FROM " + table);

@@ -82,6 +82,7 @@ public class Configuration {
         onAnimation();
         readAnimation();
         onServerTitle();
+        onWarps();
     }
 
     public void reload() {
@@ -531,5 +532,15 @@ public class Configuration {
                 e.printStackTrace();
             }
         }
+    }
+    public File Warps_file = new File(getDataFolder(), "Warps.yml");
+    private FileConfiguration Warps = new YamlConfiguration();
+
+    private void onWarps() {
+        onLoadFile(Warps_file, Warps, Warps_file.getName(), false);
+    }
+
+    public FileConfiguration getWarps() {
+        return Warps;
     }
 }

@@ -34,7 +34,7 @@ public class User implements IUser {
             Functions.instance.yamlUsers().initUserFileConfiguration(uuid);
         }
         group = getGroup();
-        send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
+        if (getOfflinePlayer().isOnline()) send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
     public User(Player player) {
         this.uuid = player.getUniqueId();
@@ -50,7 +50,7 @@ public class User implements IUser {
             Functions.instance.yamlUsers().initUserFileConfiguration(uuid);
         }
         group = getGroup();
-        //send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
+        if (player.isOnline()) send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
     public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
@@ -87,13 +87,6 @@ public class User implements IUser {
         return is;
     }
     public List<String> getPermissions() {
-        if (DelayGet.users.get(uuid.toString()+"getPermissions")!=null) {
-            if (DelayGet.users.get(uuid.toString()+"getPermissions") <= System.currentTimeMillis()) {
-                return permissions;
-            }
-            DelayGet.users.remove(uuid.toString()+"getPermissions");
-            DelayGet.users.put(uuid.toString()+"getPermissions",System.currentTimeMillis() + 5000);
-        }
         permissions = getGroup().getAllPermissions();
         if (Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions")!=null) permissions = StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions"));
         return permissions;

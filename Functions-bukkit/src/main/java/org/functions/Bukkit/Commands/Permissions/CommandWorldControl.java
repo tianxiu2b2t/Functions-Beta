@@ -27,7 +27,7 @@ public class CommandWorldControl implements TabExecutor {
                 User user = Functions.instance.getPlayerManager().getUser(p.getUniqueId());
                 fpi.getInstance().getFServer().getWorlds().forEach(e->{
                     String text = fpi.putLanguage("ShowWorldsSeed","&a世界 %world% 的种子为 %seed%",null,new Object[]{"world",e.getWorld().getName(),"seed",e.getWorld().getSeed()});
-                    user.sendTellRaw("[{\"text\":\"" + text + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + e.getWorld().getSeed() + "\"}}]");
+                    user.sendTellRaw("[{\"text\":\"" + text + "\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"" + e.getWorld().getSeed() + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"§a点击此信息可以复制粘贴\"}}]");
                 });
                 return true;
             }

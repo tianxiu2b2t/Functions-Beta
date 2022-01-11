@@ -22,6 +22,8 @@ public class PlayerManager implements Runnable {
     static List<User> offlineuser = new ArrayList<>();
     static List<User> alluser = new ArrayList<>();
     static List<Group> groups = new ArrayList<>();
+    long flush = 5000;
+    long record = System.currentTimeMillis();
     Server server;
     public PlayerManager(Server server) {
         this.server = server;
@@ -30,6 +32,10 @@ public class PlayerManager implements Runnable {
         run();
     }
     public void run() {
+        //if ((record + flush) > System.currentTimeMillis()) {
+        //    alluser.clear();
+        //    record = System.currentTimeMillis();
+        //}
         for (OfflinePlayer p : server.getOfflinePlayers()) {
             if (alluser.size() == 0) {
                 alluser.add(new User(p.getUniqueId()));

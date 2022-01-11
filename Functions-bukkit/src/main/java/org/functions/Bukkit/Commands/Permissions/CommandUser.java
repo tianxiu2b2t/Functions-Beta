@@ -20,7 +20,15 @@ public class CommandUser implements TabExecutor {
     FPI fpi = Functions.instance.getAPI();
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        //if (args.length == 0) {
+        //    sender.sendMessage(fpi.subcmd());
+        //    return true;
+       // }
         User user = null;
+        if (args.length == 0) {
+            sender.sendMessage(fpi.subcmd());
+            return true;
+        }
         for (User u : Functions.instance.getPlayerManager().getAllUser()) {
             if (args[0].equalsIgnoreCase(u.getOfflinePlayer().getName())) {
                 user = u;
@@ -126,7 +134,7 @@ public class CommandUser implements TabExecutor {
             if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefixes")) {
                 return true;
             }
-            if (args.length <= 2) {
+            if (args.length == 3) {
                 if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefixes.list")) {
                     return true;
                 }
@@ -267,7 +275,7 @@ public class CommandUser implements TabExecutor {
             if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffixes")) {
                 return true;
             }
-            if (args.length <= 2) {
+            if (args.length == 3) {
                 if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffixes.list")) {
                     return true;
                 }

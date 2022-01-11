@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Listener;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
@@ -51,6 +52,7 @@ public class Players implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void Command(PlayerCommandPreprocessEvent event) {
         Player p = event.getPlayer();
+        Functions.instance.print(event.getPlayer().getName() + "(" + p.getUniqueId().toString() + ") issued server command: " + event.getMessage());
         account = new Account(p.getUniqueId());
         String cmd = event.getMessage().split(" ")[0].substring(1);
         AllowCommand login = new AllowCommand("NotLogin");
@@ -224,6 +226,14 @@ public class Players implements Listener {
             Functions.instance.print("Now execute all player quit event.");
             Functions.instance.onDisableSettings();
             Functions.instance.print("All right. Normal Stop Server.");
+        }
+    }
+    @EventHandler
+    public void onChangeGameMode(PlayerGameModeChangeEvent event) {
+        if (event.getNewGameMode().equals(GameMode.CREATIVE)) {
+            if (!PermissionsUtils.hasPermissionsSendMessage(event.getPlayer(),"functions.event.gamemode.change.creative")) {
+                event.setCancelled(true);
+            }
         }
     }
 }

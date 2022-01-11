@@ -58,10 +58,16 @@ public class FPI {
                 return true;
             }
         }
-        if (commands.get(cmd).getName().equalsIgnoreCase(aliases)) {
-            return true;
+        return cmd.equalsIgnoreCase(aliases);
+    }
+    public boolean hasAliases(String cmd,String aliases,boolean tab) {
+        if (!tab) return hasAliases(cmd,aliases);
+        for (String s : commands.get(cmd).getAliases()) {
+            if (s.equalsIgnoreCase(aliases)) {
+                return true;
+            }
         }
-        return false;
+        return cmd.equalsIgnoreCase(aliases);
     }
     public FunctionsRules getRules() {
         return new FunctionsRules();

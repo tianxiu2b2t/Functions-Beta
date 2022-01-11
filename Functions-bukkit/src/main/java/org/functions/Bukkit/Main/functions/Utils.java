@@ -69,7 +69,7 @@ public class Utils {
     public static Location parseBlockPositionToPlayerPosition(Location location) {
         return null;
     }
-    public static double autoCon(int value) {
+    public static double autoCon(double value) {
         double values = value;
         if (values != value) {
             return values;

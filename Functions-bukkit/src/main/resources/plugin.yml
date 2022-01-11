@@ -63,3 +63,6 @@ commands:
     aliases: [uninvisibility]
   ping:
     description: Functions' get player ping ms.
+  warp:
+    description: Functions' warp.
+    aliases: [warps]

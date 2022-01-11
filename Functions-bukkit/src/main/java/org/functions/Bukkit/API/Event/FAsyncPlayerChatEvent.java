@@ -32,19 +32,20 @@ public class FAsyncPlayerChatEvent {
     }
 
     public String getFormat() {
-        List<String> name = new ArrayList<>();
+        //List<String> name = new ArrayList<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
-            name.add(p.getName());
-        }
-        for (String s : name) {
-            format = format.replace("%message%",message);
-            if (message.contains("@" + s)) {
-                format = format.replace("@" + s,user.getGroup().atPlayer().replace("%player%",s));
-            } else if (message.contains(s)) {
-                format = format.replace(s,user.getGroup().atPlayer().replace("%player%",s));
+            if (message.contains("@everyone") || message.contains(user.getGroup().atPlayer().replace("%player%", "everyone"))) {
+                message = message.replace("@" + "everyone",user.getGroup().atPlayer().replace("%player%","everyone"));
+            } else if (!message.contains("@" + p.getName()) && !message.contains("@ " + p.getName())) {
+                if (message.contains(p.getName())) {
+                    message = message.replace(p.getName(), user.getGroup().atPlayer().replace("%player%", p.getName()));
+                }
+            } else {
+                message = message.replace("@" + p.getName(), user.getGroup().atPlayer().replace("%player%", p.getName())).replace("@ " + p.getName(), user.getGroup().atPlayer().replace("%target%", p.getName()));
             }
+            //name.add(p.getName());
         }
-        return Functions.instance.getAPI().replace(format,p);
+        return Functions.instance.getAPI().replace(format.replace("%message%",message),p);
     }
     public String getRawFormat() {
         for (Player p : Bukkit.getOnlinePlayers()) {
