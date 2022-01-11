@@ -13,6 +13,9 @@ public class sendPacketToClient implements Runnable {
     Utils.ActionBar bar;
     Utils.ScoreBoard board;
     public void run() {
+        if (!Utils.TPS.isHigh(15.0D)) {
+            return;
+        }
         for (Player p : Functions.instance.getAPI().getOnlinePlayers()) {
             StringBuilder Footer = new StringBuilder();
             if (Functions.instance.getConfiguration().getSettings().getString("Tab.Footer") != null) {

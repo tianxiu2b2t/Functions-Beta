@@ -685,6 +685,19 @@ public class Utils {
 
             return new double[]{-1.0D, -2.0D, -3.0D};
         }
+        public static double getTickPerSeconds() {
+            double[] tps = recentTPS();
+            return tps[0];
+        }
+        public static boolean isBetween(double max,double min) {
+            return max >= getTickPerSeconds() && min <= getTickPerSeconds();
+        }
+        public static boolean isHigh(double min) {
+            return min <= getTickPerSeconds();
+        }
+        public static boolean isLower(double max) {
+            return max >= getTickPerSeconds();
+        }
         public static String details_tps() {
             double[] tps = recentTPS();
             String[] tpsAvg = new String[tps.length];
