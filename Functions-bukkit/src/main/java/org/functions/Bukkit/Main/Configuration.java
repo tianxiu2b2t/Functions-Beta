@@ -83,6 +83,7 @@ public class Configuration {
         readAnimation();
         onServerTitle();
         onWarps();
+        onList();
     }
 
     public void reload() {
@@ -542,5 +543,16 @@ public class Configuration {
 
     public FileConfiguration getWarps() {
         return Warps;
+    }
+
+    public File List_file = new File(getDataFolder(), "List.yml");
+    private FileConfiguration List = new YamlConfiguration();
+
+    private void onList() {
+        onLoadFile(List_file, List, List_file.getName(), false);
+    }
+
+    public FileConfiguration getList() {
+        return List;
     }
 }

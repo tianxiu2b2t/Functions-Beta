@@ -106,13 +106,13 @@ public class CommandUser implements TabExecutor {
             sender.sendMessage(fpi.putLanguage("SetUserPrefix","&a成功将 %user% 的头街设置成 \"%prefix%\"",null,new String[]{"%user%","%prefix%"},new String[]{user.getOfflinePlayer().getName(),t}));
             return true;
         }
-        if ("suffix".equalsIgnoreCase(args[0])) {
+        if ("suffix".equalsIgnoreCase(args[1])) {
             if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffix")) {
                 return true;
             }
             String t = args[2];
             StringBuilder sb = new StringBuilder();
-            for (int i = 2; i <= args.length; i++) {
+            for (int i = 3; i <= args.length; i++) {
                 if (args.length != i) {
                     sb.append(args[i-1]).append(" ");
                     continue;
@@ -245,7 +245,7 @@ public class CommandUser implements TabExecutor {
                     sender.sendMessage(fpi.putLanguage("NumberFormatTooSmall","&c%string% 的数字太小啦",null,new String[]{"%string%"},new String[]{args[3]}));
                     return true;
                 }
-                if (user.getPrefixes().size() < i) {
+                if ((user.getPrefixes().size() - 1) < i) {
                     sender.sendMessage(fpi.putLanguage("NumberBigUserPrefixes","&c用户 %user% 的头街组数量 %size% 大于 %number%",null,new String[]{"%user%","%number%","%size%"},new String[]{user.getName(),i+"",user.getPrefixes().size()+""}));
                     return true;
                 }
@@ -383,11 +383,11 @@ public class CommandUser implements TabExecutor {
                     sender.sendMessage(fpi.putLanguage("NumberFormatTooSmall","&c%string% 的数字太小啦",null,new String[]{"%string%"},new String[]{args[3]}));
                     return true;
                 }
-                if (user.getSuffixes().size() < i) {
+                if ((user.getSuffixes().size() - 1) < i) {
                     sender.sendMessage(fpi.putLanguage("NumberBigUserSuffixes","&c用户 %user% 的尾街组数量 %size% 大于 %number%",null,new String[]{"%user%","%number%","%size%"},new String[]{user.getName(),i+"",user.getPrefixes().size()+""}));
                     return true;
                 }
-                user.setSuffix(user.getPrefixes().get(i));
+                user.setSuffix(user.getSuffixes().get(i));
                 sender.sendMessage(fpi.putLanguage("ChangeSuffixesUser","&a成功切换 %user% 的 \"%suffix%\" 头街",null,new String[]{"%user%",user.getName(),"%suffix%", user.getSuffix()}));
                 return true;
             }

@@ -46,7 +46,8 @@ commands:
     aliases: [servers,funserver]
   info:
     description: Functions' Tick Per Seconds Check Info.
-    aliases: [tps]
+  tps:
+    description: Functions' Tick Per Seconds Check Info.
   seed:
     description: Functions' Check Worlds Seeds.
   fly:
@@ -64,3 +65,6 @@ commands:
   warp:
     description: Functions' warp.
     aliases: [warps]
+  home:
+    description: Functions' user's home.
+    aliases: [ homes ]

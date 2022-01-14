@@ -146,6 +146,7 @@ public class WorldBlock {
             if (material == Material.AIR) {
                 continue;
             }
+            if (worldBlock.getBlock().getType() == Material.BEDROCK) continue;
             return worldBlock.isBlock() ? i : min_ground;
         }
         return min_ground;

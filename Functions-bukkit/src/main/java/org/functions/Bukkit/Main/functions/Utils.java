@@ -84,11 +84,85 @@ public class Utils {
     public static PlayerManager getPlayerManager() {
         return Functions.instance.getPlayerManager();
     }
-    public static class Tab {
+    public static class v17HighTab {
         Player player;
-        public Tab(Player player) {
+        public void send() {
+            
+        }
+        public Class<?> getIChatBaseClass() throws ClassNotFoundException {
+              return Class.forName("net.minecraft.network.chat.IChatBaseComponent");
+        }
+        public Object getAsIChatBase(String text) throws Exception {
+            Class iChatBaseComponent = getIChatBaseClass();
+            Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
+            return m.invoke(iChatBaseComponent,"{\"text\":\"" + text + "\"}");
+        }
+        public Class<?> getPacketPlayOutListHeaderFooter() throws ClassNotFoundException {
+            return Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter");
+        }
+        public static Object getHandle(Object obj) throws Exception {
+            return invokeMethod(obj, "getHandle");
+        }
+        public static Object invokeMethod(Object obj, String name) throws Exception {
+            return invokeMethod(obj, name, true, false);
+        }
+        public static Object invokeMethod(Object obj, String name, boolean declared, boolean superClass) throws Exception {
+            Class<?> c = superClass ? obj.getClass().getSuperclass() : obj.getClass();
+            Method met = declared ? c.getDeclaredMethod(name) : c.getMethod(name);
+            if (!Tab.JavaAccessibilities.isAccessible(met, obj)) {
+                met.setAccessible(true);
+            }
+
+            return met.invoke(obj);
+        }
+
+        public static Field getField(Object clazz, String name) throws Exception {
+            return getField(clazz, name, true);
+        }
+        public static Field getField(Object clazz, String name, boolean declared) throws Exception {
+            return getField(clazz.getClass(), name, declared);
+        }
+        public static Field getField(Class<?> clazz, String name, boolean declared) throws Exception {
+            Field field = declared ? clazz.getDeclaredField(name) : clazz.getField(name);
+            if (!Tab.JavaAccessibilities.isAccessible(field, (Object)null)) {
+                field.setAccessible(true);
+            }
+
+            return field;
+        }
+        public static Object getFieldObject(Object object, Field field) throws Exception {
+            return field.get(object);
+        }
+        public static void setField(Object object, String fieldName, Object fieldValue) throws Exception {
+            getField(object, fieldName).set(object, fieldValue);
+        }
+        public static Class<?> getPacket() throws Exception {
+            return Class.forName("net.minecraft.network.protocol.Packet");
+        }
+        public static String getPackageVersion() {
+            return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        }
+        public static void sendPacket(Player player, Object packet) {
+            try {
+                Object playerHandle = getHandle(player);
+                Object playerConnection = getFieldObject(playerHandle, getField(playerHandle, "playerConnection"));
+                playerConnection.getClass().getDeclaredMethod("sendPacket", getPacket()).invoke(playerConnection, packet);
+            } catch (Exception var4) {
+            }
+        }
+        public static Class<?> getComponent() throws Exception {
+            return Class.forName("net.kyori.adventure.text.Component");
+        }
+        public v17HighTab(Player player) {
             this.player = player;
         }
+
+    }
+    public static class Tab {
+        //Player player;
+        //public Tab(Player player) {
+        //this.player = player;
+        //}
         public static String colorMsg(String msg) {
             if (msg == null) {
                 return "";
@@ -105,7 +179,7 @@ public class Utils {
             String regex = "#[a-fA-F0-9]{6}";
             Matcher matcher = Pattern.compile(regex).matcher(s);
 
-            while(matcher.find()) {
+            while (matcher.find()) {
                 String group = matcher.group(0);
 
                 try {
@@ -117,73 +191,17 @@ public class Utils {
 
             return s;
         }
-        public void send(String header, String footer) {
+
+        public static void send(Player player, String header, String footer) {
             if (Version.isCurrentEqualOrHigher(Version.v1_17_R1)) {
                 return;
             }
-            if (Functions.instance.getAPI().send_packet.get("Tab")!=null) {
+            if (Functions.instance.getAPI().send_packet.get("Tab") != null) {
                 if (System.currentTimeMillis() < Functions.instance.getAPI().send_packet.get("Tab")) {
                     return;
                 }
             }
-            Functions.instance.getAPI().send_packet.put("Tab",System.currentTimeMillis() + 50 * Functions.instance.getConfiguration().getSettings().getLong("Tab.sendTime",5));
-                if (header == null) {
-                    header = "";
-                }
-
-                if (footer == null) {
-                    footer = "";
-                }
-
-                if (Version.isCurrentEqualOrLower(Version.v1_15_R2)) {
-                    header = colorMsg(header);
-                    footer = colorMsg(footer);
-                }
-                header = Functions.instance.getAPI().replace(header,player);
-                footer = Functions.instance.getAPI().replace(footer,player);
-                header = Functions.instance.getAPI().replaceJson(header);
-                footer = Functions.instance.getAPI().replaceJson(footer);
-                try {
-                    Class packetPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
-
-                    try {
-                        Object packet = packetPlayOutPlayerListHeaderFooter.getConstructor().newInstance();
-                        Object tabHeader = getAsIChatBaseComponent(header);
-                        Object tabFooter = getAsIChatBaseComponent(footer);
-                        if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
-                            setField(packet, "header", tabHeader);
-                            setField(packet, "footer", tabFooter);
-                        } else {
-                            setField(packet, "a", tabHeader);
-                            setField(packet, "b", tabFooter);
-                        }
-
-                        sendPacket(player, packet);
-                    } catch (Exception var8) {
-                        Constructor<?> titleConstructor = null;
-                        if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {
-                            titleConstructor = packetPlayOutPlayerListHeaderFooter.getConstructor();
-                        } else if (Version.isCurrentLower(Version.v1_12_R1)) {
-                            titleConstructor = packetPlayOutPlayerListHeaderFooter.getConstructor(getAsIChatBaseComponent(header).getClass());
-                        }
-
-                        if (titleConstructor != null) {
-                            setField(titleConstructor, "b", getAsIChatBaseComponent(footer));
-                            sendPacket(player, titleConstructor);
-                        }
-                    }
-                } catch (Throwable var9) {
-                    var9.printStackTrace();
-                }
-
-        }
-        public void send(String header, String footer,String ListPlayer) {
-            if (Functions.instance.getAPI().send_packet.get("Tab")!=null) {
-                if (System.currentTimeMillis() < Functions.instance.getAPI().send_packet.get("Tab")) {
-                    return;
-                }
-            }
-            Functions.instance.getAPI().send_packet.put("Tab",System.currentTimeMillis() + 50 * Functions.instance.getConfiguration().getSettings().getLong("Tab.sendTime",5));
+            Functions.instance.getAPI().send_packet.put("Tab", System.currentTimeMillis() + 50 * Functions.instance.getConfiguration().getSettings().getLong("Tab.sendTime", 5));
             if (header == null) {
                 header = "";
             }
@@ -196,8 +214,10 @@ public class Utils {
                 header = colorMsg(header);
                 footer = colorMsg(footer);
             }
-            header = Functions.instance.getAPI().replace(header,player);
-            footer = Functions.instance.getAPI().replace(footer,player);
+            header = Functions.instance.getAPI().replace(header, player);
+            footer = Functions.instance.getAPI().replace(footer, player);
+            header = Functions.instance.getAPI().replaceJson(header);
+            footer = Functions.instance.getAPI().replaceJson(footer);
             try {
                 Class packetPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 
@@ -230,17 +250,22 @@ public class Utils {
             } catch (Throwable var9) {
                 var9.printStackTrace();
             }
-            if (ListPlayer==null || ListPlayer == "") {
-                player.setPlayerListName(Functions.instance.getAPI().replace("%player_display%",player));
+        }
+
+        public static void send(Player player, String header, String footer, String ListPlayer) {
+            send(player, header, footer);
+            if (ListPlayer == null || ListPlayer == "") {
+                player.setPlayerListName(Functions.instance.getAPI().replace("%player_display%", player));
                 return;
             }
-            player.setPlayerListName(Functions.instance.getAPI().replace(ListPlayer,player));
+            player.setPlayerListName(Functions.instance.getAPI().replace(ListPlayer, player));
         }
+
         public static class JavaAccessibilities {
             public static boolean isAccessible(Field field, Object target) {
                 if (getCurrentVersion() >= 9 && target != null) {
                     try {
-                        return (Boolean)field.getClass().getDeclaredMethod("canAccess", Object.class).invoke(field, target);
+                        return (Boolean) field.getClass().getDeclaredMethod("canAccess", Object.class).invoke(field, target);
                     } catch (NoSuchMethodException var3) {
                     } catch (Exception var4) {
                         var4.printStackTrace();
@@ -253,7 +278,7 @@ public class Utils {
             public static boolean isAccessible(Method method, Object target) {
                 if (getCurrentVersion() >= 9 && target != null) {
                     try {
-                        return (Boolean)method.getClass().getDeclaredMethod("canAccess", Object.class).invoke(method, target);
+                        return (Boolean) method.getClass().getDeclaredMethod("canAccess", Object.class).invoke(method, target);
                     } catch (NoSuchMethodException var3) {
                     } catch (Exception var4) {
                         var4.printStackTrace();
@@ -271,7 +296,7 @@ public class Utils {
 
                 currentVersion = currentVersion.replaceAll("[^\\d]|_", "");
 
-                for(int i = 8; i <= 18; ++i) {
+                for (int i = 8; i <= 18; ++i) {
                     if (currentVersion.contains(Integer.toString(i))) {
                         return i;
                     }
@@ -280,11 +305,14 @@ public class Utils {
                 return 0;
             }
         }
+
         private static final Gson GSON = (new GsonBuilder()).create();
         private static final List<JsonObject> JSONLIST = new CopyOnWriteArrayList();
+
         public static Object getHandle(Object obj) throws Exception {
             return invokeMethod(obj, "getHandle");
         }
+
         public static synchronized Object getAsIChatBaseComponent(String text) throws Exception {
             Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
             if (!Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
@@ -304,7 +332,7 @@ public class Utils {
                 String colorName = "";
                 char charBefore = ' ';
 
-                for(int i = 0; i < res.length() && i < res.length(); ++i) {
+                for (int i = 0; i < res.length() && i < res.length(); ++i) {
                     if (charBefore == '&') {
                         charBefore = ' ';
                     } else {
@@ -355,7 +383,7 @@ public class Utils {
                                     obj.addProperty("font", font);
                                 }
 
-                                switch(colorCode) {
+                                switch (colorCode) {
                                     case 'k':
                                         obj.addProperty("obfuscated", true);
                                         break;
@@ -394,9 +422,11 @@ public class Utils {
                 return m.invoke(iChatBaseComponent, GSON.toJson(JSONLIST));
             }
         }
+
         public static Object invokeMethod(Object obj, String name) throws Exception {
             return invokeMethod(obj, name, true, false);
         }
+
         public static Object invokeMethod(Object obj, String name, boolean declared, boolean superClass) throws Exception {
             Class<?> c = superClass ? obj.getClass().getSuperclass() : obj.getClass();
             Method met = declared ? c.getDeclaredMethod(name) : c.getMethod(name);
@@ -410,29 +440,36 @@ public class Utils {
         public static Field getField(Object clazz, String name) throws Exception {
             return getField(clazz, name, true);
         }
+
         public static Field getField(Object clazz, String name, boolean declared) throws Exception {
             return getField(clazz.getClass(), name, declared);
         }
+
         public static Field getField(Class<?> clazz, String name, boolean declared) throws Exception {
             Field field = declared ? clazz.getDeclaredField(name) : clazz.getField(name);
-            if (!JavaAccessibilities.isAccessible(field, (Object)null)) {
+            if (!JavaAccessibilities.isAccessible(field, (Object) null)) {
                 field.setAccessible(true);
             }
 
             return field;
         }
+
         public static Object getFieldObject(Object object, Field field) throws Exception {
             return field.get(object);
         }
+
         public static void setField(Object object, String fieldName, Object fieldValue) throws Exception {
             getField(object, fieldName).set(object, fieldValue);
         }
+
         public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
             return Class.forName("net.minecraft.server." + getPackageVersion() + "." + name);
         }
+
         public static String getPackageVersion() {
             return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         }
+
         public static void sendPacket(Player player, Object packet) {
             try {
                 Object playerHandle = getHandle(player);
@@ -444,11 +481,7 @@ public class Utils {
         }
     }
     public static class ActionBar {
-        Player player;
-        public ActionBar(Player player) {
-            this.player = player;
-        }
-        public void send(Object Message) {
+        public static void send(Player player,Object Message) {
             if (Functions.instance.getAPI().send_packet.get("ActionBar")!=null) {
                 if (System.currentTimeMillis() < Functions.instance.getAPI().send_packet.get("ActionBar")) {
                     return;

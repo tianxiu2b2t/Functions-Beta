@@ -19,11 +19,13 @@ import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.API.SpeedPerSeconds;
 import org.functions.Bukkit.API.WorldBlock;
 import org.functions.Bukkit.Main.*;
+import org.functions.Bukkit.Main.Server.FList;
 import org.functions.Bukkit.Main.functions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class Players implements Listener {
     FPI fpi = Functions.instance.getAPI();
@@ -165,7 +167,7 @@ public class Players implements Listener {
     public void leave(PlayerQuitEvent event) {
         Functions.instance.getPlayerManager().run();
         Player p = event.getPlayer();
-        event.setQuitMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getQuit(),p));
+        if (!Objects.equals(event.getQuitMessage(), "") || event.getQuitMessage() != null) event.setQuitMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getQuit(),p));
         account = new Account(p.getUniqueId());
         if (Accounts.enable()) {
             if (account.exists() || account.isLogin()) {
@@ -184,11 +186,15 @@ public class Players implements Listener {
     }
     @EventHandler
     public void death(PlayerDeathEvent event) {
-        Player p = event.getEntity();
-        event.setKeepInventory(Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep",false));
-        event.setKeepLevel(Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep",false));
-        if (Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep",false)) event.setDroppedExp(0);
-        Functions.instance.print("The player: " + p.getName() + " death is keep inventory and level");
+        if (event.getEntity() != null) {
+            Player p = event.getEntity();
+            Back.setDeathPos(p.getUniqueId(), p.getLocation());
+            event.setKeepInventory(Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep", false));
+            event.setKeepLevel(Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep", false));
+            if (Functions.instance.getConfiguration().getSettings().getBoolean("Death.Keep", false))
+                event.setDroppedExp(0);
+            Functions.instance.print("The player: " + p.getName() + " death is keep inventory and level");
+        }
     }
 
     @EventHandler
@@ -233,6 +239,14 @@ public class Players implements Listener {
         if (event.getNewGameMode().equals(GameMode.CREATIVE)) {
             if (!PermissionsUtils.hasPermissionsSendMessage(event.getPlayer(),"functions.event.gamemode.change.creative")) {
                 event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.ALLOWED)) {
+            if (!FList.IsPlayerCanJoin(event.getName())) {
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "§aYou is banned or not in white list can join this server!");
             }
         }
     }

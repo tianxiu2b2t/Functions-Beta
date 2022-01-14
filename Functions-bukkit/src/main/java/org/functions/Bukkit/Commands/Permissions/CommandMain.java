@@ -52,7 +52,20 @@ public class CommandMain implements TabExecutor {
             sender.sendMessage(Functions.instance.getAPI().putLanguage("ReloadMinecraftData","&a成功重载原版数据！ (%time-ms% ms)",null).replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
         }
-        if (args[0].equalsIgnoreCase("destroy")) {
+        if (args[0].equalsIgnoreCase("destroy_quiet")) {
+            List<Material> a = new ArrayList<>();
+            a.add(Material.BEDROCK);
+            List<Material> s = new ArrayList<>();
+            for (int i = 8; i < args.length; i++) {
+                s.add(Material.valueOf(args[i]));
+            }
+            if (s.size() == 0) {
+                sender.sendMessage(Utils.Fill.destroy(Bukkit.getWorld(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]), Integer.parseInt(args[7]), a, true));
+                return true;
+            }
+            sender.sendMessage(Utils.Fill.destroy(Bukkit.getWorld(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]), Integer.parseInt(args[7]), a, s, true));
+            return true;
+        } else if (args[0].equalsIgnoreCase("destroy")) {
             List<Material> a = new ArrayList<>();
             a.add(Material.BEDROCK);
             List<Material> s = new ArrayList<>();
