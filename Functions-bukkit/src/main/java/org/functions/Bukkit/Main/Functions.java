@@ -14,6 +14,8 @@ import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.Listener.Players;
 import org.functions.Bukkit.Main.Server.FServer;
+import org.functions.Bukkit.Main.functions.ForceLoad.Force;
+import org.functions.Bukkit.Main.functions.Utitils.NMSClassStorage;
 import org.functions.Bukkit.Main.functions.YamlUsers;
 import org.functions.Bukkit.Main.functions.AddressLocation;
 import org.functions.Bukkit.Main.functions.Messaging.BungeeCordTeleport;
@@ -24,6 +26,7 @@ import java.io.File;
 import java.util.*;
 
 public final class Functions extends JavaPlugin {
+    NMSClassStorage clazz = new NMSClassStorage();
     YamlUsers yamlUsers;
     BungeeCordTeleport bungeeCordTeleport;
     FServer f;
@@ -37,6 +40,9 @@ public final class Functions extends JavaPlugin {
     LinkedHashMap<String,String> table = new LinkedHashMap<>();
     public AddressLocation location = null;
     FPI fpi;
+    public NMSClassStorage getClassesStorage() {
+        return clazz;
+    }
     public FPI getAPI() {
         return fpi;
     }
@@ -60,6 +66,16 @@ public final class Functions extends JavaPlugin {
         location = new AddressLocation(getConfig().getString("AddressCheck.IPImportFile", "ip.dat"),getConfig().getString("AddressCheck.Folder",getDataFolder().getAbsolutePath()));
         file = new File(path,"Users");
         yamlUsers = new YamlUsers(file);
+    }
+    public File getDirPath(String dir) {
+        String path = getDataFolder()+"";
+        path = path.replace("\\","/");
+        return new File(path,dir);
+    }
+    public File getDirPath(File path,String dir) {
+        String paths = getDataFolder()+"";
+        paths = paths.replace("\\","/");
+        return new File(paths,dir);
     }
     public DataBase getDatabase() {
         return database;
@@ -112,6 +128,10 @@ public final class Functions extends JavaPlugin {
     }
     public void reloadCommand() {
     }
+    Force forceLoad;
+    public Force getForceLoad() {
+        return forceLoad;
+    }
     public File getFolder() {
         return getDataFolder();
     }
@@ -146,6 +166,7 @@ public final class Functions extends JavaPlugin {
             new PlaceholderAPIHook().register();
             Functions.instance.print("Successfully register placeholder api hook.");
         }
+        forceLoad = new Force(f);
         print("Is BungeeCord: " + f.isBc());
         print("Plugin folder size: " + configuration.DirSize());
         bungeeCordTeleport = new BungeeCordTeleport();
@@ -154,6 +175,7 @@ public final class Functions extends JavaPlugin {
         // recipe
         ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("packet_ice"),new ItemStack(Material.PACKED_ICE)).shape("xxx","xxx","xxx").setIngredient('x',Material.ICE);
         getServer().addRecipe(recipe);
+        //f.clearEnderManAndEnderPearlItem();
         // Plugin startup logic
     }
     public YamlUsers yamlUsers() {
@@ -166,15 +188,19 @@ public final class Functions extends JavaPlugin {
         return f;
     }
     public void runScheduler() {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
+        //getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, pm, 0, 0);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 5);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new AnimationsTask(), 0, 0);
     }
     public void print(Object text) {
         getServer().getConsoleSender().sendMessage(Prefix() + text);
+        latest.print(text);
+    }
+    public void inLogs(Object text) {
+        //getServer().getConsoleSender().sendMessage(Prefix() + text);
         latest.print(text);
     }
     public PlayerManager getPlayerManager() {

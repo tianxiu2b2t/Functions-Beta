@@ -2,6 +2,7 @@ package org.functions.Bukkit.Commands.Permissions;
 
 import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -81,7 +82,17 @@ public class CommandMain implements TabExecutor {
         } else if (args[0].equalsIgnoreCase("fill")) {
             List<Material> a = new ArrayList<>();
             a.add(Material.BEDROCK);
-            sender.sendMessage(Utils.Fill.fill(Bukkit.getWorld(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),Integer.parseInt(args[6]),Integer.parseInt(args[7]),a,Material.valueOf(args[8]),(Player)sender));
+            if (sender instanceof Player) {
+                if (((Player) sender).getGameMode() != GameMode.CREATIVE) {
+                    sender.sendMessage(Utils.Fill.fill_item(Bukkit.getWorld(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),Integer.parseInt(args[6]),Integer.parseInt(args[7]),a,Material.valueOf(args[8]),(Player)sender));
+                    return true;
+                }
+            }
+            sender.sendMessage(Utils.Fill.fill(Bukkit.getWorld(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),Integer.parseInt(args[6]),Integer.parseInt(args[7]),a,Material.valueOf(args[8])));
+        } else if (args[0].equalsIgnoreCase("wall_fill")) {
+            List<Material> a = new ArrayList<>();
+            a.add(Material.BEDROCK);
+            sender.sendMessage(Utils.Fill.wall_fill_item(Bukkit.getWorld(args[1]),Integer.parseInt(args[2]),Integer.parseInt(args[3]),Integer.parseInt(args[4]),Integer.parseInt(args[5]),Integer.parseInt(args[6]),Integer.parseInt(args[7]),a,Material.valueOf(args[8]),(Player)sender));
         }
         return true;
     }

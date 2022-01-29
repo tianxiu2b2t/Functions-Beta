@@ -40,6 +40,9 @@ public class Listeners {
             while (files.hasMoreElements()) {
                 String url = files.nextElement().getName().replace("\"", "/");
                 // 只认 .class 文件
+                if (url.contains("$")) {
+                    continue;
+                }
                 if (url.toLowerCase().endsWith(".class")) {
                     // 去除 .class 后缀并替换分隔符为.
                     url = url.substring(0, url.toLowerCase().lastIndexOf(".class")).replace('/', '.').replace('\\', '.');

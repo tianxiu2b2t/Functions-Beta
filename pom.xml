@@ -50,5 +50,6 @@
         <module>functions-common</module>
         <module>functions-bukkit</module>
         <module>functions-waterfall</module>
+        <module>Functions-NetMinecraftServer</module>
     </modules>
 </project>

@@ -9,6 +9,7 @@ import org.functions.Bukkit.API.SpeedPerSeconds;
 import org.functions.Bukkit.Main.DataBase;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.PlayerManager;
+import org.functions.Bukkit.Main.functions.Utitils.Tellraw;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,14 +28,12 @@ public class User implements IUser {
     String suffix = "";
     boolean hide = false;
     //public String select_all = "SELECT * FROM " + Functions.instance.getTable("Users");
-    Utils.sendTellRaw send;
     public User(UUID uuid) {
         this.uuid = uuid;
         if (!exists()) {
             Functions.instance.yamlUsers().initUserFileConfiguration(uuid);
         }
         group = getGroup();
-        if (getOfflinePlayer().isOnline()) send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
     public User(Player player) {
         this.uuid = player.getUniqueId();
@@ -42,7 +41,6 @@ public class User implements IUser {
             Functions.instance.yamlUsers().initUserFileConfiguration(uuid);
         }
         group = getGroup();
-        send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
     public User(OfflinePlayer player) {
         this.uuid = player.getUniqueId();
@@ -50,7 +48,6 @@ public class User implements IUser {
             Functions.instance.yamlUsers().initUserFileConfiguration(uuid);
         }
         group = getGroup();
-        if (player.isOnline()) send = new Utils.sendTellRaw(Bukkit.getPlayer(uuid));
     }
     public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
@@ -261,6 +258,7 @@ public class User implements IUser {
         return s;
     }
     public Group getGroup() {
+        permissions.clear();
         if (group==null) return new Group(Functions.instance.yamlUsers().configurations.get(uuid).getString("Group","Default"));
         return group;
     }
@@ -306,14 +304,7 @@ public class User implements IUser {
     }
     public void sendTellRaw(String text) {
         if (Functions.instance.getServer().getOfflinePlayer(uuid).isOnline()) {
-            send = new Utils.sendTellRaw(getPlayer());
-            send.send(text);
-        }
-    }
-    public void sendParseTellRaw(String text) {
-        if (Functions.instance.getServer().getOfflinePlayer(uuid).isOnline()) {
-            send = new Utils.sendTellRaw(getPlayer());
-            send.send(text);
+            Tellraw.send(getPlayer(),text);
         }
     }
     public String getJsonChatDisplayName() {

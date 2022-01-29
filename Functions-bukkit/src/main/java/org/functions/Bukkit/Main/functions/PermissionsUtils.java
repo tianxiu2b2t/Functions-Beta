@@ -17,7 +17,56 @@ import java.util.*;
 public class PermissionsUtils {
     //这里写检查是否有权限
     @SuppressWarnings("all")
-    public static boolean hasPermissions(Player player, String Permission) {
+    public static boolean hasPermissions(Player player, String perm) {
+        for (String s : getPermissions(player)) {
+            if (s.equalsIgnoreCase("*")) {
+                return true;
+            }
+            if (s.contains(".")) {
+                String[] st = s.split("\\.");
+                if (perm.contains(".")) {
+                    String[] permt = perm.split("\\.");
+                    int length = st.length;
+                    for (int i = 0; i < length; i++) {
+                        if (!st[i].equalsIgnoreCase(permt[i])) {
+                            i = length + 1;
+                            continue;
+                        }
+                        if (i != 0) {
+                            if (st[i - 1].equalsIgnoreCase(permt[i - 1])) {
+                                if (st[i].equalsIgnoreCase("*")) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (perm.equalsIgnoreCase(s)) {
+                        return true;
+                    } else if (perm.equalsIgnoreCase(st[0])) {
+                        return true;
+                    }
+                }
+            } else {
+                if (perm.equalsIgnoreCase(s)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public static List<String> getPermissions(Player player) {
+        return Functions.instance.getPlayerManager().getUser(player.getUniqueId()).getPermissions();
+    }
+    @Deprecated
+    /**
+     *
+     * @param player Player can is null or Minecraft get Player.
+     * @param Permission player has permission? need if true or false.
+     * @deprecated if error.
+     * @Return return user has permissions.
+     */
+    private boolean hasPermissionsOld(Player player, String Permission) {
         if (player==null) {
             return true;
         }
@@ -48,6 +97,7 @@ public class PermissionsUtils {
                             }
                         }
                         int ti = i - 1;
+                        // 3 <= 2
                         if (t.length <= i) {
                             continue;
                         }
@@ -80,6 +130,7 @@ public class PermissionsUtils {
             }
         }
         for (String temp : Functions.instance.getPlayerManager().getUser(player.getUniqueId()).getPermissions()) {
+            System.out.println(temp);
             if (temp.startsWith("*")) {
                 return true;
             }

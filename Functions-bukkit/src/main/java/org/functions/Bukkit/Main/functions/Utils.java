@@ -84,7 +84,7 @@ public class Utils {
     public static PlayerManager getPlayerManager() {
         return Functions.instance.getPlayerManager();
     }
-    public static class v17HighTab {
+    /*public static class v17HighTab {
         Player player;
         public void send() {
             
@@ -145,6 +145,7 @@ public class Utils {
         public static void sendPacket(Player player, Object packet) {
             try {
                 Object playerHandle = getHandle(player);
+                // playerHandle.get(playerHandle.getClass().getDeclaredField("playerConnection"))
                 Object playerConnection = getFieldObject(playerHandle, getField(playerHandle, "playerConnection"));
                 playerConnection.getClass().getDeclaredMethod("sendPacket", getPacket()).invoke(playerConnection, packet);
             } catch (Exception var4) {
@@ -895,7 +896,7 @@ public class Utils {
         public static String getPackageVersion() {
             return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         }
-    }
+    }*/
     public static class Fill {
         public static String replace(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,Material need, Material replace) {
             String s = "";
@@ -1107,7 +1108,7 @@ public class Utils {
             s = "{\"pos1\":\"" + t1.getX() + "," + t1.getY() + "," + t1.getZ() + "\"},{\"pos2\":\"" + t2.getX() + "," + t2.getY() + "," + t2.getZ() + "\"},{\"fillsize\":\"" + size + "\"},{\"successfill\"" + status + "\"},{\"air\"" + air + "\"}";
             return s;
         }
-        public static String fill(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,String mode,Material block) {
+        public static String fill(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,Material block) {
             String s = "";
             WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));
             WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
@@ -1139,7 +1140,68 @@ public class Utils {
             s = "{\"pos1\":\"" + t1.getX() + "," + t1.getY() + "," + t1.getZ() + "\"},{\"pos2\":\"" + t2.getX() + "," + t2.getY() + "," + t2.getZ() + "\"},{\"fillsize\":\"" + size + "\"},{\"successfill\"" + status + "\"},{\"air\"" + air + "\"}";
             return s;
         }
-        public static String fill(World world, int x, int y, int z, int dx, int dy, int dz, List<Material> anti, Material block, Player player) {
+        public static String wall_fill_item(World world, int x, int y, int z, int dx, int dy, int dz, List<Material> anti, Material block, Player player) {
+            String s = "";
+            WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));
+            WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));
+            WorldBlock s1 = new WorldBlock(Math.min(t1.getX(),t2.getX()),Math.min(t1.getY(),t2.getY()),Math.min(t1.getZ(),t2.getZ()),world);
+            WorldBlock s2 = new WorldBlock(Math.max(t1.getX(),t2.getX()),Math.max(t1.getY(),t2.getY()),Math.max(t1.getZ(),t2.getZ()),world);
+            int size = (s2.getX() - s1.getX() + 1) * (s2.getY() - s1.getY() + 1) * (s2.getZ() - s1.getZ() + 1);
+            int status = 0;
+            int air = 0;
+            int airblock = 0;
+            if (s1.getY() >= -64 && s2.getY() < world.getMaxHeight()) {
+                World w = world;
+                for(int var16 = s1.getY(); var16 <= s2.getY(); ++var16) {
+                    for (int var17 = s1.getX(); var17 <= s2.getX(); ++var17) {
+                        for (int var15 = s1.getZ(); var15 <= s2.getZ(); ++var15) {
+                            WorldBlock wb = new WorldBlock(var17, var16, var15, w);
+                            boolean is = true;
+                            for (Material f : anti) {
+                                if (wb.getBlock().getType() != Material.AIR || wb.getBlock().getType() == f || wb.getBlock().getType() == block) {
+                                    air++;
+                                    is = false;
+                                }
+                            }
+                            if (!is) continue;
+                            if (var17 == s1.getX()) {
+                                is = true;
+                            } else if (var17 == s2.getX()) {
+                                is = true;
+                            } else if (var15 == s1.getZ()) {
+                                is = true;
+                            } else if (var15 == s2.getZ()) {
+                                is = true;
+                            } else {
+                                is = false;
+                            }
+                            if (!is) {
+                                air++;
+                            }
+                            if (is) {
+                                PlayerInventory inventory = player.getInventory();
+                                for (int i = 0; i < inventory.getSize(); i++) {
+                                    ItemStack istack = inventory.getItem(i);
+                                    if (istack!=null) {
+                                        if (istack.getType().equals(block)) {
+                                            if (wb.getBlock().getType().equals(istack.getType())) {
+                                                continue;
+                                            }
+                                            istack.setAmount(istack.getAmount() - 1);
+                                            status = status + wb.set(block);
+                                            inventory.setItem(i, istack);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            s = "{\"pos1\":\"" + t1.getX() + "," + t1.getY() + "," + t1.getZ() + "\"},{\"pos2\":\"" + t2.getX() + "," + t2.getY() + "," + t2.getZ() + "\"},{\"fillsize\":\"" + size + "\"},{\"successfill\"" + status + "\"},{\"air\"" + air + "\"},{\"airblock\":\"" + airblock + "\"}";
+            return s;
+        }
+        public static String fill_item(World world, int x, int y, int z, int dx, int dy, int dz, List<Material> anti, Material block, Player player) {
             String s = "";
             WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));
             WorldBlock t2 = new WorldBlock(world.getBlockAt(dx,dy,dz));

@@ -42,7 +42,6 @@ public interface IUser {
     void setInvisibility(boolean invisibility);
     String getDisplayName();
     void sendTellRaw(String text);
-    void sendParseTellRaw(String text);
     String getJsonChatDisplayName();
     String getName();
 

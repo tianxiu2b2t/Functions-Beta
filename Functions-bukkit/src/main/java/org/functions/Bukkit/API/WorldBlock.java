@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Utils;
 
@@ -47,6 +48,7 @@ public class WorldBlock {
         return set(Material.AIR);
     }
     public int set(Material material) {
+        if (material==null) material = this.material;
         block.setType(material,true);
         int t = 0;
         status++;
@@ -55,6 +57,34 @@ public class WorldBlock {
         return t;
     }
 
+    Material material;
+    /**
+     * This is give StorageMain class creator.
+     * @param material Material material.
+     * @return success int. default 1.
+     */
+    public int setInCacheMaterial(Material material) {
+        this.material = material;
+        return 1;
+    }
+    /**
+     * This is give StorageMain class creator.
+     * @param block Set Block Material data.
+     * @return success int. default 1.
+     */
+    public int setInCacheBlock(Block block) {
+        this.block = block;
+        return 1;
+    }
+    /**
+     * This is give StorageMain class creator.
+     * @param block Set Block Material data.
+     * @return success int. default 1.
+     */
+    public int setInCacheBlockType(Block block) {
+        this.block = block;
+        return 1;
+    }
     public Block getBlock() {
         return loc.getWorld().getBlockAt(x,y,z);
     }

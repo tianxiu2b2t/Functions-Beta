@@ -1,15 +1,9 @@
 package org.functions.Bukkit.Main;
 
-import org.functions.Bukkit.API.FPI;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Date;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -29,11 +23,16 @@ public class Latest {
                 e.printStackTrace();
             }
         } else {
-            pack(latest);
+            pack();
             latest.deleteOnExit();
             latest.delete();
         }
     }
+
+    /**
+     * 
+     * @return Read Latest in text.
+     */
     private String ReadLatest() {
         BufferedReader reader = null;
         StringBuilder sbf = new StringBuilder();
@@ -58,8 +57,30 @@ public class Latest {
         }
         return sbf.toString();
     }
+
+    public String getDate() {
+        Date date = new Date();
+        SimpleDateFormat Date = new SimpleDateFormat("yyyy-MM-dd");
+        return Date.format(date);
+    }
+    public String getDateTime() {
+        return getDate() + " " + getTime();
+    }
+    public String getTime() {
+        Date date = new Date();
+        SimpleDateFormat Date = new SimpleDateFormat("HH:mm:ss");
+        return Date.format(date);
+    }
+
+    /**
+     * 
+     * @param text Text to in latest log.
+     */
     public void print(Object text) {
-        text = Functions.instance.getAPI().getDateTime() + " INFO: " + text;
+        print(text,Level.INFO);
+    }
+    public void print(Object text, Level level) {
+        text = getDateTime() + " " + level.name().toUpperCase() + ": " + text;
         FileWriter fw= null;
         try {
             fw = new FileWriter(latest,true);
@@ -74,8 +95,18 @@ public class Latest {
             e.printStackTrace();
         }
     }
-    private static void compress(File sourceFile, ZipOutputStream zos, String name,
-                                 boolean KeepDirStructure) throws Exception{
+
+    public enum Level {
+        INFO,
+        DEBUG,
+        WARNING,
+        ERROR,
+        ERR422;
+        public String toString(Level level) {
+            return level.name().toUpperCase();
+        }
+    }
+    private static void compress(File sourceFile, ZipOutputStream zos, String name, boolean KeepDirStructure) throws Exception{
         byte[] buf = new byte[1024];
         if(sourceFile.isFile()){
             // 向zip输出流中添加一个zip实体，构造器中name为zip实体的文件的名字
@@ -114,7 +145,7 @@ public class Latest {
             }
         }
     }
-    public static void toZip(File sourceFile, OutputStream out, boolean KeepDirStructure)
+    private static void toZip(File sourceFile, OutputStream out, boolean KeepDirStructure)
             throws RuntimeException{
         ZipOutputStream zos = null ;
         try {
@@ -133,7 +164,7 @@ public class Latest {
             }
         }
     }
-    private void pack(File file) {
+    private void pack() {
         FileOutputStream fos1 = null;
         try {
             fos1 = new FileOutputStream(new File(latest + " " + new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(new Date()) + ".zip"));

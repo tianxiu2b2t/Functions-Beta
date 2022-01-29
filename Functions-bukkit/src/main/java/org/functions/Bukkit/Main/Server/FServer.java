@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Main.Server;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -8,17 +9,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
-import org.bukkit.inventory.ItemStack;
 import org.functions.Bukkit.Main.Functions;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class FServer {
     List<FWorld> lw = new ArrayList<>();
@@ -160,6 +160,15 @@ public class FServer {
         });
         return ls;
     }
+    public List<Item> getItemStacks() {
+        List<Item> ls = new ArrayList<>();
+        server.getWorlds().forEach((w)->{
+            getWorldItems(w).forEach(e->{
+                ls.add((Item)e);
+            });
+        });
+        return ls;
+    }
     public boolean isBc() {
         File dir = Functions.instance.getFolder().getAbsoluteFile().getParentFile().getParentFile();
         File spigot = null;
@@ -191,5 +200,75 @@ public class FServer {
     }
     public int getEntitiesItemStacks() {
         return server.getWorlds().stream().mapToInt(this::getEntitiesItemStack).sum();
+    }
+    public void gc() {
+        System.gc();
+        Runtime.getRuntime().gc();
+        if (Functions.instance.getConfiguration().getSettings().getBoolean("CancelAllPendingTasks",false)) {
+            List<String> plugin_name = new ArrayList<>();
+            Bukkit.getScheduler().getPendingTasks().forEach(e->{
+                plugin_name.add("Task(id): " + e.getTaskId() + ", by plugin: " + e.getOwner().getDescription().getName());
+            });
+            Bukkit.getScheduler().getPendingTasks().clear();
+            plugin_name.forEach(Functions.instance::inLogs);
+        }
+        getEntities().forEach(e->{
+        });
+    }
+    public List<MonsterType> getMonsterTypes() {
+        List<MonsterType> ls = new ArrayList<>();
+        if (getInstance().getConfiguration().getSettings().get("MonsterType") != null) {
+            getInstance().getConfiguration().getSettings().getStringList("MonsterTypes").forEach(e->{
+                String[] args = e.split(":");
+                ls.add(new MonsterType(Integer.parseInt(args[0]), args[1], args[2]));
+            });
+        }
+        return ls;
+    }
+    public void loadAllClass() {
+        try {
+            String jar = URLDecoder.decode(Functions.instance.getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
+            ZipFile zip = new ZipFile(jar);
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(jar));
+            ZipInputStream zis = new ZipInputStream(bis);
+            Enumeration<? extends ZipEntry> files = zip.entries();
+            ZipEntry entry ;
+            while ((entry = zis.getNextEntry())!=null) {
+                String url = files.nextElement().getName().replace("\"", "/");
+                if (url.toLowerCase().endsWith(".class")) {
+                    try {
+                        Class<?> clazz = Class.forName(url);
+                    } catch (ClassNotFoundException e) {
+                        Functions.instance.getClass().getClassLoader().loadClass(url);
+                        Functions.instance.inLogs("load class successfully: " + url);
+                    }
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+        }
+    }
+    public static class MonsterType {
+        int id;
+        String displayName;
+        String en_us;
+        public MonsterType(int id,String en_us,String DisplayName) {
+            this.id = id;
+            this.displayName = DisplayName;
+            this.en_us = en_us;
+        }
+        public String toString() {
+            return en_us;
+        }
+        public String getDisplayName() {
+            return displayName;
+        }
+        public boolean equals(EntityType type) {
+            for (MonsterType t : Functions.instance.getFServer().getMonsterTypes()) {
+                if (t.toString().equalsIgnoreCase(type.name())) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

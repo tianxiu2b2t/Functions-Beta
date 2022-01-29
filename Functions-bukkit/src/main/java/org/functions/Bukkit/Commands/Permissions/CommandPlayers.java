@@ -11,6 +11,7 @@ import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.API.WorldBlock;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.*;
+import org.functions.Bukkit.Main.functions.Utitils.Ping;
 
 import java.util.*;
 
@@ -100,7 +101,7 @@ public class CommandPlayers implements TabExecutor {
                 if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.ping")) {
                     return true;
                 }
-                sender.sendMessage(fpi.putLanguage("PlayerPing","%player% 的延迟为 %ping%ms",p,new Object[]{"player",p.getName(),"ping", new Utils.Ping(p).toString()}));
+                sender.sendMessage(fpi.putLanguage("PlayerPing","%player% 的延迟为 %ping%ms",p,new Object[]{"player",p.getName(),"ping", Ping.getPing(p)}));
                 return true;
             }
             sender.sendMessage(fpi.noPlayer());

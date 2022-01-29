@@ -135,11 +135,7 @@ public class PlayerManager implements Runnable {
     public void sendAllTellRaw(String text) {
         getUsers().forEach((u)->{u.sendTellRaw(text);});
     }
-    @Deprecated
-    public void sendParseAllTellRaw(String text) {
-        getUsers().forEach((u)->{u.sendParseTellRaw(text);});
-    }
     public String NotFound(String name) {
-        return Functions.instance.getAPI().putLanguage("NotFoundUser","&cm没有找到 %player% 用户!",null,new Object[]{"player",name});
+        return Functions.instance.getAPI().putLanguage("NotFoundUser","&c没有找到 %player% 用户!",null,new Object[]{"player",name});
     }
 }

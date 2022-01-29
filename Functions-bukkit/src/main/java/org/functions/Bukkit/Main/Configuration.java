@@ -422,7 +422,6 @@ public class Configuration {
             return;
         }
         try {
-            int i = 0;
             String jar = URLDecoder.decode(Functions.instance.getClass().getProtectionDomain().getCodeSource().getLocation().getPath(), "UTF-8");
             ZipFile zip = new ZipFile(jar);
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(jar));

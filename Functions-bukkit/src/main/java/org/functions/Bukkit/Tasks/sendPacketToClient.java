@@ -4,18 +4,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Utils;
+import org.functions.Bukkit.Main.functions.Utitils.ActionBar;
+import org.functions.Bukkit.Main.functions.Utitils.ScoreBoard;
+import org.functions.Bukkit.Main.functions.Utitils.TPS;
+import org.functions.Bukkit.Main.functions.Utitils.Tab;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class sendPacketToClient implements Runnable {
-    Utils.Tab tab;
-    Utils.ActionBar bar;
-    Utils.ScoreBoard board;
     StringBuilder Footer;
     StringBuilder Header;
     public void run() {
-        if (!Utils.TPS.isHigh(15.0D)) {
+        if (!TPS.isHigh(Functions.instance.getConfiguration().getSettings().getDouble("TPSIsLower",16.0D))) {
             return;
         }
         Footer = new StringBuilder();
@@ -43,23 +44,24 @@ public class sendPacketToClient implements Runnable {
             }
         }
         for (Player p : Functions.instance.getAPI().getOnlinePlayers()) {
-            if (Functions.instance.getConfiguration().getSettings().getBoolean("Tab.Enable",false)) Utils.Tab.send(p,Header.toString(), Footer.toString(), Functions.instance.getConfiguration().getSettings().getString("PlayerList"));
-            //if (Functions.instance.getConfiguration().getSettings().get("ActionBar")!=null) {
-            //    Utils.ActionBar.send(p,Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
-            //    if (Functions.instance.getConfiguration().getSettings().get("ActionBar.Message")!=null) Utils.ActionBar.send(p,Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
-            //}
-            //List<String> ls = new ArrayList<>();
-           // if (Functions.instance.getConfiguration().getSettings().get("ScoreBoard")!=null) {
-            //    board = new Utils.ScoreBoard(p);
-            //    ls.add(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines",""));
-            //    if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").startsWith("[")) {
-            //        if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").endsWith("]")) {
-            //            ls.clear();
-            //            ls = Functions.instance.getConfiguration().getSettings().getStringList("ScoreBoard.Lines");
-           //         }
-            //    }
-            //    board.sendAll(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.DisplayName", "Functions"), ls);
-           // }
+            if (Functions.instance.getConfiguration().getSettings().getBoolean("Tab.Enable",false)) Tab.send(p,Header.toString(), Footer.toString());//, //Functions.instance.getConfiguration().getSettings().getString("PlayerList"));
+            if (Functions.instance.getConfiguration().getSettings().get("ActionBar")!=null) {
+                ActionBar.send(p,Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
+                if (Functions.instance.getConfiguration().getSettings().get("ActionBar.Message")!=null) ActionBar.send(p,Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
+            }
+            List<String> ls = new ArrayList<>();
+            if (Functions.instance.getConfiguration().getSettings().get("ScoreBoard")!=null) {
+                ls.add(Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines",""));
+                if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").startsWith("[")) {
+                    if (Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.Lines").endsWith("]")) {
+                        ls.clear();
+                        ls = Functions.instance.getConfiguration().getSettings().getStringList("ScoreBoard.Lines");
+                    }
+                }
+                ScoreBoard.board(p,ls,Functions.instance.getConfiguration().getSettings().getString("ScoreBoard.DisplayName", "Functions"));
+            }
+            ScoreBoard.team(p);
+            ScoreBoard.submit(p);
             for (Player o : Bukkit.getOnlinePlayers()) {
                 if (Functions.instance.getPlayerManager().getUser(p.getUniqueId()).isHiding()) o.hidePlayer(Functions.instance,p);
                 else o.showPlayer(Functions.instance,p);

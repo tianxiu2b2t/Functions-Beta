@@ -19,6 +19,8 @@ import org.functions.Bukkit.Main.functions.AnimationManager;
 import org.functions.Bukkit.Main.functions.FunctionsRules;
 import org.functions.Bukkit.Main.functions.Group;
 import org.functions.Bukkit.Main.functions.Utils;
+import org.functions.Bukkit.Main.functions.Utitils.Ping;
+import org.functions.Bukkit.Main.functions.Utitils.TPS;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -157,9 +159,11 @@ public class FPI {
                 m = m.replace("%"+s[i]+"%",onRequest(player,temp));
             }
         }
-        if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
-            if (player!=null) {
-                m = PlaceholderAPI.setPlaceholders(player, m);
+        if (m.contains("%")) {
+            if (getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                if (player != null) {
+                    m = PlaceholderAPI.setPlaceholders(player, m);
+                }
             }
         }
         return m.replace("&","§").replace("%lines%","\n").replace("none","");
@@ -185,13 +189,7 @@ public class FPI {
             Functions.instance.getConfiguration().saveLanguage();
             //return Functions.instance.Prefix() + replace(Default);
         }
-        String text = Functions.instance.Prefix() + replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()),player);
-        if (player != null) {
-            if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
-                return PlaceholderAPI.setPlaceholders(player, text);
-            }
-        }
-        return text;
+        return Functions.instance.Prefix() + replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()),player);
     }
     public String NoPrefixPutLanguage(String path, Object Default, Player player) {
         if (Functions.instance.getConfiguration().getLanguage().getString(path)==null) {
@@ -202,13 +200,7 @@ public class FPI {
             Functions.instance.getConfiguration().saveLanguage();
             //return Functions.instance.Prefix() + replace(Default);
         }
-        String text = replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()),player);
-        if (player != null) {
-            if (getPluginManager().getPlugin("PlaceholderAPI")!=null) {
-                return PlaceholderAPI.setPlaceholders(player, text);
-            }
-        }
-        return text;
+        return replace(Functions.instance.getConfiguration().getLanguage().getString(path, Default.toString()),player);
     }
     public String noPermission(String permission) {
         return putLanguage("NotPermission","&c你没有该 %permission% 权限！",null).replace("%permission%",permission);
@@ -295,18 +287,6 @@ public class FPI {
     public Group getGroup(String Name) {
         return new Group(Functions.instance.getConfiguration().groups.get(Name));
     }
-
-    /************************* PlaceholderAPIHook **********************************/
-    public String onRequest(OfflinePlayer player, String params,String[] option,String[] value) {
-        if (option.length != value.length) {
-            return onRequest(player,params);
-        }
-        String s = params;
-        for (int i = 0; i < option.length;i++) {
-            s = s.replace(option[i],value[i]);
-        }
-        return onRequest(player,params);
-    }
     public List<OfflinePlayer> getAdminPlayers() {
         List<OfflinePlayer> ls = new ArrayList<>();
         for (OfflinePlayer p : getServer().getOfflinePlayers()) {
@@ -319,6 +299,17 @@ public class FPI {
         List<Player> ls = new ArrayList<>();
         getAdminPlayers().forEach(e->{if (e.isOnline()) ls.add(e.getPlayer());});
         return ls;
+    }
+    /************************* PlaceholderAPIHook **********************************/
+    public String onRequest(OfflinePlayer player, String params,String[] option,String[] value) {
+        if (option.length != value.length) {
+            return onRequest(player,params);
+        }
+        String s = params;
+        for (int i = 0; i < option.length;i++) {
+            s = s.replace(option[i],value[i]);
+        }
+        return onRequest(player,params);
     }
     public String onRequest(OfflinePlayer player, String params) {
         if (params.equalsIgnoreCase("online_players")) {
@@ -397,14 +388,14 @@ public class FPI {
                 return pm.getUser(player.getUniqueId()).getCPS().getMaxCPS()+"";
             }
             if (params.equalsIgnoreCase("ping")) {
-                return new Utils.Ping(player.getPlayer()).toString();
+                if (player.isOnline()) return String.valueOf(Ping.getPing(player.getPlayer()));
             }
         }
         if (params.equalsIgnoreCase("tps")) {
-            return Utils.TPS.getTPS();
+            return TPS.getTPS();
         }
         if (params.equalsIgnoreCase("detail_tps")) {
-            return Utils.TPS.details_tps();
+            return TPS.details_tps();
         }
         if (params.equalsIgnoreCase("servername")) {
             return Functions.instance.getConfig().getString("ServerName","Unknown Server");

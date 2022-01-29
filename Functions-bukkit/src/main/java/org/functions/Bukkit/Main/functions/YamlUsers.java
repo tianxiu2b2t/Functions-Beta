@@ -30,6 +30,9 @@ public class YamlUsers {
         if (configurations.get(uuid)==null) configurations.put(uuid,YamlConfiguration.loadConfiguration(user));
     }
     public void initUsersFileConfiguration() {
+        if (Functions.instance.getServer().getOfflinePlayers().length == 0) {
+            return;
+        }
         Arrays.asList(Functions.instance.getServer().getOfflinePlayers()).forEach((e)->{initUserFileConfiguration(e.getUniqueId());});
     }
     public void saveUserFileConfiguration(UUID uuid) {

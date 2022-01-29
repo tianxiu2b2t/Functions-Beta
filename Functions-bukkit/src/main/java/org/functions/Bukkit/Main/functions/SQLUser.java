@@ -1,4 +1,4 @@
-package org.functions.Bukkit.Main.functions;
+/*package org.functions.Bukkit.Main.functions;
 
 import com.google.gson.JsonArray;
 import org.bukkit.Bukkit;
@@ -402,4 +402,4 @@ public class SQLUser implements IUser {
         return getOfflinePlayer().getName();
     }
 
-}
+}*/

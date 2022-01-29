@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -73,11 +74,24 @@ public class Players implements Listener {
     }
     @EventHandler
     public void chat(AsyncPlayerChatEvent event) {
-        FAsyncPlayerChatEvent fevent = new FAsyncPlayerChatEvent(event.getPlayer(),event.getMessage());
-        event.setCancelled(true);
-        event.setFormat("");
-        event.setMessage("");
-        chat(fevent);
+        String message = event.getMessage();
+        User user = Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId());
+        String format = user.getGroup().getChat();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (message.contains("@everyone") || message.contains(user.getGroup().atPlayer().replace("%player%", "everyone"))) {
+                message = message.replace("@" + "everyone",user.getGroup().atPlayer().replace("%player%","everyone"));
+            } else if (!message.contains("@" + p.getName()) && !message.contains("@ " + p.getName())) {
+                if (message.contains(p.getName())) {
+                    message = message.replace(p.getName(), user.getGroup().atPlayer().replace("%player%", p.getName()));
+                }
+            } else {
+                message = message.replace("@" + p.getName(), user.getGroup().atPlayer().replace("%player%", p.getName())).replace("@ " + p.getName(), user.getGroup().atPlayer().replace("%target%", p.getName()));
+            }
+        }
+        //Functions.instance.getAPI().replace(format.replace("%message%",message),event.getPlayer());
+        event.setFormat(Functions.instance.getAPI().replace(format.replace("%message%",message),event.getPlayer()));
+        //event.setMessage("");
+        //chat(fevent);
     }
     public void chat(FAsyncPlayerChatEvent event) {
         Player p = event.getPlayer();
@@ -106,6 +120,34 @@ public class Players implements Listener {
                 if (account.autoLogin()) {
                     p.sendMessage(fpi.putLanguage("AutoLogin", "&a成功自动登陆！", p));
                     Functions.instance.print("Player: " + p.getName() + " Auto login.");
+                } else {
+                    Functions.instance.getServer().getScheduler().runTaskTimerAsynchronously(Functions.instance,new Runnable() {
+                        public void run() throws NullPointerException {
+                            if (Accounts.enable()) {
+                                    if (!(new Account(p.getUniqueId()).exists())) {
+                                        p.sendMessage(fpi.putLanguage("RegisterAccount", "&c请使用/register <密码> <重复密码> 来注册账号！",p));
+                                    }
+                                    if (Accounts.getAccount(p.getUniqueId()).exists()) {
+                                        if (!Accounts.getAccount(p.getUniqueId()).isLogin()) {
+                                            Accounts.login.put(p.getUniqueId(), false);
+                                        }
+                                    }
+                                    if (!Accounts.getAccount(p.getUniqueId()).isLogin()) {
+                                        Accounts.login.put(p.getUniqueId(), false);
+                                    }
+                                    if (!Accounts.login.get(p.getUniqueId())) {
+                                        for (Account account : Accounts.getAccounts()) {
+                                            if (account.getUniqueID().equals(p.getUniqueId())) {
+                                                if (account.isLogin()) {
+                                                    continue;
+                                                }
+                                                p.sendMessage(fpi.putLanguage("LoginAccount", "&c请使用/login <密码> 或者使用/mailogin 来登录",p));
+                                            }
+                                        }
+                                    }
+                            }
+                        }
+                    },0,20 * Functions.instance.getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
                 }
             }
         }
