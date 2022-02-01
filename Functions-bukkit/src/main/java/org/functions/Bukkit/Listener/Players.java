@@ -22,6 +22,7 @@ import org.functions.Bukkit.API.WorldBlock;
 import org.functions.Bukkit.Main.*;
 import org.functions.Bukkit.Main.Server.FList;
 import org.functions.Bukkit.Main.functions.*;
+import org.functions.Bukkit.Tasks.CheckAccountLogin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,6 +75,11 @@ public class Players implements Listener {
     }
     @EventHandler
     public void chat(AsyncPlayerChatEvent event) {
+        account = Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount();
+        if (!account.isLogin()) {
+            event.setCancelled(true);
+            return;
+        }
         String message = event.getMessage();
         User user = Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId());
         String format = user.getGroup().getChat();
@@ -107,47 +113,20 @@ public class Players implements Listener {
     @EventHandler
     public void join(PlayerJoinEvent event) {
         Player p = event.getPlayer();
+        Accounts.login.put(p.getUniqueId(),false);
         Functions.instance.getPlayerManager().run();
         if (!Functions.instance.getPlayerManager().exists(p.getUniqueId())) Functions.instance.getPlayerManager().run();
         event.setJoinMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getJoin(),p));
         if (fpi.cps.get(p.getUniqueId())==null) fpi.cps.put(p.getUniqueId(), new ClickPerSeconds(p.getUniqueId()));
         Functions.instance.print("Player: " + p.getName() + " Join the server. (Address: " + fpi.getPlayerAddress(p.getUniqueId()) + ")");
-        account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
         if (Accounts.enable()) {
+            account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
             if (account.exists()) {
                 account.teleportSpawn();
                 Accounts.login.put(p.getUniqueId(), false);
                 if (account.autoLogin()) {
                     p.sendMessage(fpi.putLanguage("AutoLogin", "&a成功自动登陆！", p));
                     Functions.instance.print("Player: " + p.getName() + " Auto login.");
-                } else {
-                    Functions.instance.getServer().getScheduler().runTaskTimerAsynchronously(Functions.instance,new Runnable() {
-                        public void run() throws NullPointerException {
-                            if (Accounts.enable()) {
-                                    if (!(new Account(p.getUniqueId()).exists())) {
-                                        p.sendMessage(fpi.putLanguage("RegisterAccount", "&c请使用/register <密码> <重复密码> 来注册账号！",p));
-                                    }
-                                    if (Accounts.getAccount(p.getUniqueId()).exists()) {
-                                        if (!Accounts.getAccount(p.getUniqueId()).isLogin()) {
-                                            Accounts.login.put(p.getUniqueId(), false);
-                                        }
-                                    }
-                                    if (!Accounts.getAccount(p.getUniqueId()).isLogin()) {
-                                        Accounts.login.put(p.getUniqueId(), false);
-                                    }
-                                    if (!Accounts.login.get(p.getUniqueId())) {
-                                        for (Account account : Accounts.getAccounts()) {
-                                            if (account.getUniqueID().equals(p.getUniqueId())) {
-                                                if (account.isLogin()) {
-                                                    continue;
-                                                }
-                                                p.sendMessage(fpi.putLanguage("LoginAccount", "&c请使用/login <密码> 或者使用/mailogin 来登录",p));
-                                            }
-                                        }
-                                    }
-                            }
-                        }
-                    },0,20 * Functions.instance.getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
                 }
             }
         }
@@ -213,13 +192,11 @@ public class Players implements Listener {
         account = new Account(p.getUniqueId());
         if (Accounts.enable()) {
             if (account.exists() || account.isLogin()) {
-                Accounts.login.remove(p.getUniqueId());
-                if (fpi.cps.get(p.getUniqueId()) != null) fpi.cps.remove(p.getUniqueId());
+                account.logout();
                 //if (fpi.sps.get(p.getUniqueId())==null) fpi.sps.remove(event.getPlayer().getUniqueId());
-
-                account.setPosition();
-                account.setGameMode();
             }
+            if (fpi.cps.get(p.getUniqueId()) != null) fpi.cps.remove(p.getUniqueId());
+            Accounts.login.remove(p.getUniqueId());
         }
     }
     @EventHandler

@@ -176,7 +176,16 @@ public class WorldBlock {
             if (material == Material.AIR) {
                 continue;
             }
-            if (worldBlock.getBlock().getType() == Material.BEDROCK) continue;
+            if (i >= 128) {
+                if (worldBlock.getBlock().getType() == Material.BEDROCK) continue;
+            }
+            if (worldBlock.isBlock()) {
+                if (!worldBlock.up().isBlock()) {
+                    if (!worldBlock.up().up().isBlock()) {
+                        return i;
+                    }
+                }
+            }
             return worldBlock.isBlock() ? i : min_ground;
         }
         return min_ground;

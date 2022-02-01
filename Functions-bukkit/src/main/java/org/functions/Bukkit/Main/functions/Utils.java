@@ -3,6 +3,7 @@ package org.functions.Bukkit.Main.functions;
 import com.google.gson.*;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -17,6 +18,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -898,6 +900,7 @@ public class Utils {
         }
     }*/
     public static class Fill {
+        public static List<String> items = new ArrayList<>();
         public static String replace(World world,int x, int y, int z, int dx, int dy, int dz,List<Material> anti,Material need, Material replace) {
             String s = "";
             WorldBlock t1 = new WorldBlock(world.getBlockAt(x,y,z));

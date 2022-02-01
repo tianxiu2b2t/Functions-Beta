@@ -75,7 +75,9 @@ public class Account {
     public Location getPosition() {
         if (exists()) {
             try {
-                return Functions.instance.getAPI().formatLocation(db.query(select).getString("Position"));
+                String pos;
+                if ((pos = db.query(select).getString("Position")) !=null) return Functions.instance.getAPI().formatLocation(pos);
+                return getSpawnPosition();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -188,7 +190,13 @@ public class Account {
     public boolean logout() {
         if (exists()) {
             if (isLogin()) {
+                if (Accounts.login.get(uuid)==null || !Accounts.login.get(uuid)) {
+                    return true;
+                }
                 Accounts.login.put(uuid,false);
+                if (!getPosition().equals(getSpawnPosition())) {
+                    setPosition();
+                }
                 setPosition();
                 teleportSpawn();
                 setGameMode();
@@ -205,7 +213,9 @@ public class Account {
                 if (getAutoLogin()) {
                     if (address().equals(getAddress())) {
                         Accounts.login.put(uuid, true);
-                        teleportQuitPosition();
+                        if (!getPlayer().getLocation().equals(getPosition())) {
+                            teleportQuitPosition();
+                        }
                         getPlayer().setGameMode(getGameMode());
                         return true;
                     }

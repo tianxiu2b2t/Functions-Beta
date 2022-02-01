@@ -46,10 +46,10 @@ public class Warp {
         return configuration.getWarps().getString(getWarp(name));
     }
     public static void setWarpPos(String name, World world, double x, double y, double z,float yaw, float pitch) {
-        setWarpPos(name,new Location(world,Utils.autoCon(x),Utils.autoCon(y),Utils.autoCon(z),yaw,pitch));
+        setWarpPos(name,new Location(world,Utils.autoCon(x),y,Utils.autoCon(z),yaw,pitch));
     }
     public static void setWarpPos(String name, World world, double x, double y, double z) {
-        setWarpPos(name,new Location(world,x,y,z));
+        setWarpPos(name,new Location(world,Utils.autoCon(x),y,Utils.autoCon(z)));
     }
     public static void setWarpPos(String name,Location pos) {
         if (pos!=null) configuration.getWarps().set(name,Functions.instance.getAPI().changeLocationToString(pos));

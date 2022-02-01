@@ -36,7 +36,7 @@ public class FList {
         return !isPlayerInWhite(name);
     }
     public static boolean IsPlayerCanJoin(String name) {
-        if (configuration.getSettings().getBoolean("Whited",false)) {
+        if (configuration.getSettings().getBoolean("Whited")) {
             if (isPlayerNotInBanned(name)) return isPlayerInWhite(name);
         }
         return isPlayerNotInBanned(name);

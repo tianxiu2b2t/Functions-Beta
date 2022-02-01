@@ -3,62 +3,63 @@ package org.functions.Bukkit.Main.functions;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.PlayerManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PermissionsUtils {
     //这里写检查是否有权限
     @SuppressWarnings("all")
-    public static boolean hasPermissions(Player player, String perm) {
-        for (String s : getPermissions(player)) {
-            if (s.equalsIgnoreCase("*")) {
-                return true;
-            }
-            if (s.contains(".")) {
-                String[] st = s.split("\\.");
-                if (perm.contains(".")) {
-                    String[] permt = perm.split("\\.");
-                    int length = st.length;
-                    for (int i = 0; i < length; i++) {
-                        if (!st[i].equalsIgnoreCase(permt[i])) {
-                            i = length + 1;
-                            continue;
-                        }
-                        if (i != 0) {
-                            if (st[i - 1].equalsIgnoreCase(permt[i - 1])) {
-                                if (st[i].equalsIgnoreCase("*")) {
-                                    return true;
-                                }
-                            }
+    private static boolean has(String t,String perm) {
+        if (t.equalsIgnoreCase(perm)) {
+            return true;
+        } else if (t.contains(".")) {
+            String[] tm = t.split("\\.");
+            if (perm.contains(".")) {
+                String[] permit = perm.split("\\.");
+                boolean cancel = false;
+                for (int i = 0; i < tm.length; i++) {
+                    // functions.default;
+                    // functions.permissions;
+                    // 2 length;
+                    // functions.default.*
+                    if (cancel) {
+                        continue;
+                    }
+                    if (i != 0) {
+                        if (tm[i].equalsIgnoreCase("*")) {
+                            return true;
                         }
                     }
-                } else {
-                    if (perm.equalsIgnoreCase(s)) {
-                        return true;
-                    } else if (perm.equalsIgnoreCase(st[0])) {
+                    if (!tm[i].equalsIgnoreCase(permit[i])) {
+                        cancel = true;
+                        continue;
+                    }
+                    if (tm[i].equalsIgnoreCase("*")) {
                         return true;
                     }
                 }
-            } else {
-                if (perm.equalsIgnoreCase(s)) {
-                    return true;
-                }
             }
-        }
+        } else return t.equalsIgnoreCase("*") || t.startsWith("*");
         return false;
+    }
+    public static boolean hasPermissions(Player player, String perm) {
+        AtomicBoolean is = new AtomicBoolean(false);
+        getPermissions(player).forEach(e->{
+            if (has(e,perm)) {
+                is.set(true);
+            }
+        });
+        return is.get();
     }
     public static List<String> getPermissions(Player player) {
         return Functions.instance.getPlayerManager().getUser(player.getUniqueId()).getPermissions();
     }
-    @Deprecated
     /**
      *
      * @param player Player can is null or Minecraft get Player.
@@ -89,39 +90,33 @@ public class PermissionsUtils {
                         if (!t[0].equalsIgnoreCase(pm[0])) {
                             continue;
                         }
-                        if (t.length == i || pm.length == i) {
-                            if (t[i - 1].equalsIgnoreCase(pm[i - 1])) {
-                                if (t[i].startsWith("*")) {
+                        if (t.length == i) {
+                            if (t[i - 2].equalsIgnoreCase(pm[i - 2])) {
+                                if (t[i - 1].startsWith("*")) {
                                     return true;
                                 }
                             }
                         }
-                        int ti = i - 1;
-                        // 3 <= 2
                         if (t.length <= i) {
                             continue;
                         }
                         if (!t[i].equalsIgnoreCase(pm[i])) {
                             continue;
                         }
-                        if (t.length >= ti) {
-                            if (t[i].equalsIgnoreCase(pm[i])) {
-                                if (t.length == i) {
-                                    return true;
-                                }
-                                int ts = i + 1;
-                                // t .length = 5;
-                                // 5 < 6
-                                if (t.length == ts) {
-                                    if (t[ts] != null) {
-                                        if (t[ts].startsWith("*")) {
-                                            return true;
-                                        }
-                                    }
-                                } else if (t[i] != null || pm[i] != null) {
-                                    if (t[i].equalsIgnoreCase(pm[i])) {
+                        if (t[i].equalsIgnoreCase(pm[i])) {
+                            int ti = i + 1;
+                            if (t.length == ti) {
+                                return true;
+                            }
+                            if (t.length > ti) {
+                                if (t[i] != null) {
+                                    if (t[ti].startsWith("*")) {
                                         return true;
                                     }
+                                }
+                            } else if (t[i] != null || pm[i] != null) {
+                                if (t[i].equalsIgnoreCase(pm[i])) {
+                                    return true;
                                 }
                             }
                         }

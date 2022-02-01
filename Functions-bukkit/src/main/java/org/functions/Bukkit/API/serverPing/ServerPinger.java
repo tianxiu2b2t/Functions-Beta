@@ -7,11 +7,14 @@ import java.io.IOException;
 import java.net.*;
 
 public class ServerPinger {
+    public static void main(String[] args) {
+        fetchData(new ServerAddress("localhost",25565),5000);
+    }
 
     public static PingResponse fetchData(final ServerAddress serverAddress, int timeout) {
         try {
             SocketAddress socketAddress = null;
-            Socket socket = null;
+            Socket socket = new Socket();
             DataOutputStream dataOut = null;
             DataInputStream dataIn = null;
 

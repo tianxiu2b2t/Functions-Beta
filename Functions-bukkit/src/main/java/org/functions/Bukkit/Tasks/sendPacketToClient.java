@@ -46,8 +46,8 @@ public class sendPacketToClient implements Runnable {
         for (Player p : Functions.instance.getAPI().getOnlinePlayers()) {
             if (Functions.instance.getConfiguration().getSettings().getBoolean("Tab.Enable",false)) Tab.send(p,Header.toString(), Footer.toString());//, //Functions.instance.getConfiguration().getSettings().getString("PlayerList"));
             if (Functions.instance.getConfiguration().getSettings().get("ActionBar")!=null) {
-                ActionBar.send(p,Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
-                if (Functions.instance.getConfiguration().getSettings().get("ActionBar.Message")!=null) ActionBar.send(p,Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
+                ActionBar.send(p,Functions.instance.getConfiguration().getSettings().getString("ActionBar"));
+                if (Functions.instance.getConfiguration().getSettings().get("ActionBar")!=null) ActionBar.send(p,Functions.instance.getConfiguration().getSettings().getString("ActionBar.Message"));
             }
             List<String> ls = new ArrayList<>();
             if (Functions.instance.getConfiguration().getSettings().get("ScoreBoard")!=null) {

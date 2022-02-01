@@ -187,13 +187,19 @@ public final class Functions extends JavaPlugin {
     public FServer getFServer() {
         return f;
     }
+    Task task = new Task();
     public void runScheduler() {
+        task.runTask(new BalanceTopRunnable(),0);
+        task.runTask(pm,0);
+        task.runTask(new sendPacketToClient(),0);
+        task.runTask(new AnimationsTask(),0);
+        task.runTask(new CheckAccountLogin(),20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
         //getServer().getScheduler().scheduleSyncRepeatingTask(this, new CheckAccountLogin(), 0, 20 * getConfig().getLong("Functions.RegisterLoginMessageInterval",5));
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, pm, 0, 0);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 5);
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new AnimationsTask(), 0, 0);
+       // getServer().getScheduler().scheduleSyncRepeatingTask(this, new Tasks(), 0, 0);
+        //getServer().getScheduler().scheduleSyncRepeatingTask(this, new BalanceTopRunnable(), 0, 0);
+        //getServer().getScheduler().scheduleSyncRepeatingTask(this, pm, 0, 0);
+        //getServer().getScheduler().scheduleSyncRepeatingTask(this, new sendPacketToClient(), 0, 0);
+        //getServer().getScheduler().scheduleSyncRepeatingTask(this, new AnimationsTask(), 0, 0);
     }
     public void print(Object text) {
         getServer().getConsoleSender().sendMessage(Prefix() + text);

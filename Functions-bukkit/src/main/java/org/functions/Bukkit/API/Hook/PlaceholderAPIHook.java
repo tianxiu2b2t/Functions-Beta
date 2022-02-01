@@ -1,17 +1,9 @@
 package org.functions.Bukkit.API.Hook;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.PlaceholderHook;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.PlayerManager;
-import org.functions.Bukkit.Main.functions.Bank;
-import org.functions.Bukkit.Main.functions.Economy;
-
 public class PlaceholderAPIHook extends PlaceholderExpansion {
     Functions plugin = Functions.instance;
     public String getAuthor() {

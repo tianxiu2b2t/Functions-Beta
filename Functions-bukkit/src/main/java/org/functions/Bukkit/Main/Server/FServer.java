@@ -22,6 +22,7 @@ import java.util.zip.ZipInputStream;
 
 public class FServer {
     List<FWorld> lw = new ArrayList<>();
+    List<Item> items = new ArrayList<>();
     LocalTime starts = LocalTime.now();
     //LocalTime starts = LocalTime.of(13,0);
     final long start = System.currentTimeMillis();
@@ -206,14 +207,27 @@ public class FServer {
         Runtime.getRuntime().gc();
         if (Functions.instance.getConfiguration().getSettings().getBoolean("CancelAllPendingTasks",false)) {
             List<String> plugin_name = new ArrayList<>();
-            Bukkit.getScheduler().getPendingTasks().forEach(e->{
+            Bukkit.getScheduler().getPendingTasks().forEach(e -> {
                 plugin_name.add("Task(id): " + e.getTaskId() + ", by plugin: " + e.getOwner().getDescription().getName());
             });
             Bukkit.getScheduler().getPendingTasks().clear();
             plugin_name.forEach(Functions.instance::inLogs);
         }
-        getEntities().forEach(e->{
-        });
+        addItemToCache();
+    }
+    public void addItemToCache() {
+        if (getItems().size() >= 10000) {
+            items.add(getItemStacks().get(getItems().size() - 1));
+            getItemStacks().remove(getItems().size() - 1);
+            addItemToCache();
+        } else {
+            items.forEach(e->{
+                if (getItems().size() <= 10000) {
+                    e.getLocation().getWorld().dropItemNaturally(e.getLocation(),e.getItemStack());
+                    items.remove(e);
+                }
+            });
+        }
     }
     public List<MonsterType> getMonsterTypes() {
         List<MonsterType> ls = new ArrayList<>();

@@ -18,6 +18,7 @@ public class CommandTPS implements TabExecutor {
     FPI fpi = Functions.instance.getAPI();
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        fpi.getInstance().getFServer().gc();
         sender.sendMessage(Info.getInfo());
         return true;
     }

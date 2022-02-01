@@ -84,11 +84,11 @@ public class User implements IUser {
         return is;
     }
     public List<String> getPermissions() {
+        permissions.clear();
         permissions = getGroup().getAllPermissions();
         if (Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions")!=null) {
             List<String> ls = StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions"));
-            permissions.forEach(
-                    e-> {
+            permissions.forEach(e-> {
                         ls.forEach(f->{
                             if (f.equalsIgnoreCase(e)) {
                                 ls.remove(f);
@@ -182,7 +182,6 @@ public class User implements IUser {
         return suffix;
     }
     public boolean addPrefixes(String name) {
-        //boolean is = false;
         List<String> ls = getPrefixes();
         for (String s : ls) {
             if (s.equalsIgnoreCase(name)) {
@@ -194,7 +193,6 @@ public class User implements IUser {
         return true;
     }
     public boolean addSuffixes(String name) {
-        //boolean is = false;
         List<String> ls = getSuffixes();
         for (String s : ls) {
             if (s.equalsIgnoreCase(name)) {
@@ -248,7 +246,6 @@ public class User implements IUser {
         return is;
     }
     public String removeSuffixes(int number) {
-        boolean is = true;
         String s = null;
         if (getSuffixes().size() >= number) {
             List<String> ls = getSuffixes();
@@ -259,7 +256,7 @@ public class User implements IUser {
     }
     public Group getGroup() {
         permissions.clear();
-        if (group==null) return new Group(Functions.instance.yamlUsers().configurations.get(uuid).getString("Group","Default"));
+        if (group==null) return new Group(Functions.instance.yamlUsers().configurations.get(uuid).getString("Group",Functions.instance.getConfiguration().getSettings().getString("DefaultGroup","Default")));
         return group;
     }
     public void setGroup(String name) {
