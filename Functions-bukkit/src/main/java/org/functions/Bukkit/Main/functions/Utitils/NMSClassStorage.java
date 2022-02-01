@@ -47,7 +47,7 @@ public class NMSClassStorage {
         PacketPlayOutPlayerListHeaderFooter_FOOTER = (Field)getFields(PacketPlayOutPlayerListHeaderFooter, IChatBaseComponent).get(1);
         PacketPlayOutChatClass = getNMSClass("network.protocol.game.PacketPlayOutChat", "PacketPlayOutChat", "Packet3Chat");
         if (ProtocolVersion.getServerVersion().getMinorVersion() >= 12) {
-            ChatMessageType = getNMSClass("net.minecraft.network.chat.ChatMessageType", "ChatMessageType");
+            ChatMessageType = getNMSClass("network.chat.ChatMessageType", "ChatMessageType");
             ChatMessageTypeValues = getEnumValues(ChatMessageType);
         }
         if (ProtocolVersion.getServerVersion().getMinorVersion() >= 16) {
