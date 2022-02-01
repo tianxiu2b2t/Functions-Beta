@@ -12,6 +12,7 @@ Minecraft Plugins
     - Tab(列表栏)√
     - ScoreBoard(计分板)√
     - ActionBar(物品栏上方显示)√
+    - JsonText(原版tellraw显示)√
 
 #### 安装教程
 
@@ -29,3 +30,8 @@ Minecraft Plugins
 #### issues
     
     如果有漏洞请把错误代码发送给我√
+
+## 没开发计划
+#### 金币指令
+#### gc查看服务器信息
+#### AI智能检测服务器各方面的性能及清理
