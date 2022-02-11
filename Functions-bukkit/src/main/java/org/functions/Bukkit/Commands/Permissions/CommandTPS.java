@@ -14,6 +14,7 @@ public class CommandTPS implements TabExecutor {
     public void run() {
         Functions.instance.getAPI().getCommand("info", new CommandTPS());
         Functions.instance.getAPI().getCommand("tps", new CommandTPS());
+        Functions.instance.getAPI().getCommand("gc", new CommandTPS());
     }
     FPI fpi = Functions.instance.getAPI();
 

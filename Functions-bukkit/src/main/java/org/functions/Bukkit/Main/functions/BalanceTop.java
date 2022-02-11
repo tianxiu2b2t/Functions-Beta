@@ -12,14 +12,9 @@ import java.util.UUID;
 public class BalanceTop {
     public List<Economy> getEconomyBalances() {
         List<Economy> user = new ArrayList<>();
-        try {
-            ResultSet r = Functions.instance.getDatabase().query("SELECT * FROM " + Functions.instance.getTable("Economy"));
-            while (r.next()) {
-                user.add(new Economy(UUID.fromString(r.getString("UUID"))));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Functions.instance.getPlayerManager().getAllUser().forEach(e->{
+            user.add(e.getEconomy());
+        });
         return user;
     }
 
@@ -28,14 +23,9 @@ public class BalanceTop {
     }
     public List<Bank> getBankBalances() {
         List<Bank> user = new ArrayList<>();
-        try {
-            ResultSet r = Functions.instance.getDatabase().query("SELECT * FROM " + Functions.instance.getTable("Economy"));
-            while (r.next()) {
-                user.add(new Bank(UUID.fromString(r.getString("UUID"))));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Functions.instance.getPlayerManager().getAllUser().forEach(e->{
+            user.add(e.getBank());
+        });
         return user;
     }
 

@@ -1,18 +1,14 @@
 package org.functions.Bukkit.Main.functions;
 
-import com.google.gson.JsonArray;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.SpeedPerSeconds;
-import org.functions.Bukkit.Main.DataBase;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.PlayerManager;
+import org.functions.Bukkit.Main.functions.UserAccounts.Account;
+import org.functions.Bukkit.Main.functions.UserAccounts.Accounts;
 import org.functions.Bukkit.Main.functions.Utitils.Tellraw;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 public class User implements IUser {
@@ -83,18 +79,21 @@ public class User implements IUser {
         }
         return is;
     }
+    public List<String> getUserPermissions() {
+        return Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions")!=null ? StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions")) : new ArrayList<>();
+    }
     public List<String> getPermissions() {
         permissions.clear();
         permissions = getGroup().getAllPermissions();
         if (Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions")!=null) {
-            List<String> ls = StringToList(Functions.instance.yamlUsers().configurations.get(uuid).getString("Permissions"));
+            List<String> ls = getUserPermissions();
             permissions.forEach(e-> {
-                        ls.forEach(f->{
-                            if (f.equalsIgnoreCase(e)) {
-                                ls.remove(f);
-                            }
-                        });
-                    });
+                ls.forEach(f->{
+                    if (f.equalsIgnoreCase(e)) {
+                        ls.remove(f);
+                    }
+                });
+            });
             permissions.addAll(ls);
         }
         return permissions;
@@ -271,7 +270,7 @@ public class User implements IUser {
         return new Bank(uuid);
     }
     public Account getAccount() {
-        return new Account(uuid);
+        return Accounts.getAccount(uuid);
     }
     public OfflinePlayer getOfflinePlayer() {
         return Functions.instance.getAPI().getServer().getOfflinePlayer(uuid);

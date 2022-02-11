@@ -2,24 +2,26 @@ package org.functions.Bukkit.API.FunctionsSQL;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class SQLReader extends SQLFile {
     String select;
     public SQLReader(File file, List<String> texts) {
         super(file, texts);
     }
-    public SQLReader(File file, List<String> texts,String select) {
-        this(file, texts);
-        this.select = select;
-    }
     public SQLReader setSelect(String select) {
-        return new SQLReader(file,texts,select);
+        this.select = select;
+        return this;
     }
-    public Object getObject() {
+    public SQLReader clearSelect() {
+        return setSelect("");
+    }
+    public boolean existsSelect() {
         if (select == null) {
-            throwException("select");
-            return null;
+            throwException("select is null");
+            return false;
         }
         List<Object> t = new ArrayList<>();
         super.texts.forEach(e->{
@@ -27,13 +29,40 @@ public class SQLReader extends SQLFile {
                 t.add(split(e,1));
             }
         });
-        return t.get(t.size()-1);
+        return t.size() != 0;
+    }
+    public Object getObject() {
+        if (select == null) {
+            throwException("select");
+            return null;
+        }
+        if (super.texts.size() == 0) {
+            return null;
+        }
+        for (String text : super.texts) {
+            if (split(text,0).equals(select)) {
+                return split(text,1);
+            }
+        }
+        return null;
     }
     public String getObjectAsString() {
-        return getObject().toString();
+        if (getObject() == null) {
+            return "";
+        }
+        return getObject()+"";
+    }
+    public String[] getObjectAsStrings(String split) {
+        if (getObject() == null) {
+            return new String[]{};
+        }
+        return getObjectAsString().split(split);
     }
     public int getObjectAsInteger() {
         int i = Integer.MIN_VALUE;
+        if (getObject() == null) {
+            return i;
+        }
         try {
             i = Integer.parseInt(getObjectAsString());
         } catch (NumberFormatException e) {
@@ -43,6 +72,9 @@ public class SQLReader extends SQLFile {
     }
     public double getObjectAsDouble() {
         double i = Double.MIN_VALUE;
+        if (getObject() == null) {
+            return i;
+        }
         try {
             i = Double.parseDouble(getObjectAsString());
         } catch (NumberFormatException e) {
@@ -52,6 +84,9 @@ public class SQLReader extends SQLFile {
     }
     public float getObjectAsFloat() {
         float i = Float.MIN_VALUE;
+        if (getObject() == null) {
+            return i;
+        }
         try {
             i = Float.parseFloat(getObjectAsString());
         } catch (NumberFormatException e) {
@@ -61,6 +96,9 @@ public class SQLReader extends SQLFile {
     }
     public long getObjectAsLong() {
         long i = Long.MIN_VALUE;
+        if (getObject() == null) {
+            return i;
+        }
         try {
             i = Long.parseLong(getObjectAsString());
         } catch (NumberFormatException e) {
@@ -69,32 +107,35 @@ public class SQLReader extends SQLFile {
         return i;
     }
     public boolean getObjectAsBoolean() {
-        boolean i = false;
-        try {
-            i = Boolean.parseBoolean(getObjectAsString());
-        } catch (NumberFormatException e) {
-            throwException("Boolean format exception");
+        if (getObject() == null) {
+            return false;
         }
-        return i;
+        return Objects.equals(getObjectAsString(), "true");
     }
     public void setObject(Object object) {
         if (select == null) {
             throwException("select");
             return;
         }
-        List<Boolean> is = new ArrayList<>();
-        super.texts.forEach(e->{
-            if (split(e,0).equals(select)) {
-                if (is.get(0) == null || is.get(0)) {
-                    texts.remove(e);
-                    texts.add(e.replace(split(e,1),object.toString()));
-                    is.add(true);
-                }
-            }
-        });
-        if (!is.get(0)) {
-            texts.add(select + ":" + object.toString());
+        if (super.texts.size() == 0) {
+            texts.add(select + ":" + object);
         }
+        for (int i = 0; i < super.texts.size(); i++) {
+            if (split(texts.get(i), 0).equals(select)) {
+                super.texts.set(i, super.texts.get(i).replace(split(super.texts.get(i), 1), String.valueOf(object)));
+                return;
+            }
+        }
+        texts.add(select + ":" + object);
+    }
+    @Deprecated
+    /**
+     * Because it split you do not know it split char.
+     * So, it is @deprecated.
+     * @param args args is you create String[] chars.
+     * */
+    public void setObjectAsStrings(String[] args) {
+        setObject(Arrays.toString(args));
     }
     public void setObjectAsString(String string) {
         setObject(string);

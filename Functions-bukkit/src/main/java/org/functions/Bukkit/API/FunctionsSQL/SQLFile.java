@@ -7,10 +7,10 @@ import java.util.List;
 public class SQLFile extends SQLMain {
     File file;
     List<String> texts;
-    private final String format = ".SQLFile";
     private SQLFile(File file) {
+        String format = ".SQLFile";
         if (!file.getName().endsWith(format)) {
-            file = new File(file.getName() + format);
+            file = new File(file.getPath() + format);
         }
         this.file = file;
     }

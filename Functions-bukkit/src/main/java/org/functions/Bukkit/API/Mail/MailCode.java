@@ -1,7 +1,7 @@
 package org.functions.Bukkit.API.Mail;
 
 import org.functions.Bukkit.API.FPI;
-import org.functions.Bukkit.Main.functions.Account;
+import org.functions.Bukkit.Main.functions.UserAccounts.Account;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.RandomCode;
 
@@ -33,7 +33,7 @@ public class MailCode {
                 if (FPI.code.get(uuid) == null) {
                     String code = random.out();
                     if (Mail.sendRecoveryPassword(account.getMail(),
-                            account.getPlayer(),
+                            account.getOfflinePlayer().getPlayer(),
                             code,
                             Functions.instance.getConfiguration().getSettings().getString("Mail.TimeOut", "5"))) {
                         FPI.code.put(uuid, code);

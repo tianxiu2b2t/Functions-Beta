@@ -1,20 +1,9 @@
 package org.functions.Bukkit.API.FunctionsSQL;
 
 import java.io.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryUsage;
 import java.util.*;
 
 public class SQLMain {
-    public static void main(String[] args) {
-        File file = new File("O:\\test.SQLFile");
-        List<String> texts = new ArrayList<>();
-        texts.add("Name:test.SQLFile");
-        SQLReader reader = new SQLReader(file,texts);
-        reader.save();
-    }
     private final String format = ".SQLFile";
     public List<SQLRead> getSubSQLFiles(File dir) {
         List<SQLRead> list = new ArrayList<>();

@@ -136,7 +136,7 @@ public class NMSClassStorage {
 
         return field;
     }
-    private List<Field> getFields(Class<?> clazz, Class<?> type) {
+    public List<Field> getFields(Class<?> clazz, Class<?> type) {
         if (clazz == null) {
             throw new IllegalArgumentException("Source class cannot be null");
         } else {
@@ -160,7 +160,7 @@ public class NMSClassStorage {
     public void setField(Object object, Field field, Object fieldValue) throws Exception {
         field.set(object,fieldValue);
     }
-    private Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
+    public Method getMethod(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
         String[] var4 = names;
         int var5 = names.length;
         int var6 = 0;
@@ -177,7 +177,7 @@ public class NMSClassStorage {
 
         throw new NoSuchMethodException("No method found with possible names " + Arrays.toString(names) + " with parameters " + Arrays.toString(parameterTypes) + " in class " + clazz.getName());
     }
-    private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
+    public Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) throws NoSuchMethodException {
         List<Method> list = new ArrayList<>();
         Method[] var5 = clazz.getMethods();
         int var6 = var5.length;
@@ -207,7 +207,7 @@ public class NMSClassStorage {
             throw new NoSuchMethodException("No method found with name " + name + " in class " + clazz.getName() + " with parameters " + Arrays.toString(parameterTypes));
         }
     }
-    private List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
+    public List<Method> getMethods(Class<?> clazz, Class<?> returnType, Class<?>... parameterTypes) {
         List<Method> list = new ArrayList<>();
         Method[] var5 = clazz.getDeclaredMethods();
         int var6 = var5.length;
@@ -233,7 +233,7 @@ public class NMSClassStorage {
 
         return list;
     }
-    private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
+    public Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         Field[] var3 = clazz.getDeclaredFields();
         int var4 = var3.length;
 
@@ -246,7 +246,7 @@ public class NMSClassStorage {
 
         throw new NoSuchFieldException("Field \"" + name + "\" was not found in class " + clazz.getName());
     }
-    private Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
+    public Field getField(Class<?> clazz, String... potentialNames) throws NoSuchFieldException {
         String[] var3 = potentialNames;
         int var4 = potentialNames.length;
         int var5 = 0;
@@ -360,7 +360,7 @@ public class NMSClassStorage {
     public Object getEntityPlayer(Player player) throws Exception {
         return getHandle(player);
     }
-    private Object[] getEnumValues(Class<?> enumClass) {
+    public Object[] getEnumValues(Class<?> enumClass) {
         if (enumClass == null) {
             throw new IllegalArgumentException("Class cannot be null");
         } else if (!enumClass.isEnum()) {
@@ -390,4 +390,5 @@ public class NMSClassStorage {
         }
         return false;
     }
+
 }

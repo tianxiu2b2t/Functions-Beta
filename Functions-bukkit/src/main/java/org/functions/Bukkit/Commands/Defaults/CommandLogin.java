@@ -6,8 +6,8 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.functions.Account;
-import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.UserAccounts.Account;
+import org.functions.Bukkit.Main.functions.UserAccounts.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class CommandLogin implements TabExecutor {
                 sender.sendMessage(fpi.putLanguage("AccountIsLogin","&c你的账号已登录。退出请使用/logout",p));
                 return true;
             }
-            if (account.Login(args[0])) {
+            if (account.login(args[0])) {
                 sender.sendMessage(fpi.putLanguage("AccountLogin","&a成功登陆！",p));
             } else {
                 sender.sendMessage(fpi.putLanguage("AccountPasswordWrong","&c密码错误！",p));

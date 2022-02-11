@@ -1,21 +1,38 @@
-package org.functions.Bukkit.Main.functions;
+package org.functions.Bukkit.Main.functions.UserAccounts;
 
-import org.functions.Bukkit.API.FPI;
-import org.functions.Bukkit.Main.DataBase;
+import org.functions.Bukkit.API.FunctionsSQL.SQLMain;
+import org.functions.Bukkit.API.FunctionsSQL.SQLRead;
 import org.functions.Bukkit.Main.Functions;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class Accounts {
+    public static File dir = Functions.instance.getDirPath("Accounts");
+    public static List<Account> accounts = new ArrayList<>();
     public static LinkedHashMap<UUID, Boolean> login = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, Long> bclogin = new LinkedHashMap<>();
-    static String table = Functions.instance.getTable("Accounts");
-    static DataBase db = Functions.instance.getDatabase();
+    public static Account getAccount(UUID uuid) {
+        for (Account a : accounts) {
+            if (a.getUUID().equals(uuid)) {
+                return a;
+            }
+        }
+        accounts.add(new Account(uuid));
+        return accounts.get(accounts.size() - 1);
+    }
+    public static Account getAccount(String name) {
+        name = name.toLowerCase();
+        for (Account account : accounts) {
+            if (account.getName().toLowerCase().equalsIgnoreCase(name)) {
+                return account;
+            }
+        }
+        return null;
+    }
     public static boolean isBcLoginTimeOut(UUID uuid) {
         if (Functions.instance.getFServer().isBc()) {
             if (bclogin.get(uuid)!=null) {
@@ -34,24 +51,6 @@ public class Accounts {
                 bclogin.remove(uuid);
             }
         }
-    }
-    public static List<Account> getAccounts() {
-        List<Account> accounts = new ArrayList<>();
-        ResultSet rs = db.query("SELECT * FROM " + table);
-        try {
-            while (rs.next()) {
-                accounts.add(new Account(UUID.fromString(rs.getString("UUID"))));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return accounts;
-    }
-    public static Account getAccount(UUID uuid) {
-        return new Account(uuid);
-    }
-    public static int size() {
-        return getAccounts().size();
     }
     public static boolean register() {
         return Functions.instance.getConfig().getBoolean("Functions.RegisterAccounts",true);

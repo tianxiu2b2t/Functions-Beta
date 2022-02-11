@@ -6,16 +6,17 @@ import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Messaging.BungeeCord.GetServer;
 import org.functions.Bukkit.Main.functions.Messaging.BungeeCord.Teleport;
 
-public class BungeeCordTeleport implements ListenerMessaging {
+public class BungeeCordTeleport extends ListenerMessaging {
     GetServer getBcServer;
     Teleport BcTeleport;
     Functions instance = Functions.instance;
     public void onEnable() {
+        Manager.manager.addClass("BungeeCordBetweenServers",this);
         if (!instance.getServer().getMessenger().isOutgoingChannelRegistered(instance, "BungeeCord")) {
             instance.getServer().getMessenger().registerOutgoingPluginChannel(instance, "BungeeCord");
         }
         if (!instance.getServer().getMessenger().isIncomingChannelRegistered(instance, "BungeeCord")) {
-            instance.getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", this);
+            instance.getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", Manager.manager);
         }
         getBcServer = new GetServer();
         getBcServer.SendBCDataGetServerList();
@@ -34,7 +35,7 @@ public class BungeeCordTeleport implements ListenerMessaging {
         BcTeleport = null;
     }
 
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+    public void ReceivePluginMessage(String channel, Player player, String[] message) {
         getBcServer.ReceivePluginMessage(channel, player, message);
     }
 

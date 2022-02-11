@@ -1,6 +1,7 @@
 package org.functions.Bukkit.Main.Server;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -213,28 +214,32 @@ public class FServer {
             Bukkit.getScheduler().getPendingTasks().clear();
             plugin_name.forEach(Functions.instance::inLogs);
         }
-        addItemToCache();
+        Functions.instance.inLogs("Chunk unload count: " + world_gc());
     }
-    public void addItemToCache() {
-        if (getItems().size() >= 10000) {
-            items.add(getItemStacks().get(getItems().size() - 1));
-            getItemStacks().remove(getItems().size() - 1);
-            addItemToCache();
-        } else {
-            items.forEach(e->{
-                if (getItems().size() <= 10000) {
-                    e.getLocation().getWorld().dropItemNaturally(e.getLocation(),e.getItemStack());
-                    items.remove(e);
-                }
-            });
+    private int world_gc() {
+        int i = 0;
+        for (FWorld world : getWorlds()) {
+            i = i + chunk_gc(world.world);
         }
+        return i;
     }
-    public List<MonsterType> getMonsterTypes() {
-        List<MonsterType> ls = new ArrayList<>();
-        if (getInstance().getConfiguration().getSettings().get("MonsterType") != null) {
-            getInstance().getConfiguration().getSettings().getStringList("MonsterTypes").forEach(e->{
+    private int chunk_gc(World world) {
+        int i = 0;
+        for (Chunk chunk : world.getLoadedChunks()) {
+            if (world.isChunkInUse(chunk.getX(),chunk.getZ())) {
+                continue;
+            }
+            chunk.unload(true);
+            i++;
+        }
+        return i;
+    }
+    public List<EntityType> getCanCleanTypes() {
+        List<EntityType> ls = new ArrayList<>();
+        if (getInstance().getConfiguration().getSettings().get("CanCleanType") != null) {
+            getInstance().getConfiguration().getSettings().getStringList("CanCleanTypes").forEach(e->{
                 String[] args = e.split(":");
-                ls.add(new MonsterType(Integer.parseInt(args[0]), args[1], args[2]));
+                ls.add(EntityType.valueOf(args[0].toUpperCase()));
             });
         }
         return ls;
@@ -259,30 +264,6 @@ public class FServer {
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
-        }
-    }
-    public static class MonsterType {
-        int id;
-        String displayName;
-        String en_us;
-        public MonsterType(int id,String en_us,String DisplayName) {
-            this.id = id;
-            this.displayName = DisplayName;
-            this.en_us = en_us;
-        }
-        public String toString() {
-            return en_us;
-        }
-        public String getDisplayName() {
-            return displayName;
-        }
-        public boolean equals(EntityType type) {
-            for (MonsterType t : Functions.instance.getFServer().getMonsterTypes()) {
-                if (t.toString().equalsIgnoreCase(type.name())) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

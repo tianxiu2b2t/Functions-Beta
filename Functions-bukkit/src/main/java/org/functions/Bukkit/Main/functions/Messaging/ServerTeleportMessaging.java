@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ServerTeleportMessaging implements ListenerMessaging {
+public class ServerTeleportMessaging extends ListenerMessaging {
     public List<String> ServerList = new ArrayList<>();
     Functions instance = Functions.instance;
     public void onEnable() {
@@ -23,7 +23,7 @@ public class ServerTeleportMessaging implements ListenerMessaging {
             instance.getServer().getMessenger().registerOutgoingPluginChannel(instance, "BungeeCord");
         }
         if (!instance.getServer().getMessenger().isIncomingChannelRegistered(instance, "BungeeCord")) {
-            instance.getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", this);
+            instance.getServer().getMessenger().registerIncomingPluginChannel(instance, "BungeeCord", Manager.manager);
         }
         getServers();
     }
@@ -77,36 +77,17 @@ public class ServerTeleportMessaging implements ListenerMessaging {
 
     }
 
-    @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        ReceivePluginMessage(channel,player,message);
-    }
-
-    public void ReceivePluginMessage(String channel, Player player, byte[] message) {
-        DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-        String subchannel = "";
+    public void ReceivePluginMessage(String channel, Player player, String[] message) {
+        String subchannel = message[0];
         String[] SL = null;
-
-        try {
-            subchannel = in.readUTF();
-        } catch (IOException var13) {
-        }
 
         String ts;
         if (subchannel.equals("GetServers")) {
-            try {
-                String ServerListStr = in.readUTF();
-                SL = ServerListStr.split(", ");
-            } catch (IOException var12) {
-            }
-
-            if (SL == null) {
-                return;
-            }
+            SL = message[1].split(", ");
 
             String[] var14 = SL;
             int var8 = SL.length;
-
+            ServerList.clear();
             for(int var9 = 0; var9 < var8; ++var9) {
                 ts = var14[var9];
                 ServerList.add(ts);
@@ -115,15 +96,8 @@ public class ServerTeleportMessaging implements ListenerMessaging {
         }
 
         if (subchannel.equals("Functions_ServerTeleportAll")) {
-            try {
-                short len = in.readShort();
-                byte[] msgbytes = new byte[len];
-                in.readFully(msgbytes);
-                DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
-                ts = msgin.readUTF();
-                Run(ts);
-            } catch (IOException var11) {
-            }
+            ts = message[1];
+            ((BungeeCordTeleport)Manager.manager.getClass("BungeeCordBetweenServers")).getBcTeleport().Run(ts);
         }
 
     }
@@ -137,25 +111,6 @@ public class ServerTeleportMessaging implements ListenerMessaging {
         } catch (IOException var4) {
         }
 
-        Bukkit.getConsoleSender().getServer().sendPluginMessage(instance, "BungeeCord", b.toByteArray());
-    }
-
-    public void SendBCDateStpAll(String TargetServer) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-
-        try {
-            out.writeUTF("Forward");
-            out.writeUTF("ALL");
-            out.writeUTF("Functions_ServerTeleportAll");
-            ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
-            DataOutputStream msgout = new DataOutputStream(msgbytes);
-            msgout.writeUTF(TargetServer);
-            out.writeShort(msgbytes.toByteArray().length);
-            out.write(msgbytes.toByteArray());
-        } catch (IOException var6) {
-        }
-
-        Bukkit.getConsoleSender().getServer().sendPluginMessage(instance, "BungeeCord", b.toByteArray());
+        Bukkit.getConsoleSender().getServer().sendPluginMessage(Functions.instance, "BungeeCord", b.toByteArray());
     }
 }

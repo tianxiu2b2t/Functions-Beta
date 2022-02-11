@@ -13,7 +13,7 @@ RecoveryPasswordServerName: "Recovery Password Unknown Server"
 #语言配置
 #如果没有语言文字则生成中文
 Language: zh-cn
-#数据库
+#数据库(已弃用，可能在未来发布版本中加入)
 DataBase:
   #SQLITE MYSQL(目前Beta版不开放)
   Type: SQLITE
@@ -28,3 +28,4 @@ Functions:
   RegisterAccounts: true
   #注册或登录提示间隔(单位为秒)
   RegisterLoginMessageInterval: 5
+BungeeCord: #No API find this.#

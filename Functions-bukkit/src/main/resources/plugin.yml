@@ -48,6 +48,8 @@ commands:
     description: Functions' Tick Per Seconds Check Info.
   tps:
     description: Functions' Tick Per Seconds Check Info.
+  gc:
+    description: Functions' Tick Per Seconds Check Info.
   seed:
     description: Functions' Check Worlds Seeds.
   fly:

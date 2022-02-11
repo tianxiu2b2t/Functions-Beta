@@ -78,6 +78,8 @@ public class Commands {
                                             c.getMethod("run", null).invoke(c.newInstance(), null);
                                         } else if (e.getName().startsWith("get")) {
                                             Object cmd = e.invoke(c.newInstance(), null);
+                                        } else {
+                                            c.newInstance();
                                         }
                                     }
                                 }

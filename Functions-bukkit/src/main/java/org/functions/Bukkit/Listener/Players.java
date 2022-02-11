@@ -22,6 +22,8 @@ import org.functions.Bukkit.API.WorldBlock;
 import org.functions.Bukkit.Main.*;
 import org.functions.Bukkit.Main.Server.FList;
 import org.functions.Bukkit.Main.functions.*;
+import org.functions.Bukkit.Main.functions.UserAccounts.*;
+import org.functions.Bukkit.Main.functions.Utitils.FunctionsCommand;
 import org.functions.Bukkit.Tasks.CheckAccountLogin;
 
 import java.util.ArrayList;
@@ -57,7 +59,7 @@ public class Players implements Listener {
     public void Command(PlayerCommandPreprocessEvent event) {
         Player p = event.getPlayer();
         Functions.instance.print(event.getPlayer().getName() + "(" + p.getUniqueId().toString() + ") issued server command: " + event.getMessage());
-        account = new Account(p.getUniqueId());
+        account = Accounts.getAccount(p.getUniqueId());
         String cmd = event.getMessage().split(" ")[0].substring(1);
         AllowCommand login = new AllowCommand("NotLogin");
         if (!account.isLogin()) {
@@ -72,10 +74,14 @@ public class Players implements Listener {
                 event.setCancelled(true);
             }
         }
+        if (!FunctionsCommand.contains(cmd)) {
+            p.sendMessage(fpi.putLanguage("UnknownCommand","&c未知指令: /%command%, 请用/help 查看指令！",null,new Object[]{"command",cmd}));
+            event.setCancelled(true);
+        }
     }
     @EventHandler
     public void chat(AsyncPlayerChatEvent event) {
-        account = Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount();
+        account = Accounts.getAccount(event.getPlayer().getUniqueId());
         if (!account.isLogin()) {
             event.setCancelled(true);
             return;
@@ -101,7 +107,7 @@ public class Players implements Listener {
     }
     public void chat(FAsyncPlayerChatEvent event) {
         Player p = event.getPlayer();
-        account = new Account(p.getUniqueId());
+        account = Accounts.getAccount(p.getUniqueId());
         if (account.isLogin()) {
             p.getServer().getConsoleSender().sendMessage(event.getFormat());
             p.getServer().getOnlinePlayers().forEach(ps->{ps.sendMessage(event.getFormat());});
@@ -112,8 +118,7 @@ public class Players implements Listener {
 
     @EventHandler
     public void join(PlayerJoinEvent event) {
-        Player p = event.getPlayer();
-        Accounts.login.put(p.getUniqueId(),false);
+        Player p = event.getPlayer();;
         Functions.instance.getPlayerManager().run();
         if (!Functions.instance.getPlayerManager().exists(p.getUniqueId())) Functions.instance.getPlayerManager().run();
         event.setJoinMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getJoin(),p));
@@ -122,8 +127,7 @@ public class Players implements Listener {
         if (Accounts.enable()) {
             account = Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getAccount();
             if (account.exists()) {
-                account.teleportSpawn();
-                Accounts.login.put(p.getUniqueId(), false);
+                account.logout();
                 if (account.autoLogin()) {
                     p.sendMessage(fpi.putLanguage("AutoLogin", "&a成功自动登陆！", p));
                     Functions.instance.print("Player: " + p.getName() + " Auto login.");
@@ -137,7 +141,7 @@ public class Players implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void move(PlayerMoveEvent event) {
         Player p = event.getPlayer();
-        account = new Account(p.getUniqueId());
+        account = Accounts.getAccount(p.getUniqueId());
         if (!account.isLogin()) {
             event.setTo(new Location(event.getFrom().getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), event.getTo().getYaw(), event.getTo().getPitch()));
             return;
@@ -156,7 +160,7 @@ public class Players implements Listener {
     public void damage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
-            account = new Account(event.getEntity().getUniqueId());
+            account = Accounts.getAccount(entity.getUniqueId());
             if (!account.isLogin()) {
                 event.setCancelled(true);
             }
@@ -189,7 +193,7 @@ public class Players implements Listener {
         Functions.instance.getPlayerManager().run();
         Player p = event.getPlayer();
         if (!Objects.equals(event.getQuitMessage(), "") || event.getQuitMessage() != null) event.setQuitMessage(Functions.instance.getAPI().replace(Functions.instance.getPlayerManager().getUser(p.getUniqueId()).getGroup().getQuit(),p));
-        account = new Account(p.getUniqueId());
+        account = Accounts.getAccount(p.getUniqueId());
         if (Accounts.enable()) {
             if (account.exists() || account.isLogin()) {
                 account.logout();

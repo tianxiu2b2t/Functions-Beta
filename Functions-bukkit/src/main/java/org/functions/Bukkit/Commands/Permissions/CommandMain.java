@@ -53,6 +53,9 @@ public class CommandMain implements TabExecutor {
             sender.sendMessage(Functions.instance.getAPI().putLanguage("ReloadMinecraftData","&a成功重载原版数据！ (%time-ms% ms)",null).replace("%time-ms%", (((double)System.currentTimeMillis() - start) / 1000) + ""));
             return true;
         }
+        if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.functions.otherCommands.minecraft")) {
+            return true;
+        }
         if (args[0].equalsIgnoreCase("destroy_quiet")) {
             List<Material> a = new ArrayList<>();
             a.add(Material.BEDROCK);

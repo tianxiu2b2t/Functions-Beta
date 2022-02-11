@@ -3,6 +3,7 @@ package org.functions.Bukkit.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -15,6 +16,8 @@ import org.functions.Bukkit.API.Hook.PlaceholderAPIHook;
 import org.functions.Bukkit.Listener.Players;
 import org.functions.Bukkit.Main.Server.FServer;
 import org.functions.Bukkit.Main.functions.ForceLoad.Force;
+import org.functions.Bukkit.Main.functions.Messaging.Manager;
+import org.functions.Bukkit.Main.functions.Utitils.FunctionsCommand;
 import org.functions.Bukkit.Main.functions.Utitils.NMSClassStorage;
 import org.functions.Bukkit.Main.functions.YamlUsers;
 import org.functions.Bukkit.Main.functions.AddressLocation;
@@ -22,13 +25,13 @@ import org.functions.Bukkit.Main.functions.Messaging.BungeeCordTeleport;
 import org.functions.Bukkit.Main.functions.ServerTitle;
 import org.functions.Bukkit.Tasks.*;
 
-import java.io.File;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public final class Functions extends JavaPlugin {
     NMSClassStorage clazz = new NMSClassStorage();
     YamlUsers yamlUsers;
-    BungeeCordTeleport bungeeCordTeleport;
     FServer f;
     public ServerTitle title;
     //public PermissionsUtils.BukkitPermissions perms = new PermissionsUtils.BukkitPermissions();
@@ -70,12 +73,16 @@ public final class Functions extends JavaPlugin {
     public File getDirPath(String dir) {
         String path = getDataFolder()+"";
         path = path.replace("\\","/");
-        return new File(path,dir);
+        File file = new File(path,dir);
+        file.mkdirs();
+        return file;
     }
     public File getDirPath(File path,String dir) {
-        String paths = getDataFolder()+"";
+        String paths = path+"";
         paths = paths.replace("\\","/");
-        return new File(paths,dir);
+        File file = new File(paths,dir);
+        file.mkdirs();
+        return file;
     }
     public DataBase getDatabase() {
         return database;
@@ -169,14 +176,18 @@ public final class Functions extends JavaPlugin {
         forceLoad = new Force(f);
         print("Is BungeeCord: " + f.isBc());
         print("Plugin folder size: " + configuration.DirSize());
-        bungeeCordTeleport = new BungeeCordTeleport();
-        bungeeCordTeleport.onEnable();
+        new Manager().onEnable();
         f.flushMemory();
         // recipe
         ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("packet_ice"),new ItemStack(Material.PACKED_ICE)).shape("xxx","xxx","xxx").setIngredient('x',Material.ICE);
         getServer().addRecipe(recipe);
         //f.clearEnderManAndEnderPearlItem();
         // Plugin startup logic
+        try {
+            FunctionsCommand.registerAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public YamlUsers yamlUsers() {
         String path = getDataFolder()+"";
@@ -221,10 +232,6 @@ public final class Functions extends JavaPlugin {
         latest.print(type.getName() + " " + text);
     }
 
-    public BungeeCordTeleport getMessaging() {
-        return bungeeCordTeleport;
-    }
-
     public void onDisableSettings() {
         for (Player p : getAPI().getOnlinePlayers()) {
             // Bukkit 事件新建一个
@@ -250,8 +257,7 @@ public final class Functions extends JavaPlugin {
     }
     public void onDisable() {
         onDisableSettings();
-        bungeeCordTeleport.onDisable();
-        bungeeCordTeleport = null;
+        Manager.manager.onDisable();
         // 获取在线玩家
         //a.onDisable();
         title = null;
@@ -262,5 +268,16 @@ public final class Functions extends JavaPlugin {
     }
     public Configuration getConfiguration() {
         return configuration;
+    }
+    public int getVersion() {
+        int i = -1;
+        try {
+            InputStream is = getResource("Version");
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            i = Integer.parseInt(br.readLine());
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return i;
     }
 }

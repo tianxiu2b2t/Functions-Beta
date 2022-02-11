@@ -4,6 +4,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.SpeedPerSeconds;
+import org.functions.Bukkit.Main.functions.UserAccounts.Account;
 
 import java.util.List;
 

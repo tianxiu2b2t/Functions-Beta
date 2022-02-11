@@ -24,6 +24,9 @@ public class CommandUser implements TabExecutor {
         //    sender.sendMessage(fpi.subcmd());
         //    return true;
        // }
+        if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user")) {
+            return true;
+        }
         User user = null;
         if (args.length == 0) {
             sender.sendMessage(fpi.subcmd());
@@ -38,7 +41,7 @@ public class CommandUser implements TabExecutor {
             sender.sendMessage(fpi.putLanguage("NotFindUser","&c找不到 %user% !",null,new String[]{"%user%"},new String[]{args[0]}));
             return true;
         }
-        if (args.length == 2) {
+        if (args.length == 1) {
             sender.sendMessage(fpi.subcmd());
             return true;
         }
@@ -56,6 +59,44 @@ public class CommandUser implements TabExecutor {
         }
         if (args[1].equalsIgnoreCase("permissions")) {
             if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.permissions")) {
+                return true;
+            }
+            if (args.length == 2) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.group.list")) {
+                    return true;
+                }
+                String format = "%1$s(%2$s)";
+                StringBuilder list = new StringBuilder();
+                for (int i = 1; i <= user.getUserPermissions().size();i++) {
+                    String g = user.getUserPermissions().get(i-1);
+                    if (i != user.getUserPermissions().size()) {
+                        list.append(String.format(format, user.getUserPermissions().get(i-1))).append(", ");
+                        //System.out.println(list.toString());
+                        continue;
+                    }
+                    list.append(String.format(format, user.getUserPermissions().get(i-1), i));
+                    //System.out.println(list.toString());
+                }
+                sender.sendMessage(fpi.putLanguage("UserPermissionsList","&a用户 %user% 的权限有: %permissions%",null,new Object[]{"user",user.getOfflinePlayer().getName(),"permissions",list.toString()}));
+                return true;
+            }
+            if ("list".equalsIgnoreCase(args[2])) {
+                if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.group.list")) {
+                    return true;
+                }
+                String format = "%1$s(%2$s)";
+                StringBuilder list = new StringBuilder();
+                for (int i = 1; i <= user.getUserPermissions().size();i++) {
+                    String g = user.getUserPermissions().get(i-1);
+                    if (i != user.getUserPermissions().size()) {
+                        list.append(String.format(format, user.getUserPermissions().get(i-1))).append(", ");
+                        //System.out.println(list.toString());
+                        continue;
+                    }
+                    list.append(String.format(format, user.getUserPermissions().get(i-1), i));
+                    //System.out.println(list.toString());
+                }
+                sender.sendMessage(fpi.putLanguage("UserPermissionsList","&a%user%的权限有: ",null,new Object[]{"user",user.getOfflinePlayer().getName(),"permissions",list.toString()}));
                 return true;
             }
             if ("add".equalsIgnoreCase(args[2])) {
@@ -432,6 +473,7 @@ public class CommandUser implements TabExecutor {
             if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffix")) ls.add("suffix");
             if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.suffixes")) ls.add("suffixes");
             if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefixes")) ls.add("prefixes");
+            if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.permissions")) ls.add("permissions");
         }
         if (args.length == 3) {
             if (args[1].equalsIgnoreCase("suffixes")) {
@@ -445,6 +487,12 @@ public class CommandUser implements TabExecutor {
                 if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefixes.use")) ls.add("use");
                 if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefixes.add")) ls.add("add");
                 if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.prefixes.list")) ls.add("list");
+            }
+            if (args[1].equalsIgnoreCase("permissions")) {
+                if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.permissions.remove")) ls.add("remove");
+                if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.permissions.use")) ls.add("use");
+                if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.permissions.add")) ls.add("add");
+                if (PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.user.permissions.list")) ls.add("list");
             }
         }
         Collections.sort(ls);

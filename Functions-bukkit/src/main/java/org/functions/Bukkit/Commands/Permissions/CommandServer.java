@@ -6,6 +6,8 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
+import org.functions.Bukkit.Main.functions.Messaging.BungeeCordTeleport;
+import org.functions.Bukkit.Main.functions.Messaging.Manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,26 +20,30 @@ public class CommandServer implements TabExecutor {
 
     FPI fpi = Functions.instance.getAPI();
 
+    public BungeeCordTeleport getTeleport() {
+        return (BungeeCordTeleport) Manager.manager.getClass("BungeeCordBetweenServers");
+    }
+
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (Functions.instance.getFServer().isBc()) {
-            Functions.instance.getMessaging().getGetBcServer().SendBCDataGetServerList();
+            getTeleport().getGetBcServer().SendBCDataGetServerList();
             if (sender instanceof Player) {
                 Player player = ((Player) sender).getPlayer();
                 if (args.length == 1) {
-                    Functions.instance.getMessaging().getGetBcServer().ServerList.forEach((e) -> {
+                    getTeleport().getGetBcServer().ServerList.forEach((e) -> {
                         if (args[0].equalsIgnoreCase(e)) {
-                            Functions.instance.getMessaging().getBcTeleport().Run(player, e);
+                            getTeleport().getBcTeleport().Run(player, e);
                         }
                     });
                 }
                 if (args.length == 2) {
-                    Functions.instance.getMessaging().getGetBcServer().ServerList.forEach((e) -> {
+                    getTeleport().getGetBcServer().ServerList.forEach((e) -> {
                         if (args[0].equalsIgnoreCase(e)) {
-                            Functions.instance.getMessaging().getGetBcServer().SendBCDataGetServerOnlinePlayers();
-                            Functions.instance.getMessaging().getGetBcServer().OnlinePlayers.forEach((Player, ServerName) -> {
+                            getTeleport().getGetBcServer().SendBCDataGetServerOnlinePlayers();
+                            getTeleport().getGetBcServer().OnlinePlayers.forEach((Player, ServerName) -> {
                                 if (!ServerName.equalsIgnoreCase(e)) {
                                     if (args[1].equalsIgnoreCase(Player)) {
-                                        Functions.instance.getMessaging().getBcTeleport().Run(Player, e);
+                                        getTeleport().getBcTeleport().Run(Player, e);
                                     }
                                 }
                             });
@@ -57,15 +63,15 @@ public class CommandServer implements TabExecutor {
         List<String> ls = new ArrayList<>();
         if (Functions.instance.getFServer().isBc()) {
             if (args.length <= 1) {
-                Functions.instance.getMessaging().getGetBcServer().SendBCDataGetServerList();
-                ls.addAll(Functions.instance.getMessaging().getGetBcServer().ServerList);
+                getTeleport().getGetBcServer().SendBCDataGetServerList();
+                ls.addAll(getTeleport().getGetBcServer().ServerList);
             }
             if (args.length == 2) {
-                Functions.instance.getMessaging().getGetBcServer().SendBCDataGetServerList();
-                Functions.instance.getMessaging().getGetBcServer().ServerList.forEach((e) -> {
+                getTeleport().getGetBcServer().SendBCDataGetServerList();
+                getTeleport().getGetBcServer().ServerList.forEach((e) -> {
                     if (args[0].equalsIgnoreCase(e)) {
-                        Functions.instance.getMessaging().getGetBcServer().SendBCDataGetServerOnlinePlayers();
-                        Functions.instance.getMessaging().getGetBcServer().OnlinePlayers.forEach((Player, ServerName) -> {
+                        getTeleport().getGetBcServer().SendBCDataGetServerOnlinePlayers();
+                        getTeleport().getGetBcServer().OnlinePlayers.forEach((Player, ServerName) -> {
                             if (!ServerName.equalsIgnoreCase(e)) {
                                 ls.add(Player);
                             }

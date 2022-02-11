@@ -45,6 +45,7 @@ public class Sql implements DataBase {
             //connect.commit();
             //state.close();
             //connect.close();
+            disconnect();
             return true;
         } catch (SQLException e) {
             e.fillInStackTrace();
@@ -62,8 +63,9 @@ public class Sql implements DataBase {
                 init();
                 connect();
             }
-            connect.commit();
-            return state.executeQuery(cmd);
+            ResultSet resultSet = state.executeQuery(cmd);
+            disconnect();
+            return resultSet;
         } catch (SQLException e) {
             e.fillInStackTrace();
             //File file = new File(name);

@@ -3,13 +3,16 @@ package org.functions.Bukkit.Main.functions.Messaging.BungeeCord;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.Main.Functions;
+import org.functions.Bukkit.Main.functions.Messaging.BungeeCordTeleport;
+import org.functions.Bukkit.Main.functions.Messaging.ListenerMessaging;
+import org.functions.Bukkit.Main.functions.Messaging.Manager;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class GetServer {
+public class GetServer extends ListenerMessaging {
     public List<String> ServerList = new ArrayList<>();
     public LinkedHashMap<String,String> OnlinePlayers = new LinkedHashMap<>();
 
@@ -21,27 +24,21 @@ public class GetServer {
         return OnlinePlayers;
     }
 
-    public void ReceivePluginMessage(String channel, Player player, byte[] message) {
-        DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-        String subchannel = "";
-        String[] SL = null;
+    public void onEnable() {
+        Manager.manager.addClass("Account",this);
+    }
 
-        try {
-            subchannel = in.readUTF();
-        } catch (IOException var13) {
-        }
+    public void onDisable() {
+
+    }
+
+    public void ReceivePluginMessage(String channel, Player player, String[] message) {
+        String subchannel = message[0];
+        String[] SL = null;
 
         String ts;
         if (subchannel.equals("GetServers")) {
-            try {
-                String ServerListStr = in.readUTF();
-                SL = ServerListStr.split(", ");
-            } catch (IOException var12) {
-            }
-
-            if (SL == null) {
-                return;
-            }
+            SL = message[1].split(", ");
 
             String[] var14 = SL;
             int var8 = SL.length;
@@ -55,15 +52,8 @@ public class GetServer {
         if (subchannel.equals("PlayerList")) {
             System.out.println(subchannel);
             String ServerName = "";
-            try {
-                ServerName = in.readUTF();
-                SL = in.readUTF().split(", ");
-            } catch (IOException var12) {
-            }
-
-            if (SL == null) {
-                return;
-            }
+            ServerName = message[1];
+            SL = message[2].split(", ");
 
             String[] var14 = SL;
             int var8 = SL.length;
@@ -76,15 +66,8 @@ public class GetServer {
         }
 
         if (subchannel.equals("Functions_ServerTeleportAll")) {
-            try {
-                short len = in.readShort();
-                byte[] msgbytes = new byte[len];
-                in.readFully(msgbytes);
-                DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
-                ts = msgin.readUTF();
-                Functions.instance.getMessaging().getBcTeleport().Run(ts);
-            } catch (IOException var11) {
-            }
+            ts = message[1];
+            ((BungeeCordTeleport)Manager.manager.getClass("BungeeCordBetweenServers")).getBcTeleport().Run(ts);
         }
 
     }
@@ -115,21 +98,6 @@ public class GetServer {
     }
 
     public void SendBCDateStpAll(String TargetServer) {
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(b);
-
-        try {
-            out.writeUTF("Forward");
-            out.writeUTF("ALL");
-            out.writeUTF("Functions_ServerTeleportAll");
-            ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
-            DataOutputStream msgout = new DataOutputStream(msgbytes);
-            msgout.writeUTF(TargetServer);
-            out.writeShort(msgbytes.toByteArray().length);
-            out.write(msgbytes.toByteArray());
-        } catch (IOException var6) {
-        }
-
-        Bukkit.getConsoleSender().getServer().sendPluginMessage(Functions.instance, "BungeeCord", b.toByteArray());
+        sendMessage("BungeeCord", new Object[]{"Forward","ALL","Functions_ServerTeleportAll",TargetServer});
     }
 }

@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class SQLSave extends SQLRead{
+public class SQLSave extends SQLRead {
     public SQLSave(File file, List<String> texts) {
         super(file);
         try {

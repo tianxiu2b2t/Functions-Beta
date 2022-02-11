@@ -54,7 +54,6 @@ public class CommandGroup implements TabExecutor {
 //                        }
 //                    }
 //                }
-        if (args.length == 4) {
             if ("permissions".equalsIgnoreCase(args[0])) {
                 if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.group.permissions")) {
                     return true;
@@ -67,6 +66,43 @@ public class CommandGroup implements TabExecutor {
                 }
                 if (group == null) {
                     sender.sendMessage(fpi.putLanguage("NotFindGroup", "&c无法找到 %group% 用户组！", null, new String[]{"%group%"}, new String[]{args[0]}));
+                    return true;
+                }
+                if (args.length == 2) {
+                    if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.list")) {
+                        return true;
+                    }
+                    String format = "%1$s(%2$s)";
+                    StringBuilder list = new StringBuilder();
+                    for (int i = 1; i <= group.getAllPermissions().size();i++) {
+                        if (i != group.getAllPermissions().size()) {
+                            list.append(String.format(format, group.getAllPermissions().get(i-1))).append(", ");
+                            //System.out.println(list.toString());
+                            continue;
+                        }
+                        list.append(String.format(format, group.getAllPermissions().get(i-1), i));
+                        //System.out.println(list.toString());
+                    }
+                    sender.sendMessage(fpi.putLanguage("GroupPermissionsList","&a用户组 %group% 的权限有: %permissions",null,new Object[]{"group",group.getGroupName(),"permissions",list.toString()}));
+                    return true;
+                }
+                if ("list".equalsIgnoreCase(args[2])) {
+                    if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.list")) {
+                        return true;
+                    }
+                    String format = "%1$s(%2$s)";
+                    StringBuilder list = new StringBuilder();
+                    for (int i = 1; i <= group.getAllPermissions().size();i++) {
+                        String g = group.getAllPermissions().get(i-1);
+                        if (i != group.getAllPermissions().size()) {
+                            list.append(String.format(format, group.getAllPermissions().get(i-1))).append(", ");
+                            //System.out.println(list.toString());
+                            continue;
+                        }
+                        list.append(String.format(format, group.getAllPermissions().get(i-1), i));
+                        //System.out.println(list.toString());
+                    }
+                    sender.sendMessage(fpi.putLanguage("GroupPermissionsList","&a用户组 %group% 的权限有: %permissions",null,new Object[]{"group",group.getGroupName(),"permissions",list.toString()}));
                     return true;
                 }
                 if ("add".equalsIgnoreCase(args[2])) {
@@ -91,7 +127,6 @@ public class CommandGroup implements TabExecutor {
                     sender.sendMessage(fpi.putLanguage("RemoveFailedPermissionToGroup", "&c用户组 %group% 的 %permission% 是否存在？", null, new String[]{"%permission%", "%group%"}, new String[]{args[3], group.getGroupName()}));
                     return true;
                 }
-            }
         }
         if ("prefix".equalsIgnoreCase(args[0])) {
             if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.group.prefix")) {
@@ -269,7 +304,6 @@ public class CommandGroup implements TabExecutor {
                     return true;
                 }
             }
-
             if ("use".equalsIgnoreCase(args[2])) {
                 if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.group.prefixes.use")) {
                     return true;

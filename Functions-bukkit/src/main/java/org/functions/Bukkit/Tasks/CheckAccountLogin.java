@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.functions.Account;
-import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.UserAccounts.Account;
+import org.functions.Bukkit.Main.functions.UserAccounts.Accounts;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,17 +26,12 @@ public class CheckAccountLogin implements Runnable {
             if (!Bukkit.getPlayer(e).isOnline()) NoLogins.remove(e);
             Account account = Functions.instance.getPlayerManager().getUser(e).getAccount();
             boolean is = false;
-            System.out.println("a");
             if (account.exists()) {
-                System.out.println("b");
-                account.getPlayer().sendMessage(fpi.putLanguage("LoginAccount", "&c请使用/login <密码> 或者使用/mailogin 来登录", account.getPlayer()));
+                account.getOfflinePlayer().getPlayer().sendMessage(fpi.putLanguage("LoginAccount", "&c请使用/login <密码> 或者使用/mailogin 来登录", account.getOfflinePlayer().getPlayer()));
                 is = true;
-                System.out.println("c");
             }
-            System.out.println("e");
             if (!is) {
-                System.out.println("d");
-                account.getPlayer().sendMessage(fpi.putLanguage("RegisterAccount", "&c请使用/register <密码> <重复密码> 来注册账号！", account.getPlayer()));
+                account.getOfflinePlayer().getPlayer().sendMessage(fpi.putLanguage("RegisterAccount", "&c请使用/register <密码> <重复密码> 来注册账号！", account.getOfflinePlayer().getPlayer()));
             }
         });
     }

@@ -6,8 +6,8 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.functions.Account;
-import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.UserAccounts.Account;
+import org.functions.Bukkit.Main.functions.UserAccounts.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
 import java.util.ArrayList;

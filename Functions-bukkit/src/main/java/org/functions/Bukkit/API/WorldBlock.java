@@ -101,7 +101,11 @@ public class WorldBlock {
         return z;
     }
 
-    public Location getLoc() {
+    public Location getLocation() {
+        return new Location(loc.getWorld(),Utils.autoCon(x),y,Utils.autoCon(z));
+    }
+
+    public Location getPosition() {
         return loc;
     }
 

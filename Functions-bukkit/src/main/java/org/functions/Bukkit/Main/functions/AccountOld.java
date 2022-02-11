@@ -1,4 +1,4 @@
-package org.functions.Bukkit.Main.functions;
+/**package org.functions.Bukkit.Main.functions;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Account {
+public class AccountOld {
     String table = Functions.instance.getTable("Accounts");
     DataBase db = Functions.instance.getDatabase();
     UUID uuid = null;
@@ -336,4 +336,4 @@ public class Account {
         }
         return false;
     }
-}
+}*/

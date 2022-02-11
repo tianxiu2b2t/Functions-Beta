@@ -6,8 +6,8 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.functions.Account;
-import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.UserAccounts.Account;
+import org.functions.Bukkit.Main.functions.UserAccounts.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 import org.functions.Bukkit.Main.functions.User;
 
@@ -55,12 +55,11 @@ public class CommandAccountDelete implements TabExecutor {
                 return true;
             }
             String name = args[0];
-            for (Account accounts : Accounts.getAccounts()) {
-                if (accounts.getLowerName().equals(name.toLowerCase())) {
-                    accounts.delete();
-                    sender.sendMessage(fpi.putLanguage("AccountIsAdministratorDelete","&a成功删除玩家账号！",null));
-                    return true;
-                }
+            Account account;
+            if ((account = Accounts.getAccount(name)) != null) {
+                account.delete();
+                sender.sendMessage(fpi.putLanguage("AccountIsAdministratorDelete", "&a成功删除玩家账号！", null));
+                return true;
             }
             sender.sendMessage(fpi.putLanguage("AccountsIsExists","&c账号不存在？",null));
             return true;
@@ -73,11 +72,11 @@ public class CommandAccountDelete implements TabExecutor {
         if (sender.isOp()) {
             for (User u : Functions.instance.getPlayerManager().getAllUser()) {
                 if (args.length >= 1) {
-                    if (u.getAccount().getLowerName().contains(args[0])) {
-                        ls.add(u.getAccount().getLowerName());
+                    if (u.getAccount().getName().toLowerCase().contains(args[0])) {
+                        ls.add(u.getAccount().getName().toLowerCase());
                     }
                 } else {
-                    ls.add(u.getAccount().getLowerName());
+                    ls.add(u.getAccount().getName().toLowerCase());
                 }
             }
         }

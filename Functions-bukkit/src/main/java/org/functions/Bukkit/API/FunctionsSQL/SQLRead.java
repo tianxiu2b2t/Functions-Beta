@@ -17,6 +17,7 @@ public class SQLRead {
                 while ((input = reader.readLine()) != null) {
                     ls.add(toString(input));
                 }
+                reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

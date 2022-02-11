@@ -6,8 +6,8 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.functions.Bukkit.API.FPI;
 import org.functions.Bukkit.Main.Functions;
-import org.functions.Bukkit.Main.functions.Account;
-import org.functions.Bukkit.Main.functions.Accounts;
+import org.functions.Bukkit.Main.functions.UserAccounts.Account;
+import org.functions.Bukkit.Main.functions.UserAccounts.Accounts;
 import org.functions.Bukkit.Main.functions.PermissionsUtils;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class CommandRegister implements TabExecutor {
             if (!PermissionsUtils.hasPermissionsSendMessage(p,"functions.default.command.register")) {
                 return true;
             }
-            Account account = new Account(p.getUniqueId());
+            Account account = Accounts.getAccount(p.getUniqueId());
             if (args.length < 2) {
                 sender.sendMessage(fpi.subcmd());
                 return true;
