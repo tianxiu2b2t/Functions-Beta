@@ -59,6 +59,7 @@ public class CommandAccountDelete implements TabExecutor {
             Account account;
             if ((account = Accounts.getAccount(name)) != null) {
                 account.delete();
+                Accounts.reloadAccounts();
                 sender.sendMessage(fpi.putLanguage("AccountIsAdministratorDelete", "&a成功删除玩家账号！", null));
                 return true;
             }
@@ -71,13 +72,13 @@ public class CommandAccountDelete implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> ls = new ArrayList<>();
         if (sender.isOp()) {
-            for (User u : Functions.instance.getPlayerManager().getAllUser()) {
+            for (Account u : Accounts.getAccounts()) {
                 if (args.length >= 1) {
-                    if (u.getAccount().getName().toLowerCase().contains(args[0])) {
-                        ls.add(u.getAccount().getName().toLowerCase());
+                    if (u.getName().toLowerCase().contains(args[0])) {
+                        ls.add(u.getName().toLowerCase());
                     }
                 } else {
-                    ls.add(u.getAccount().getName().toLowerCase());
+                    ls.add(u.getName().toLowerCase());
                 }
             }
         }

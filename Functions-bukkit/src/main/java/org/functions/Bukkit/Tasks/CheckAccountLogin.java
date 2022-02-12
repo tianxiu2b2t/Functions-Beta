@@ -17,9 +17,9 @@ public class CheckAccountLogin implements Runnable {
     FPI fpi = Functions.instance.getAPI();
     public void run() {
         NoLogins.clear();
-        Accounts.login.forEach((e,f)->{
-            if (!f) {
-                NoLogins.add(e);
+        Accounts.accounts.forEach((e)->{
+            if (!e.isLogin()) {
+                NoLogins.add(e.getUUID());
             }
         });
         NoLogins.forEach(e->{

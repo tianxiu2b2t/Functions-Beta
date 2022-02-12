@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.Utils;
+import org.functions.Bukkit.Main.functions.Utitils.ProtocolVersion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +143,7 @@ public class WorldBlock {
 
     static int min_ground = 0;
     static {
-        if (Utils.Version.isCurrentLower(Utils.Version.v1_18_R1)) min_ground = -64;
+        if (ProtocolVersion.getServerVersion().getMinorVersion() >= 18) min_ground = -64;
     }
 
     public WorldBlock down() {

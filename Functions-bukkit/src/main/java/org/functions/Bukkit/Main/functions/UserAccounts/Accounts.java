@@ -15,6 +15,25 @@ public class Accounts {
     public static List<Account> accounts = new ArrayList<>();
     public static LinkedHashMap<UUID, Boolean> login = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, Long> bclogin = new LinkedHashMap<>();
+    public static void reloadAccounts() {
+        accounts.clear();
+        SQLMain.getFilesNotFormat(dir).forEach(Accounts::getAccount);
+    }
+    public static int canLogin() {
+        int i = 0;
+        for (File file : SQLMain.getFiles(dir)) {
+            if (file.length() != 0) {
+                i++;
+            }
+        }
+        return i;
+    }
+    public static List<Account> getAccounts() {
+        if (accounts.size() != canLogin()) {
+            reloadAccounts();
+        }
+        return accounts;
+    }
     public static Account getAccount(UUID uuid) {
         for (Account a : accounts) {
             if (a.getUUID().equals(uuid)) {

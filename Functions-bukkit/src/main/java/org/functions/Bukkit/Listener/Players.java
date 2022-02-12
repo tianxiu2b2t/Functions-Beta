@@ -143,7 +143,9 @@ public class Players implements Listener {
         Player p = event.getPlayer();
         account = Accounts.getAccount(p.getUniqueId());
         if (!account.isLogin()) {
-            event.setTo(new Location(event.getFrom().getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), event.getTo().getYaw(), event.getTo().getPitch()));
+            Location pos = new Location(event.getFrom().getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), event.getTo().getYaw(), event.getTo().getPitch());
+            event.setTo(pos);
+            //event.getPlayer().teleport(pos);
             return;
             //event.setTo(event.getFrom());
         }
@@ -275,7 +277,7 @@ public class Players implements Listener {
             }
         }
     }
-    @EventHandler
+    /*@EventHandler
     public void onClickerInventory(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             if (!Functions.instance.getPlayerManager().getUser(event.getWhoClicked().getUniqueId()).getAccount().isLogin()) {
@@ -378,5 +380,5 @@ public class Players implements Listener {
                 event.setCancelled(true);
             }
         }
-    }
+    }*/
 }

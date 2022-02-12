@@ -9,8 +9,8 @@ public class SQLMain {
         s.add("awa:aaaa废物");
         new SQLReader(new File("O:\\awa")).save();
     }
-    private final String format = ".SQLFile";
-    public List<SQLRead> getSubSQLFiles(File dir) {
+    private static final String format = ".SQLFile";
+    public static List<SQLRead> getSubSQLFiles(File dir) {
         List<SQLRead> list = new ArrayList<>();
         if (isDirAnyFiles(dir)) {
             getFiles(dir).forEach(e->{
@@ -19,7 +19,7 @@ public class SQLMain {
         }
         return list;
     }
-    public List<File> getFiles(File dir) {
+    public static List<File> getFiles(File dir) {
         List<File> list = new ArrayList<>();
         if (!isDirAnyFiles(dir)) {
             return list;
@@ -31,7 +31,17 @@ public class SQLMain {
         });
         return list;
     }
-    public boolean isDirAnyFiles(File dir) {
+    public static List<String> getFilesNotFormat(File dir) {
+        List<String> list = new ArrayList<>();
+        if (!isDirAnyFiles(dir)) {
+            return list;
+        }
+        Arrays.asList(Objects.requireNonNull(dir.listFiles())).forEach(e->{
+            list.add(e.getName().split("\\.")[e.getName().split("\\.").length - 1]);
+        });
+        return list;
+    }
+    public static boolean isDirAnyFiles(File dir) {
         if (dir.exists()) {
             if (dir.listFiles()!=null) {
                 return true;

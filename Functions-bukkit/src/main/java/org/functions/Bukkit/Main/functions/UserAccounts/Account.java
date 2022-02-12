@@ -196,14 +196,14 @@ public class Account extends SQLRead {
 
     public boolean login(String password) {
         if (!isLogin()) {
-            password = security.security(password);
-            System.out.println(password);
-            System.out.println(getPassword());
-            if (password.equals(getPassword())) {
+            //password = security.security(password);
+            //System.out.println(password);
+            //System.out.println(getPassword());
+            if (security.security(password).equals(getPassword())) {
                 login();
                 return true;
             }
-            //WrongPassword();
+            WrongPassword();
         }
         return false;
     }
@@ -232,9 +232,12 @@ public class Account extends SQLRead {
         return false;
     }
     public boolean delete() {
+        if (reader.getFile().length() == 0) return false;
         if (getOfflinePlayer().isOnline()) logout();
-        super.getReader().getFile().deleteOnExit();
-        return !exists();
+        reader.getTexts().clear();
+        reader.save();
+        reader.getFile().deleteOnExit();
+        return reader.getFile().exists();
     }
     public boolean setAutoLogin() {
         reader.setSelect("AutoLogin").setObjectAsBoolean(!getAutoLogin());
