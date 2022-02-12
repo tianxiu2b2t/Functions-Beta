@@ -24,9 +24,9 @@ public class CheckAccountLogin implements Runnable {
         });
         NoLogins.forEach(e->{
             if (!Bukkit.getPlayer(e).isOnline()) NoLogins.remove(e);
-            Account account = Functions.instance.getPlayerManager().getUser(e).getAccount();
+            Account account = Accounts.getAccount(e);
             boolean is = false;
-            if (account.exists()) {
+            if (account.isRegister()) {
                 account.getOfflinePlayer().getPlayer().sendMessage(fpi.putLanguage("LoginAccount", "&c请使用/login <密码> 或者使用/mailogin 来登录", account.getOfflinePlayer().getPlayer()));
                 is = true;
             }

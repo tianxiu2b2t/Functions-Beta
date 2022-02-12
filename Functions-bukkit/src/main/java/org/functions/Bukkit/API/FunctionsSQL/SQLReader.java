@@ -6,10 +6,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class SQLReader extends SQLFile {
+public class SQLReader extends SQLRead {
     String select;
-    public SQLReader(File file, List<String> texts) {
-        super(file, texts);
+    public SQLReader(File file) {
+        super(file);
+    }
+    public SQLReader(File file,List<String> texts) {
+        this(file);
+        super.texts = texts;
     }
     public SQLReader setSelect(String select) {
         this.select = select;
@@ -36,7 +40,10 @@ public class SQLReader extends SQLFile {
             return null;
         }
         if (super.texts.size() == 0) {
-            return null;
+            readString();
+            if (texts.size() == 0) {
+                return null;
+            }
         }
         for (String text : super.texts) {
             if (split(text,0).equals(select)) {
@@ -175,6 +182,6 @@ public class SQLReader extends SQLFile {
         throw new SQLException(type);
     }
     public void save() {
-        new SQLSave(file,texts);
+        new SQLSave(file,texts).readString();
     }
 }

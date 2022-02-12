@@ -1,33 +1,40 @@
 package org.functions.Bukkit.API.FunctionsSQL;
 
+import org.bukkit.Bukkit;
+import org.functions.Bukkit.Main.Functions;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SQLRead {
     List<String> texts = new ArrayList<>();
-    File file;
+    File file = null;
     public SQLRead(File file) {
+        File file1 = null;
         String format = ".SQLFile";
         if (!file.getName().endsWith(format)) {
-            file = new File(file.getPath() + format);
+            file1 = new File(file.getPath() + format);
         }
-        this.file = file;
+        if (file1 != null) {
+            this.file = file;
+        }
         readString();
     }
     public void readString() {
-        List<String> ls = new ArrayList<>();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String input;
-            while ((input = reader.readLine()) != null) {
-                ls.add(toString(input));
+        if (file.exists()) {
+            List<String> ls = new ArrayList<>();
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                String input;
+                while ((input = reader.readLine()) != null) {
+                    ls.add(toString(input));
+                }
+                reader.close();
+            } catch (IOException ignored) {
             }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            texts = ls;
         }
-        this.texts = ls;
         if (file.exists()) {
             if (file.length() != 0) {
                 if (texts.size() == 0) {
@@ -37,7 +44,7 @@ public class SQLRead {
         }
     }
     public SQLReader getReader() {
-        return new SQLReader(file,texts);
+        return new SQLReader(file);
     }
     private String toString(String binary) {
         String[] tempStr = binary.split(" ");
@@ -55,5 +62,8 @@ public class SQLRead {
             tempChar[i] = (char)sum;
         }
         return String.valueOf(tempChar);
+    }
+    public File getFile() {
+        return file;
     }
 }

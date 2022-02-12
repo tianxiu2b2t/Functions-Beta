@@ -14,9 +14,6 @@ import java.util.List;
 public class Manager implements PluginMessageListener {
     public static Manager manager;
     Functions instance = Functions.instance;
-    public Manager() {
-        setManager(this);
-    }
     public void onEnable() {
         manager = this;
         if (!instance.getServer().getMessenger().isOutgoingChannelRegistered(instance, "Functions:" + Functions.instance.getVersion())) {
@@ -28,7 +25,7 @@ public class Manager implements PluginMessageListener {
         getAllClass().forEach(ListenerMessaging::onEnable);
     }
 
-    public void setManager(Manager manager) {
+    public static void setManager(Manager manager) {
         Manager.manager = manager;
     }
 

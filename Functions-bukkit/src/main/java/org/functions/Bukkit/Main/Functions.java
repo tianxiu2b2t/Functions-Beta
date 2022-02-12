@@ -147,6 +147,9 @@ public final class Functions extends JavaPlugin {
         saveResource(name, replace);
     }
     public void onEnable() {
+        Manager manager = new Manager();
+        Manager.setManager(manager);
+        manager.onEnable();
         getAPI().registerCommand();
         getAPI().registerListener();
         Metrics metrics = new Metrics(this, 11673);
@@ -177,7 +180,6 @@ public final class Functions extends JavaPlugin {
         forceLoad = new Force(f);
         print("Is BungeeCord: " + f.isBc());
         print("Plugin folder size: " + configuration.DirSize());
-        new Manager().onEnable();
         f.flushMemory();
         // recipe
         ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("packet_ice"),new ItemStack(Material.PACKED_ICE)).shape("xxx","xxx","xxx").setIngredient('x',Material.ICE);

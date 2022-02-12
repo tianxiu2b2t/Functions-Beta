@@ -22,7 +22,7 @@ public class Account extends SQLRead {
         this.uuid = uuid;
     }
     public boolean exists() {
-        return super.getReader().getFile().exists();
+        return isRegister();
     }
     public void save() {
         reader.save();
