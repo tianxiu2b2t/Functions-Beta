@@ -4,6 +4,11 @@ import java.io.*;
 import java.util.*;
 
 public class SQLMain {
+    public static void main(String[] args) {
+        List<String> s = new ArrayList<>();
+        s.add("awa:aaaa废物");
+        new SQLReader(new File("O:\\awa"),s).save();
+    }
     private final String format = ".SQLFile";
     public List<SQLRead> getSubSQLFiles(File dir) {
         List<SQLRead> list = new ArrayList<>();

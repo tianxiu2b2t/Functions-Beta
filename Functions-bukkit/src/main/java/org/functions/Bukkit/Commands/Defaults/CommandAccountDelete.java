@@ -44,6 +44,7 @@ public class CommandAccountDelete implements TabExecutor {
                     return true;
                 }
                 if (account.delete()) {
+                    Accounts.accounts.remove(account);
                     sender.sendMessage(fpi.putLanguage("AccountIsDelete", "&a成功删除账号！", p));
                     return true;
                 }

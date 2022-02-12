@@ -35,7 +35,7 @@ public class CommandLogin implements TabExecutor {
                 sender.sendMessage(fpi.subcmd());
                 return true;
             }
-            if (!account.exists()) {
+            if (!account.isRegister()) {
                 sender.sendMessage(fpi.putLanguage("AccountNotExists","&c你的账号没有注册。请使用/register <密码> <重复密码> 来注册！",p));
                 return true;
             }

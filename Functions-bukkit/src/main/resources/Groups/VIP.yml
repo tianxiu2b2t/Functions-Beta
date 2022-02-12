@@ -12,4 +12,5 @@ Permissions:
   - "functions.permissions.command.fly"
   - "functions.permissions.command.seed"
   - "functions.permissions.command.warp.teleport"
+  - "functions.permissions.command.home.*"
 atPlayer: "&2@%player%&r"

@@ -12,7 +12,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.functions.Bukkit.Main.Functions;
 import org.functions.Bukkit.Main.functions.User;
-
+@Deprecated
 public class FAsyncPlayerChatEvent {
     Player p;
     private String message;

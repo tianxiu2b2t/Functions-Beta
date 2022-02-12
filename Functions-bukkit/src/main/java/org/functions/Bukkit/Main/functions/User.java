@@ -12,6 +12,7 @@ import org.functions.Bukkit.Main.functions.Utitils.Tellraw;
 import java.util.*;
 
 public class User implements IUser {
+    public int noClickers = 0;
     UUID uuid;
     //DataBase db = Functions.instance.database;
     //String table = Functions.instance.getTable("Users");
@@ -22,7 +23,6 @@ public class User implements IUser {
     List<String> suffixes = new ArrayList<>();
     String prefix = "";
     String suffix = "";
-    boolean hide = false;
     //public String select_all = "SELECT * FROM " + Functions.instance.getTable("Users");
     public User(UUID uuid) {
         this.uuid = uuid;
@@ -294,6 +294,12 @@ public class User implements IUser {
     }
     public void setInvisibility(boolean invisibility) {
         Functions.instance.yamlUsers().set(uuid,"Invisibility",invisibility);
+    }
+    public boolean isAFK() {
+        return Functions.instance.yamlUsers().configurations.get(uuid).getBoolean("AwayFromBoard",false);
+    }
+    public void setAFK(boolean AwayFromBoard) {
+        Functions.instance.yamlUsers().set(uuid,"AwayFromBoard",AwayFromBoard);
     }
     public String getDisplayName() {
         return getPrefix() + getPlayer().getName() + getSuffix();

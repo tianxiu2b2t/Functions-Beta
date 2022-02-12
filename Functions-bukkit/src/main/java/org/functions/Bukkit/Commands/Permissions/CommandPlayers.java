@@ -1,6 +1,7 @@
 package org.functions.Bukkit.Commands.Permissions;
 
 import com.google.common.base.Preconditions;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -39,7 +40,7 @@ public class CommandPlayers implements TabExecutor {
                 if (!PermissionsUtils.hasPermissionsSendMessage(sender,"functions.permissions.command.spawn")) {
                     return true;
                 }
-                Location position = p.getWorld().getSpawnLocation();
+                Location position = Functions.instance.getConfiguration().getSettings().get("Spawn.DefaultWorld") != null ? Bukkit.getWorld(Functions.instance.getConfiguration().getSettings().getString("Spawn.DefaultWorld")).getSpawnLocation() : Bukkit.getWorlds().get(0).getSpawnLocation();
                 WorldBlock worldBlock = new WorldBlock(position);
                 position.setY(worldBlock.onGroundY());
                 p.teleport(position);

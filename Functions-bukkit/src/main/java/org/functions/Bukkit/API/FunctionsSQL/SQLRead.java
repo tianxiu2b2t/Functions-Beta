@@ -8,20 +8,32 @@ public class SQLRead {
     List<String> texts = new ArrayList<>();
     File file;
     public SQLRead(File file) {
+        String format = ".SQLFile";
+        if (!file.getName().endsWith(format)) {
+            file = new File(file.getPath() + format);
+        }
         this.file = file;
-        if (file.exists()) {
-            List<String> ls = new ArrayList<>();
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                String input;
-                while ((input = reader.readLine()) != null) {
-                    ls.add(toString(input));
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+        readString();
+    }
+    public void readString() {
+        List<String> ls = new ArrayList<>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String input;
+            while ((input = reader.readLine()) != null) {
+                ls.add(toString(input));
             }
-            this.texts = ls;
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.texts = ls;
+        if (file.exists()) {
+            if (file.length() != 0) {
+                if (texts.size() == 0) {
+                    readString();
+                }
+            }
         }
     }
     public SQLReader getReader() {

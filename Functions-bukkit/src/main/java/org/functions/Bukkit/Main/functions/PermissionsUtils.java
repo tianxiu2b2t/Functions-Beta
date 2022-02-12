@@ -9,6 +9,7 @@ import org.functions.Bukkit.Main.Functions;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -172,7 +173,7 @@ public class PermissionsUtils {
         }
         return true;
     }
-    public static LinkedHashMap<String,PermissionAttachment> attachments = new LinkedHashMap<>();
+    /*public static LinkedHashMap<String,PermissionAttachment> attachments = new LinkedHashMap<>();
     public static LinkedHashMap<UUID,PermissionAttachment> loadPermissionAttachment = new LinkedHashMap<>();
     public static LinkedHashMap<String, Permission> registeredPermission = new LinkedHashMap<>();
     public static void updatePlayerCommand(Player player) {
@@ -241,7 +242,7 @@ public class PermissionsUtils {
         for (String key : permList) {
             /*
              * Ignore stupid plugins which add empty permission nodes.
-             */
+             **
             if (!key.isEmpty()) {
                 String a = key.charAt(0) == '-' ? key.substring(1) : key;
                 Map<String, Boolean> allchildren = getAllChildren(a, new HashSet<>());
@@ -344,5 +345,74 @@ public class PermissionsUtils {
         } catch (SecurityException | NoSuchFieldException e) {
             e.printStackTrace();
         }
+    }*/
+    static boolean isUpdateCommands = false;
+    static {
+        for (Method method : Player.class.getDeclaredMethods()) {
+            if (method.getName().equalsIgnoreCase("updateCommands")) {
+                isUpdateCommands = true;
+            }
+        }
+        isUpdateCommands = false;
+    }
+    public boolean inMethodUpdateCommands() {
+        for (Method method : Player.class.getDeclaredMethods()) {
+            if (method.getName().equalsIgnoreCase("updateCommands")) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static void updateCommands(Player player) {
+        if (isUpdateCommands) {
+            try {
+                player.getClass().getDeclaredMethod("updateCommands").invoke(player);
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    static LinkedHashMap<UUID,PermissionAttachment> perms = new LinkedHashMap<>();
+    public static void recalculatePlayers() {
+        Bukkit.getOnlinePlayers().forEach(PermissionsUtils::setPlayerPermissions);
+    }
+    public static void setPlayerPermissions(Player player) {
+        getPermissions().forEach(e->{
+            PermissionAttachment attachment = perms.get(player.getUniqueId());
+            if (attachment == null) {
+                attachment = player.addAttachment(Functions.instance);
+                perms.put(player.getUniqueId(), attachment);
+            } else {
+                attachment = player.addAttachment(Functions.instance);
+                perms.replace(player.getUniqueId(), attachment);
+            }
+            e.recalculatePermissibles();
+            attachment.setPermission(e,hasPermissions(player,e.getName()));
+            attachment.getPermissible().recalculatePermissions();
+            updateCommands(player);
+        });
+    }
+    public static Map<String, Boolean> getChildrenPermission(String name) {
+        return getPermission(name).getChildren();
+    }
+    public static Permission getPermission(String name) {
+        for (Permission perm : getPermissions()) {
+            if (perm.getName().equalsIgnoreCase(name)) {
+                return perm;
+            }
+        }
+        return null;
+    }
+    public static Set<Permission> getPermissions() {
+        return Bukkit.getPluginManager().getPermissions();
+    }
+    public static Map<Permission,Map<String, Boolean>> getChildrenPermissions() {
+        Map<Permission,Map<String, Boolean>> maps = new HashMap<>();
+        getPermissions().forEach(e->{
+            if (e.getChildren() != null) {
+                maps.put(e, getChildrenPermission(e.getName()));
+            }
+        });
+        return maps;
     }
 }

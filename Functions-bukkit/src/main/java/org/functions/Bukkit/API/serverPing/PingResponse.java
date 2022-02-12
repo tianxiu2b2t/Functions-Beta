@@ -22,7 +22,6 @@ public class PingResponse
         this.name = name;
     }
     public PingResponse(String jsonString,ServerAddress address) {
-        System.out.println(jsonString);
 
         if (jsonString == null || jsonString.isEmpty()) {
             toString = "Offline the server";

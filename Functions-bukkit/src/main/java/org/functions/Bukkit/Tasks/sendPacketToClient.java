@@ -2,7 +2,10 @@ package org.functions.Bukkit.Tasks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.functions.Bukkit.API.Event.AwayFromBoardEvent;
 import org.functions.Bukkit.Main.Functions;
+import org.functions.Bukkit.Main.functions.PermissionsUtils;
+import org.functions.Bukkit.Main.functions.User;
 import org.functions.Bukkit.Main.functions.Utils;
 import org.functions.Bukkit.Main.functions.Utitils.ActionBar;
 import org.functions.Bukkit.Main.functions.Utitils.ScoreBoard;
@@ -65,6 +68,22 @@ public class sendPacketToClient implements Runnable {
             for (Player o : Bukkit.getOnlinePlayers()) {
                 if (Functions.instance.getPlayerManager().getUser(p.getUniqueId()).isHiding()) o.hidePlayer(Functions.instance,p);
                 else o.showPlayer(Functions.instance,p);
+            }
+            User user = Functions.instance.getPlayerManager().getUser(p.getUniqueId());
+            if (user.getCPS() != null) {
+                if (user.getCPS().getCountCPS() != 0) {
+                    if (user.noClickers != 0) user.noClickers = 0;
+                } else {
+                    if (user.isAFK()) {
+                        user.noClickers = 0;
+                    } else if (user.noClickers >= Functions.instance.getConfiguration().getSettings().getInt("AFK.NoClickersOut", 15) * 20) {
+                        AwayFromBoardEvent event = new AwayFromBoardEvent(p);
+                        Bukkit.getPluginManager().callEvent(event);
+                        if (!event.isCancelled()) {
+                            Bukkit.getScheduler().runTaskAsynchronously(Functions.instance, () -> user.setAFK(true));
+                        }
+                    }
+                }
             }
         }
     }

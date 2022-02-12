@@ -1,23 +1,32 @@
 package org.functions.Bukkit.Main.functions;
 
+import org.functions.Bukkit.API.FunctionsSQL.SQLFile;
+import org.functions.Bukkit.API.FunctionsSQL.SQLRead;
 import org.functions.Bukkit.Main.DataBase;
 import org.functions.Bukkit.Main.Functions;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FunctionsRules {
-    DataBase db = Functions.instance.getDatabase();
-    String table = Functions.instance.getTable("Rules");
     public enum Type {
-        FALL,
-        SICKS_ITEM,
-        DISPENSER,
-        WRONGPASSWORD
+        FALL(true),
+        SICKS_ITEM(true),
+        DISPENSER(true),
+        WRONGPASSWORD(true);
+        boolean isEnabled;
+        Type(boolean isEnabled) {
+            this.isEnabled = isEnabled;
+        }
+
+        public boolean isEnabled() {
+            return isEnabled;
+        }
     }
+    SQLRead read;
     public FunctionsRules() {
+        read = new SQLRead(new File(Functions.instance.getDataFolder(),"Rules"));
         AddRules(Type.FALL);
         AddRules(Type.SICKS_ITEM);
         AddRules(Type.DISPENSER);
@@ -32,43 +41,18 @@ public class FunctionsRules {
         return this;
     }
     public boolean isEnabled(Type type) {
-        try {
-            return  Boolean.parseBoolean(db.query("SELECT * FROM " + table + " WHERE Rules='" + type.name() + "'").getString("Enable"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return read.getReader().setSelect(type.name()).getObjectAsBoolean();
     }
     public boolean enable(Type type) {
-        if (isEnabled(type)) {
-            db.execute("UPDATE " + table + " SET Enable='" + false + "' WHERE Rules=' " + type.name() + "')");
-            return false;
-        }
-        db.execute("UPDATE " + table + " SET Enable='" + true + "' WHERE Rules=' " + type.name() + "')");
-        return true;
+        read.getReader().setSelect(type.name()).setObjectAsBoolean(!read.getReader().setSelect(type.name()).getObjectAsBoolean());
+        return read.getReader().setSelect(type.name()).getObjectAsBoolean();
     }
     private boolean RulesExists(Type type) {
-        List<String> ls = new ArrayList<>();
-        ResultSet rs = db.query("SELECT * FROM " + table);
-        try {
-            while (rs.next()) {
-                ls.add(rs.getString("Rules"));
-            }
-        } catch (SQLException troubles) {
-            troubles.printStackTrace();
-        }
-        for (String s : ls) {
-            if (s.equalsIgnoreCase(type.name().toLowerCase())) {
-                ls.clear();
-                return true;
-            }
-        }
-        ls.clear();
-        return false;
+        return read.getReader().setSelect(type.name()).existsSelect();
     }
     private void AddRules(Type type) {
         if (!RulesExists(type)) {
-            db.execute("INSERT INTO " + table + " ( Rules  ) VALUES ( '" + type.name() + "' )");
+            read.getReader().setSelect(type.name()).setObjectAsBoolean(type.isEnabled());
         }
     }
 }

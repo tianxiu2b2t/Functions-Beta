@@ -41,7 +41,7 @@ public class CommandRegister implements TabExecutor {
                 sender.sendMessage(fpi.putLanguage("AccountIsLogin","&c你的账号已登录。退出请使用/logout",p));
                 return true;
             }
-            if (account.exists()) {
+            if (account.isRegister()) {
                 sender.sendMessage(fpi.putLanguage("AccountExists","&c你的账号已注册。",p));
                 return true;
             }

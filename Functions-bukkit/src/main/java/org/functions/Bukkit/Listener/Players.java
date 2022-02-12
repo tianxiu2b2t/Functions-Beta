@@ -5,6 +5,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,19 +13,18 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.functions.Bukkit.API.ClickPerSeconds;
 import org.functions.Bukkit.API.Event.FAsyncPlayerChatEvent;
 import org.functions.Bukkit.API.FPI;
-import org.functions.Bukkit.API.SpeedPerSeconds;
-import org.functions.Bukkit.API.WorldBlock;
+import org.functions.Bukkit.API.Speed;
 import org.functions.Bukkit.Main.*;
 import org.functions.Bukkit.Main.Server.FList;
 import org.functions.Bukkit.Main.functions.*;
 import org.functions.Bukkit.Main.functions.UserAccounts.*;
 import org.functions.Bukkit.Main.functions.Utitils.FunctionsCommand;
-import org.functions.Bukkit.Tasks.CheckAccountLogin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -153,6 +153,8 @@ public class Players implements Listener {
                 event.getPlayer().teleport(new Location(event.getTo().getWorld(), event.getTo().getX(), event.getPlayer().getWorld().getMaxHeight(), event.getTo().getZ(), event.getTo().getYaw(), event.getTo().getPitch()));
             }
         }
+        Speed.count(event.getPlayer());
+        Speed.getSpeed(event.getPlayer().getUniqueId());
         //if (fpi.sps.get(p.getUniqueId())==null) fpi.sps.put(event.getPlayer().getUniqueId(),new SpeedPerSeconds(event.getPlayer().getUniqueId()));
         //fpi.sps.get(event.getPlayer().getUniqueId()).count();
     }
@@ -178,7 +180,7 @@ public class Players implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void interact(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        account = new Account(p.getUniqueId());
+        account = Accounts.getAccount(event.getPlayer().getUniqueId());
         if (!account.isLogin()) {
             event.setCancelled(true);
         } else {
@@ -270,6 +272,110 @@ public class Players implements Listener {
         if (event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.ALLOWED)) {
             if (!FList.IsPlayerCanJoin(event.getName())) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "§aYou is banned or not in white list can join this server!");
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(InventoryClickEvent event) {
+        if (event.getWhoClicked() instanceof Player) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getWhoClicked().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(InventoryDragEvent event) {
+        if (event.getWhoClicked() instanceof Player) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getWhoClicked().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(InventoryCreativeEvent event) {
+        if (event.getWhoClicked() instanceof Player) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getWhoClicked().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(InventoryOpenEvent event) {
+        if (event.getPlayer() instanceof Player) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerDropItemEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerItemConsumeEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerItemHeldEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerItemMendEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerSwapHandItemsEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerPickupArrowEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerPortalEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerEditBookEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
+            }
+        }
+    }
+    @EventHandler
+    public void onClickerInventory(PlayerTeleportEvent event) {
+        if (event.getPlayer() != null) {
+            if (!Functions.instance.getPlayerManager().getUser(event.getPlayer().getUniqueId()).getAccount().isLogin()) {
+                event.setCancelled(true);
             }
         }
     }

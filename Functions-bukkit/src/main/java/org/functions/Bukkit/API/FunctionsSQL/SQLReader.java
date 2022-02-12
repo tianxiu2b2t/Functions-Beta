@@ -23,13 +23,12 @@ public class SQLReader extends SQLFile {
             throwException("select is null");
             return false;
         }
-        List<Object> t = new ArrayList<>();
-        super.texts.forEach(e->{
-            if (split(e,0).equals(select)) {
-                t.add(split(e,1));
+        for (String s : texts) {
+            if (split(s,0).equals(select)) {
+                return true;
             }
-        });
-        return t.size() != 0;
+        }
+        return false;
     }
     public Object getObject() {
         if (select == null) {

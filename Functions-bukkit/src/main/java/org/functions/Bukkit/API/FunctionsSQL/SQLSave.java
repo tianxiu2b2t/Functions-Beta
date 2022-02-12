@@ -10,7 +10,6 @@ public class SQLSave extends SQLRead {
     public SQLSave(File file, List<String> texts) {
         super(file);
         try {
-            if (file.exists()) file.deleteOnExit();
             if (!file.exists()) file.createNewFile();
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             texts.forEach(e->{

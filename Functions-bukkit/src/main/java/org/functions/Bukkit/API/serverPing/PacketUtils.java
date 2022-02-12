@@ -7,10 +7,11 @@ import java.io.IOException;
 import java.lang.String;
 import java.io.DataOutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 class PacketUtils {
 
-    public static final Charset UTF8 = Charset.forName("UTF-8");
+    public static final Charset UTF8 = StandardCharsets.UTF_8;
 
     public static void writeString(final DataOutputStream out, final String s, final Charset charset) throws IOException {
         if (charset == PacketUtils.UTF8) {

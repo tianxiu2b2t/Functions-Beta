@@ -1,5 +1,6 @@
 package org.functions.Bukkit.Main.functions.UserAccounts;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.functions.Bukkit.API.FunctionsSQL.SQLRead;
 import org.functions.Bukkit.API.FunctionsSQL.SQLReader;
@@ -75,8 +76,26 @@ public class Account extends SQLRead {
             save();
         }
     }
+    public boolean isBlank(String str) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (str.charAt(i) != ' ') {
+                return false;
+            }
+            if ((!Character.isWhitespace(str.charAt(i)))) {
+                return false;
+            }
+        }
+        return true;
+    }
     public boolean isRegister() {
-        return reader.setSelect("Password").existsSelect();
+        if (reader.setSelect("Password").existsSelect()) {
+            return !isBlank(reader.setSelect("Password").getObjectAsString());
+        }
+        return false;
     }
     public boolean logout() {
         if (isLogin()) {
@@ -177,10 +196,14 @@ public class Account extends SQLRead {
 
     public boolean login(String password) {
         if (!isLogin()) {
-            if (security.security(password).equals(getPassword())) {
+            password = security.security(password);
+            System.out.println(password);
+            System.out.println(getPassword());
+            if (password.equals(getPassword())) {
                 login();
                 return true;
             }
+            //WrongPassword();
         }
         return false;
     }
@@ -200,13 +223,11 @@ public class Account extends SQLRead {
         return false;
     }
     public boolean changePassword(String password) {
-        if (isLogin()) {
-            password = security.security(password);
-            if (!getPassword().equals(password)) {
-                setPassword(password);
-                logout();
-                return true;
-            }
+        password = security.security(password);
+        if (!getPassword().equals(password)) {
+            setPassword(password);
+            logout();
+            return true;
         }
         return false;
     }
@@ -216,7 +237,7 @@ public class Account extends SQLRead {
         return !exists();
     }
     public boolean setAutoLogin() {
-        reader.setSelect("AutoLogin").setObjectAsBoolean(true);
+        reader.setSelect("AutoLogin").setObjectAsBoolean(!getAutoLogin());
         return true;
     }
     public boolean getAutoLogin() {
@@ -228,9 +249,11 @@ public class Account extends SQLRead {
     public boolean autoLogin() {
         if (exists()) {
             if (!isLogin()) {
-                if (getAddress().equalsIgnoreCase(address())) {
-                    login();
-                    return true;
+                if (getAutoLogin()) {
+                    if (getAddress().equalsIgnoreCase(address())) {
+                        login();
+                        return true;
+                    }
                 }
             }
         }
